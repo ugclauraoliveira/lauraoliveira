@@ -369,12 +369,12 @@
   .obj-radio .corpo::after{ content:""; position:absolute; right:10px; top:14px; width:26px; height:26px; border-radius:6px; background: var(--terracota); }
   .obj-radio .antena{ position:absolute; top:-26px; right:14px; width:3px; height:28px; background: var(--tinta-suave); transform: rotate(18deg); }
 
-  .obj-planta{ top: 42%; left: 2%; --rot:3deg; width:78px; height:110px; }
-  .obj-planta .vaso{ width:56px; height:44px; background: var(--terracota); border-radius: 4px 4px 14px 14px; margin: 66px auto 0; box-shadow: 0 10px 18px -10px var(--sombra); }
-  .obj-planta .folha{ position:absolute; bottom:44px; left:50%; width:14px; height:56px; background: var(--oliva); border-radius: 50% 50% 50% 4px; transform-origin: bottom center; }
-  .obj-planta .folha:nth-child(1){ transform: translateX(-50%) rotate(-18deg); }
-  .obj-planta .folha:nth-child(2){ transform: translateX(-50%) rotate(6deg); height:64px; }
-  .obj-planta .folha:nth-child(3){ transform: translateX(-50%) rotate(26deg); height:50px; }
+  .obj-skincare{ top: 42%; left: 2%; --rot:3deg; width:78px; height:110px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; }
+  .obj-skincare .bulbo{ width:20px; height:26px; background: var(--oliva); border-radius: 10px 10px 3px 3px; }
+  .obj-skincare .colar{ width:34px; height:10px; background: var(--tinta-suave); border-radius: 3px; }
+  .obj-skincare .frasco{ position:relative; width:58px; height:64px; background: var(--terracota); border-radius: 8px 8px 14px 14px; box-shadow: 0 10px 18px -10px var(--sombra); display:flex; align-items:center; justify-content:center; }
+  .obj-skincare .frasco::after{ content:""; position:absolute; top:8px; left:6px; width:5px; height:44px; border-radius:4px; background: rgba(255,253,248,0.22); }
+  .obj-skincare .rotulo{ width:34px; height:30px; border-radius:3px; background-color: var(--papel); background-image: linear-gradient(var(--terracota-escuro),var(--terracota-escuro)), linear-gradient(var(--tinta-suave),var(--tinta-suave)), linear-gradient(var(--tinta-suave),var(--tinta-suave)); background-repeat:no-repeat; background-size: 18px 3px, 24px 2px, 16px 2px; background-position: center 7px, center 15px, center 21px; }
 
   .obj-xicara{ bottom: 6%; left: 6%; --rot:-2deg; width:70px; height:56px; }
   .obj-xicara .pires{ width:70px; height:10px; background: var(--tinta-suave); border-radius:50%; margin-top:44px; opacity:.5; }
@@ -792,11 +792,10 @@
       <div class="antena"></div>
       <div class="corpo"></div>
     </div>
-    <div class="objeto-decorativo obj-planta" aria-hidden="true">
-      <div class="folha"></div>
-      <div class="folha"></div>
-      <div class="folha"></div>
-      <div class="vaso"></div>
+    <div class="objeto-decorativo obj-skincare" aria-hidden="true">
+      <div class="bulbo"></div>
+      <div class="colar"></div>
+      <div class="frasco"><div class="rotulo"></div></div>
     </div>
     <div class="objeto-decorativo obj-xicara" aria-hidden="true">
       <div class="fumaca"></div>
