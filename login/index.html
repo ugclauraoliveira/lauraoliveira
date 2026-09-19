@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Entrar | Painel Laura Oliveira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+
+<div class="tela-login">
+  <div class="cartao-login">
+    <span class="marca-nome">Laura Oliveira</span>
+    <h1>Entrar no painel</h1>
+    <p class="sub">Área restrita. Use o seu e-mail e senha de acesso.</p>
+
+    <div class="faixa-erro" id="faixaErro" role="alert"></div>
+
+    <form id="formularioLogin" novalidate>
+      <div class="campo-admin">
+        <label for="campoEmailLogin">E-mail</label>
+        <input type="email" id="campoEmailLogin" name="email" required autocomplete="username">
+      </div>
+      <div class="campo-admin">
+        <label for="campoSenhaLogin">Senha</label>
+        <input type="password" id="campoSenhaLogin" name="senha" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primario" id="botaoEntrar">Entrar</button>
+    </form>
+
+    <button class="link-discreto" id="botaoEsqueci">Esqueci minha senha</button>
+  </div>
+</div>
+
+<div id="toastArea"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/banco.js"></script>
+<script src="../js/admin-util.js"></script>
+<script>
+  /* =========================================================
+     LOGIN
+     Se já existir uma sessão aberta, manda direto pro admin.
+     Senão, deixa a pessoa entrar com e-mail e senha.
+  ========================================================= */
+  (async function verificarSessaoExistente(){
+    const { data } = await window.banco.auth.getSession();
+    if (data.session) {
+      window.location.replace("../admin/");
+    }
+  })();
+
+  const formularioLogin = document.getElementById("formularioLogin");
+  const faixaErro = document.getElementById("faixaErro");
+  const botaoEntrar = document.getElementById("botaoEntrar");
+  const botaoEsqueci = document.getElementById("botaoEsqueci");
+
+  function mostrarErro(mensagem) {
+    faixaErro.textContent = mensagem;
+    faixaErro.classList.add("mostrar");
+  }
+  function esconderErro() {
+    faixaErro.classList.remove("mostrar");
+  }
+
+  formularioLogin.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    esconderErro();
+
+    const email = document.getElementById("campoEmailLogin").value.trim();
+    const senha = document.getElementById("campoSenhaLogin").value;
+
+    botaoEntrar.disabled = true;
+    botaoEntrar.textContent = "Entrando...";
+
+    const { error } = await window.banco.auth.signInWithPassword({ email, password: senha });
+
+    botaoEntrar.disabled = false;
+    botaoEntrar.textContent = "Entrar";
+
+    if (error) {
+      mostrarErro("E-mail ou senha incorretos");
+      return;
+    }
+
+    window.location.href = "../admin/";
+  });
+
+  botaoEsqueci.addEventListener("click", async () => {
+    esconderErro();
+    const email = document.getElementById("campoEmailLogin").value.trim();
+    if (!email) {
+      mostrarErro("Digite seu e-mail no campo acima antes de clicar em esqueci minha senha");
+      return;
+    }
+    const { error } = await window.banco.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+    if (error) {
+      mostrarErro("Não consegui enviar o e-mail de recuperação. Tente de novo em alguns minutos.");
+      return;
+    }
+    mostrarToast("Te enviei um e-mail com o link para trocar a senha");
+  });
+</script>
+</body>
+</html>
