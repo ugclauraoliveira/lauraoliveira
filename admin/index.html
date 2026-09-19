@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel | Laura Oliveira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+<style>
+  body.carregando .painel{ visibility:hidden; }
+</style>
+</head>
+<body class="carregando">
+
+<div class="painel">
+
+  <div class="fundo-sidebar-mobile" id="fundoSidebarMobile"></div>
+
+  <aside class="sidebar" id="sidebarPainel">
+    <div class="sidebar-topo">
+      <span class="marca-nome">Laura Oliveira</span>
+    </div>
+    <nav class="sidebar-nav" aria-label="Navegação do painel">
+      <div class="grupo-nav">
+        <p class="grupo-nav-titulo">meu site</p>
+        <ul>
+          <li><button class="item-nav" data-aba="portfolio">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M3 14l5-5 4 4 4-5 5 6"/><circle cx="8" cy="8" r="1.3"/></svg>
+            Portfólio
+          </button></li>
+          <li><button class="item-nav" data-aba="marcas">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V9a2 2 0 0 1 2-2h3V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2h3a2 2 0 0 1 2 2v11"/><path d="M4 20h16"/><path d="M9 9h6"/><path d="M9 13h6"/></svg>
+            Marcas
+          </button></li>
+        </ul>
+      </div>
+      <div class="grupo-nav">
+        <p class="grupo-nav-titulo">minha rotina</p>
+        <ul>
+          <li><button class="item-nav" data-aba="calendario">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/></svg>
+            Calendário
+          </button></li>
+          <li><button class="item-nav" data-aba="campanhas">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16"/><path d="M4 4h11l-2 4 2 4H4"/></svg>
+            Campanhas
+          </button></li>
+          <li><button class="item-nav" data-aba="checklist">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+            Checklist
+          </button></li>
+        </ul>
+      </div>
+    </nav>
+    <div class="sidebar-rodape">
+      <span class="email" id="emailUsuaria">carregando...</span>
+      <button class="btn btn-secundario" id="botaoSair">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        Sair
+      </button>
+    </div>
+  </aside>
+
+  <main class="conteudo">
+    <div class="topo-conteudo">
+      <button class="btn btn-icone menu-toggle-admin" id="menuToggleAdmin" aria-label="Abrir menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/></svg>
+      </button>
+      <h1 id="tituloAba">Portfólio</h1>
+    </div>
+    <div class="corpo-conteudo" id="conteudoAba">
+      <!-- preenchido via JavaScript pela aba ativa -->
+    </div>
+  </main>
+
+</div>
+
+<!-- Modal reutilizado por todas as abas pra adicionar/editar -->
+<div class="modal-admin-fundo" id="modalAdmin" role="dialog" aria-modal="true">
+  <div class="modal-admin-caixa">
+    <button class="modal-admin-fechar" id="modalAdminFechar" aria-label="Fechar janela">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
+    </button>
+    <h2 class="modal-admin-titulo">Título</h2>
+    <div class="modal-admin-corpo"></div>
+  </div>
+</div>
+
+<div id="toastArea"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/banco.js"></script>
+<script src="../js/admin-util.js"></script>
+<script src="../js/biblioteca.js"></script>
+<script src="../js/admin-portfolio.js"></script>
+<script src="../js/admin-marcas.js"></script>
+<script src="../js/admin-calendario.js"></script>
+<script src="../js/admin-campanhas.js"></script>
+<script src="../js/admin-checklist.js"></script>
+<script src="../js/admin.js"></script>
+</body>
+</html>

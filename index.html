@@ -1035,59 +1035,9 @@
     "Marca 07","Marca 08","Marca 09","Marca 10","Marca 11","Marca 12"
   ];
 
-  // Conteúdos de destaque (seção 3)
-  // link: para onde o card inteiro leva quando clicado (o vídeo real)
-  // capa: comentário indicando onde entra a imagem de capa vertical 9:16
-  const destaquesData = [
-    {
-      link: "https://www.instagram.com/p/DaiTTIPulEt/",
-      numero: "+3.673",
-      rotulo: "visualizações",
-      titulo: "Título do conteúdo 01 (edite aqui)",
-      contexto: "Escreva aqui uma linha curta de contexto sobre esse vídeo."
-      // capa: troque o bloco .midia-placeholder deste card por uma imagem real da capa vertical 9:16
-    },
-    {
-      link: "https://www.instagram.com/p/DcUF3MUpmOA/",
-      numero: "+1.593",
-      rotulo: "visualizações",
-      titulo: "Título do conteúdo 02 (edite aqui)",
-      contexto: "Escreva aqui uma linha curta de contexto sobre esse vídeo."
-    },
-    {
-      link: "https://www.instagram.com/p/DcMB0UHxNn3/",
-      numero: "+5.460",
-      rotulo: "visualizações",
-      titulo: "Título do conteúdo 03 (edite aqui)",
-      contexto: "Escreva aqui uma linha curta de contexto sobre esse vídeo."
-    }
-  ];
-
-  // Nichos disponíveis para o filtro (seção 4)
-  const nichosData = [
-    { chave: "todos", rotulo: "Todos" },
-    { chave: "beleza", rotulo: "Beleza" },
-    { chave: "skincare", rotulo: "Skincare" },
-    { chave: "moda", rotulo: "Moda" },
-    { chave: "comida", rotulo: "Comida" },
-    { chave: "casa", rotulo: "Casa e decoração" },
-    { chave: "pet", rotulo: "Pet" },
-    { chave: "tech", rotulo: "Tech" }
-  ];
-
-  // Trabalhos por nicho (seção 4)
-  const trabalhosData = [
-    { titulo: "Rotina de skincare noturna", cliente: "Cliente 01", niche: "skincare", formato: "Vídeo vertical 9:16" },
-    { titulo: "Resenha de base líquida", cliente: "Cliente 02", niche: "beleza", formato: "Vídeo vertical 9:16" },
-    { titulo: "Look de fim de semana", cliente: "Cliente 03", niche: "moda", formato: "Foto 4:5" },
-    { titulo: "Receita rápida do dia a dia", cliente: "Cliente 04", niche: "comida", formato: "Vídeo vertical 9:16" },
-    { titulo: "Cantinho de leitura decorado", cliente: "Cliente 01", niche: "casa", formato: "Foto 4:5" },
-    { titulo: "Brinquedo novo do pet", cliente: "Cliente 02", niche: "pet", formato: "Vídeo vertical 9:16" },
-    { titulo: "Unboxing de gadget", cliente: "Cliente 03", niche: "tech", formato: "Vídeo vertical 9:16" },
-    { titulo: "Maquiagem para o dia a dia", cliente: "Cliente 04", niche: "beleza", formato: "Foto 4:5" },
-    { titulo: "Skincare de manhã", cliente: "Cliente 01", niche: "skincare", formato: "Vídeo vertical 9:16" },
-    { titulo: "Produto de limpeza para casa", cliente: "Cliente 02", niche: "casa", formato: "Vídeo vertical 9:16" }
-  ];
+  // Os conteúdos de destaque e os trabalhos por nicho (seções 3 e 4) agora
+  // vêm do banco de dados (tabela "videos"), editável no painel admin.
+  // Veja js/site.js para essa parte.
 
   // Serviços oferecidos (seção 5)
   const servicosData = [
@@ -1133,67 +1083,8 @@
   const marcasHtml = marcasData.map(m => `<span>${m}</span>`).join("");
   trilhoMarcas.innerHTML = marcasHtml + marcasHtml;
 
-  // Destaques
-  const destaquesGrid = document.getElementById("destaquesGrid");
-  destaquesGrid.innerHTML = destaquesData.map(d => `
-    <a class="destaque-card reveal" href="${d.link}" target="_blank" rel="noopener" aria-label="Assistir ao vídeo: ${d.titulo}">
-      <div class="destaque-capa">
-        <!-- capa: substitua este midia-placeholder por uma imagem real (background-image ou <img>) da capa vertical 9:16 -->
-        <div class="midia-placeholder" role="img" aria-label="Capa vertical 9:16 do conteúdo">capa vertical 9:16</div>
-        <span class="play-botao" aria-hidden="true"></span>
-      </div>
-      <div class="destaque-info">
-        <span class="destaque-numero">${d.numero}</span>
-        <span class="destaque-rotulo">${d.rotulo}</span>
-        <h3>${d.titulo}</h3>
-        <p class="destaque-contexto">${d.contexto}</p>
-      </div>
-    </a>
-  `).join("");
-
-  // Filtros de nicho
-  const filtrosNicho = document.getElementById("filtrosNicho");
-  filtrosNicho.innerHTML = nichosData.map((n, i) => `
-    <button class="filtro-btn${i === 0 ? " ativo" : ""}" data-niche="${n.chave}" aria-pressed="${i === 0 ? "true" : "false"}">${n.rotulo}</button>
-  `).join("");
-
-  // Trabalhos
-  const trabalhosGrid = document.getElementById("trabalhosGrid");
-  function nomeNicho(chave){
-    const encontrado = nichosData.find(n => n.chave === chave);
-    return encontrado ? encontrado.rotulo : chave;
-  }
-  trabalhosGrid.innerHTML = trabalhosData.map(t => `
-    <article class="trabalho-card reveal" data-niche="${t.niche}">
-      <div class="trabalho-capa">
-        <!-- troque este midia-placeholder pela imagem real do trabalho -->
-        <div class="midia-placeholder" role="img" aria-label="${t.formato} do trabalho ${t.titulo}">${t.formato}</div>
-      </div>
-      <div class="trabalho-corpo">
-        <span class="trabalho-niche">${nomeNicho(t.niche)}</span>
-        <h3>${t.titulo}</h3>
-        <p>${t.cliente}</p>
-      </div>
-    </article>
-  `).join("");
-
-  filtrosNicho.addEventListener("click", (evento) => {
-    const botao = evento.target.closest(".filtro-btn");
-    if(!botao) return;
-    const niche = botao.dataset.niche;
-
-    filtrosNicho.querySelectorAll(".filtro-btn").forEach(b => {
-      b.classList.remove("ativo");
-      b.setAttribute("aria-pressed","false");
-    });
-    botao.classList.add("ativo");
-    botao.setAttribute("aria-pressed","true");
-
-    trabalhosGrid.querySelectorAll(".trabalho-card").forEach(card => {
-      const mostrar = niche === "todos" || card.dataset.niche === niche;
-      card.hidden = !mostrar;
-    });
-  });
+  // Destaques, filtro de nicho e trabalhos: preenchidos pelo js/site.js
+  // a partir dos vídeos cadastrados no painel admin.
 
   // Serviços
   const servicosGrid = document.getElementById("servicosGrid");
@@ -1318,21 +1209,8 @@
   }, { threshold: 0.4 });
   contadores.forEach(c => observadorContador.observe(c));
 
-  /* =========================================================
-     FORMULÁRIO DE CONTATO
-  ========================================================== */
-  const formularioContato = document.getElementById("formularioContato");
-  const confirmacaoEnvio = document.getElementById("confirmacaoEnvio");
-
-  formularioContato.addEventListener("submit", (evento) => {
-    evento.preventDefault();
-    if(!formularioContato.checkValidity()){
-      formularioContato.reportValidity();
-      return;
-    }
-    formularioContato.hidden = true;
-    confirmacaoEnvio.hidden = false;
-  });
+  // Formulário de contato: o envio (e a ligação com o banco de dados)
+  // é tratado em js/site.js.
 
   /* =========================================================
      CARD DE CAPTURA (aparece uma vez por visita, após 7 segundos)
@@ -1381,5 +1259,10 @@
   ========================================================== */
   document.getElementById("anoAtual").textContent = new Date().getFullYear();
 </script>
+
+<!-- Ligação com o banco de dados: vídeos dinâmicos, formulário de contato e registro de visita -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/banco.js"></script>
+<script src="js/site.js"></script>
 </body>
 </html>
