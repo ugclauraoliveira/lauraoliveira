@@ -200,9 +200,18 @@ window.AdminMarcas = (function () {
         ultimo_contato: document.getElementById("campoContatoMarca").value || null,
         obs: document.getElementById("campoObsMarca").value.trim(),
       };
-      const resultado = editando
-        ? await window.banco.from("marcas").update(dados).eq("id", marca.id)
-        : await window.banco.from("marcas").insert(dados);
+      let resultado;
+    if (editando) {
+      resultado = await window.banco.from("marcas").update(dados).eq("id", marca.id);
+    } else {
+      // A regra de seguranca do banco so aceita criar marcas novas como "lead".
+      // Por isso a marca nasce como lead e, se voce escolheu outra situacao, atualizamos em seguida.
+      const novoId = crypto.randomUUID();
+      resultado = await window.banco.from("marcas").insert({ ...dados, id: novoId, situacao: "lead" });
+      if (!resultado.error && dados.situacao !== "lead") {
+        resultado = await window.banco.from("marcas").update({ situacao: dados.situacao }).eq("id", novoId);
+      }
+    }
 
       if (resultado.error) { mostrarToast("Não consegui salvar: " + resultado.error.message, "erro"); return; }
       fecharModalAdmin();
