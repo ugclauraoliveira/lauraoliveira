@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | Laura Oliveira</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=Rubik:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --papel: #fcfaf3;
+    --papel-carta: #ffffff;
+    --linha-papel: #e2e6f2;
+    --azul-caneta: #1e3ec8;
+    --azul-caneta-escuro: #142b8f;
+    --amarelo-marcador: #ffe066;
+    --rosa: #ffb7ce;
+    --vermelho: #d64545;
+    --verde: #2f9e5c;
+    --tinta: #232733;
+    --tinta-suave: #626a7d;
+    --fonte-mao: 'Gloria Hallelujah', cursive;
+    --fonte-corpo: 'Karla', 'Segoe UI', sans-serif;
+    --fonte-titulo: 'Rubik', 'Segoe UI', sans-serif;
+  }
+  *,*::before,*::after{ box-sizing: border-box; }
+  body{
+    margin: 0;
+    font-family: var(--fonte-corpo);
+    background: var(--papel);
+    color: var(--tinta);
+    min-height: 100vh;
+  }
+  h1,h2,h3{ font-family: var(--fonte-titulo); margin: 0; }
+  button{ font-family: inherit; cursor: pointer; }
+  input, select, textarea{ font-family: inherit; }
+
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+    outline: 3px solid var(--azul-caneta);
+    outline-offset: 2px;
+  }
+
+  /* ---------- TELA DE LOGIN ---------- */
+  .tela-login{
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .caixa-login{
+    background: var(--papel-carta);
+    border: 2px solid var(--azul-caneta);
+    border-radius: 16px;
+    padding: 36px 30px;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(30,62,200,0.12);
+  }
+  .caixa-login h1{
+    font-family: var(--fonte-mao);
+    color: var(--azul-caneta);
+    font-size: 2rem;
+    margin-bottom: 4px;
+  }
+  .caixa-login p{ color: var(--tinta-suave); font-size: 0.9rem; margin-bottom: 20px; }
+  .campo{ display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .campo label{ font-weight: 600; font-size: 0.9rem; }
+  .campo input, .campo select{
+    padding: 11px 13px;
+    border: 2px solid var(--linha-papel);
+    border-radius: 10px;
+    font-size: 1rem;
+    background: var(--papel);
+  }
+  .campo input:focus, .campo select:focus{ border-color: var(--azul-caneta); outline: none; }
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--fonte-titulo);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 12px 20px;
+    border-radius: 999px;
+    border: 2px solid var(--azul-caneta);
+    background: var(--azul-caneta);
+    color: #fff;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  .btn:hover{ background: var(--azul-caneta-escuro); transform: translateY(-1px); }
+  .btn.secundario{ background: transparent; color: var(--azul-caneta); }
+  .btn.secundario:hover{ background: var(--azul-caneta); color: #fff; }
+  .btn.perigo{ border-color: var(--vermelho); background: var(--vermelho); }
+  .btn.perigo:hover{ background: #b93636; }
+  .btn:disabled{ opacity: 0.55; cursor: not-allowed; transform: none; }
+  .btn-largo{ width: 100%; }
+
+  .mensagem-erro{
+    background: #fdeaea;
+    border: 1px solid var(--vermelho);
+    color: #8a2626;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 14px;
+  }
+  .mensagem-sucesso{
+    background: #eaf7ee;
+    border: 1px solid var(--verde);
+    color: #1f6b3d;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 14px;
+  }
+
+  /* ---------- PAINEL ---------- */
+  .tela-painel{ display: none; }
+  .topo-painel{
+    background: var(--papel-carta);
+    border-bottom: 2px dashed var(--azul-caneta);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .topo-painel h1{ font-family: var(--fonte-mao); color: var(--azul-caneta); font-size: 1.5rem; }
+  .miolo-painel{ max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  .barra-acoes{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .barra-acoes h2{ font-size: 1.4rem; }
+  .grupo-acoes{ display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .campo-busca{
+    padding: 10px 14px;
+    border: 2px solid var(--linha-papel);
+    border-radius: 999px;
+    min-width: 220px;
+  }
+
+  .cartao{
+    background: var(--papel-carta);
+    border: 2px solid var(--linha-papel);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  table{ width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  thead th{
+    text-align: left;
+    font-family: var(--fonte-titulo);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--tinta-suave);
+    padding: 10px 12px;
+    border-bottom: 2px solid var(--linha-papel);
+    white-space: nowrap;
+  }
+  tbody td{
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--linha-papel);
+    vertical-align: top;
+  }
+  tbody tr:hover{ background: #fbfaf5; }
+  .status-select{
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 2px solid var(--linha-papel);
+    font-size: 0.82rem;
+    background: var(--papel);
+  }
+  .btn-excluir{
+    background: transparent;
+    border: none;
+    color: var(--vermelho);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 6px;
+  }
+  .celula-vazia{ color: var(--tinta-suave); font-style: italic; }
+  .contador-leads{ color: var(--tinta-suave); font-size: 0.88rem; }
+
+  .tabela-scroll{ overflow-x: auto; }
+
+  /* ---------- MODAL DE IMPORTAÇÃO ---------- */
+  .modal-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(35,39,51,0.55);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    overflow-y: auto;
+    z-index: 2000;
+  }
+  .modal-overlay[hidden]{ display: none; }
+  .modal-caixa{
+    background: var(--papel-carta);
+    border-radius: 16px;
+    max-width: 780px;
+    width: 100%;
+    padding: 28px;
+    border: 3px solid var(--azul-caneta);
+  }
+  .modal-caixa h2{ font-family: var(--fonte-mao); color: var(--azul-caneta); font-size: 1.6rem; margin-bottom: 6px; }
+  .modal-caixa p{ color: var(--tinta-suave); font-size: 0.9rem; }
+  .modal-fechar{
+    float: right;
+    background: transparent;
+    border: none;
+    font-size: 1.3rem;
+    color: var(--tinta-suave);
+  }
+  .etapa-import{ margin-top: 18px; }
+  .zona-arquivo{
+    border: 2px dashed var(--azul-caneta);
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    background: var(--papel);
+  }
+  .tabela-mapeamento{ width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.85rem; }
+  .tabela-mapeamento th, .tabela-mapeamento td{ padding: 8px 10px; border-bottom: 1px solid var(--linha-papel); text-align: left; }
+  .tabela-mapeamento select{ padding: 6px 8px; border-radius: 8px; border: 2px solid var(--linha-papel); width: 100%; }
+  .resumo-import{ margin-top: 16px; }
+  .resumo-import ul{ margin: 8px 0 0; padding-left: 20px; }
+  .rodape-modal{ display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+  .barra-progresso{
+    height: 10px;
+    border-radius: 999px;
+    background: var(--linha-papel);
+    overflow: hidden;
+    margin-top: 14px;
+  }
+  .barra-progresso-preenchimento{
+    height: 100%;
+    background: var(--azul-caneta);
+    width: 0%;
+    transition: width 0.2s ease;
+  }
+
+  @media (max-width: 640px){
+    .topo-painel{ flex-direction: column; align-items: flex-start; }
+    .barra-acoes{ flex-direction: column; align-items: flex-start; }
+    .campo-busca{ width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== TELA DE LOGIN ========== -->
+<div class="tela-login" id="tela-login">
+  <div class="caixa-login">
+    <h1>Admin</h1>
+    <p>Área restrita da Laura Oliveira.</p>
+    <div id="area-erro-login"></div>
+    <form id="form-login">
+      <div class="campo">
+        <label for="login-email">E-mail</label>
+        <input type="email" id="login-email" required autocomplete="username">
+      </div>
+      <div class="campo">
+        <label for="login-senha">Senha</label>
+        <input type="password" id="login-senha" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-largo" id="btn-entrar">Entrar</button>
+    </form>
+  </div>
+</div>
+
+<!-- ========== PAINEL ADMIN ========== -->
+<div class="tela-painel" id="tela-painel">
+  <header class="topo-painel">
+    <h1>Admin Laura Oliveira</h1>
+    <button class="btn secundario" id="btn-sair">Sair</button>
+  </header>
+
+  <div class="miolo-painel">
+    <div class="barra-acoes">
+      <h2>Marcas</h2>
+      <div class="grupo-acoes">
+        <input type="search" class="campo-busca" id="campo-busca-leads" placeholder="Buscar por marca, nicho ou status...">
+        <button class="btn" id="btn-abrir-importar">Importar planilha (CSV)</button>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <p class="contador-leads" id="contador-leads">Carregando leads...</p>
+      <div class="tabela-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Marca</th>
+              <th>Contato</th>
+              <th>E-mail</th>
+              <th>Telefone</th>
+              <th>Instagram</th>
+              <th>Nicho</th>
+              <th>Status</th>
+              <th>Origem</th>
+              <th>Data</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="corpo-tabela-leads"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL DE IMPORTAÇÃO CSV ========== -->
+<div class="modal-overlay" id="modal-importar" hidden>
+  <div class="modal-caixa">
+    <button class="modal-fechar" id="btn-fechar-importar" aria-label="Fechar">✕</button>
+    <h2>Importar planilha</h2>
+    <p>Suba o CSV da sua planilha de leads. O sistema tenta identificar as colunas sozinho, mas você pode corrigir antes de confirmar.</p>
+
+    <!-- etapa 1: escolher arquivo -->
+    <div class="etapa-import" id="etapa-arquivo">
+      <div class="zona-arquivo">
+        <p style="margin:0 0 12px;">Selecione o arquivo .csv da sua planilha</p>
+        <input type="file" id="input-arquivo-csv" accept=".csv,text/csv">
+      </div>
+      <div id="erro-arquivo"></div>
+    </div>
+
+    <!-- etapa 2: conferir mapeamento das colunas -->
+    <div class="etapa-import" id="etapa-mapeamento" hidden>
+      <h3 style="font-size:1rem;">Confira o que encontramos em cada coluna</h3>
+      <div class="tabela-scroll">
+        <table class="tabela-mapeamento">
+          <thead>
+            <tr><th>Coluna da sua planilha</th><th>Vai virar</th><th>Exemplo</th></tr>
+          </thead>
+          <tbody id="corpo-tabela-mapeamento"></tbody>
+        </table>
+      </div>
+      <p id="resumo-linhas-detectadas" style="font-size:0.85rem;"></p>
+      <label style="display:flex; align-items:center; gap:8px; font-size:0.88rem;">
+        <input type="checkbox" id="checkbox-pular-duplicados" checked>
+        Pular linhas cuja marca já existe na lista atual
+      </label>
+      <div class="rodape-modal">
+        <button class="btn secundario" id="btn-cancelar-mapeamento">Cancelar</button>
+        <button class="btn" id="btn-confirmar-importacao">Confirmar e importar</button>
+      </div>
+    </div>
+
+    <!-- etapa 3: progresso -->
+    <div class="etapa-import" id="etapa-progresso" hidden>
+      <p id="texto-progresso">Importando...</p>
+      <div class="barra-progresso"><div class="barra-progresso-preenchimento" id="barra-progresso-preenchimento"></div></div>
+    </div>
+
+    <!-- etapa 4: resumo final -->
+    <div class="etapa-import resumo-import" id="etapa-resumo" hidden>
+      <div class="mensagem-sucesso" id="texto-resumo-final"></div>
+      <div class="rodape-modal">
+        <button class="btn" id="btn-fechar-resumo">Ver na lista de marcas</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ===================== CONFIGURAÇÃO DO SUPABASE ===================== */
+  var SUPABASE_URL = "https://znkvmwhpnnbfelwmiqzo.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_NwP4wKU63LHC6uKIxcxcCw_c9lu66ju";
+  var CHAVE_ACCESS_TOKEN = "laura_admin_access_token";
+  var CHAVE_REFRESH_TOKEN = "laura_admin_refresh_token";
+
+  var OPCOES_STATUS = ["novo", "em contato", "proposta enviada", "fechado", "perdido"];
+
+  // Sinônimos usados para identificar automaticamente as colunas da planilha importada.
+  // Para ensinar o sistema a reconhecer um novo nome de coluna, adicione a palavra na lista certa.
+  var SINONIMOS_COLUNAS = {
+    nome_marca: ["marca", "nome da marca", "empresa", "nome da empresa", "cliente", "nome", "brand"],
+    contato_nome: ["contato", "nome do contato", "responsavel", "pessoa de contato"],
+    email: ["email", "e-mail", "endereco de email"],
+    telefone: ["telefone", "whatsapp", "celular", "fone", "numero", "contato telefone"],
+    instagram: ["instagram", "insta", "perfil", "rede social"],
+    nicho: ["nicho", "categoria", "segmento", "area", "ramo"],
+    status: ["status", "situacao", "etapa", "fase"],
+    origem: ["origem", "fonte", "como chegou", "canal"],
+    observacoes: ["observacoes", "obs", "notas", "comentarios"]
+  };
+  var RÓTULOS_CAMPO = {
+    "": "Ignorar esta coluna",
+    nome_marca: "Nome da marca",
+    contato_nome: "Nome do contato",
+    email: "E-mail",
+    telefone: "Telefone / WhatsApp",
+    instagram: "Instagram",
+    nicho: "Nicho",
+    status: "Status",
+    origem: "Origem",
+    observacoes: "Observações"
+  };
+
+  var elementos = {};
+  var leadsAtuais = [];
+  var linhasImportacao = null; // { cabecalhos, linhas, mapeamento }
+
+  /* ===================== AUTENTICAÇÃO (fetch puro, sem SDK) ===================== */
+
+  function salvarSessao(dados){
+    localStorage.setItem(CHAVE_ACCESS_TOKEN, dados.access_token);
+    localStorage.setItem(CHAVE_REFRESH_TOKEN, dados.refresh_token);
+  }
+
+  function limparSessao(){
+    localStorage.removeItem(CHAVE_ACCESS_TOKEN);
+    localStorage.removeItem(CHAVE_REFRESH_TOKEN);
+  }
+
+  function fazerLogin(email, senha){
+    return fetch(SUPABASE_URL + "/auth/v1/token?grant_type=password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY },
+      body: JSON.stringify({ email: email, password: senha })
+    }).then(function(res){
+      if(!res.ok){ throw new Error("credenciais"); }
+      return res.json();
+    }).then(function(dados){
+      salvarSessao(dados);
+      return dados;
+    });
+  }
+
+  function renovarToken(){
+    var refresh = localStorage.getItem(CHAVE_REFRESH_TOKEN);
+    if(!refresh) return Promise.reject(new Error("sem sessão"));
+    return fetch(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY },
+      body: JSON.stringify({ refresh_token: refresh })
+    }).then(function(res){
+      if(!res.ok){ throw new Error("sessão expirada"); }
+      return res.json();
+    }).then(function(dados){
+      salvarSessao(dados);
+      return dados.access_token;
+    });
+  }
+
+  function requisicaoAutenticada(caminho, opcoes){
+    opcoes = opcoes || {};
+    var token = localStorage.getItem(CHAVE_ACCESS_TOKEN);
+    function executar(tok){
+      var cabecalhos = Object.assign({ apikey: SUPABASE_KEY, Authorization: "Bearer " + tok }, opcoes.headers || {});
+      return fetch(SUPABASE_URL + caminho, Object.assign({}, opcoes, { headers: cabecalhos }));
+    }
+    return executar(token).then(function(res){
+      if(res.status === 401){
+        return renovarToken().then(executar);
+      }
+      return res;
+    });
+  }
+
+  /* ===================== CARREGAR / RENDERIZAR LEADS ===================== */
+
+  function formatarData(iso){
+    if(!iso) return "";
+    var d = new Date(iso);
+    return d.toLocaleDateString("pt-BR");
+  }
+
+  function escapa(texto){
+    var d = document.createElement("div");
+    d.textContent = texto == null ? "" : String(texto);
+    return d.innerHTML;
+  }
+
+  function celula(valor){
+    return valor ? escapa(valor) : '<span class="celula-vazia">—</span>';
+  }
+
+  function carregarLeads(){
+    return requisicaoAutenticada("/rest/v1/leads?select=*&order=criado_em.desc", { method: "GET" })
+      .then(function(res){
+        if(!res.ok) throw new Error("Não foi possível carregar os leads.");
+        return res.json();
+      })
+      .then(function(dados){
+        leadsAtuais = dados;
+        renderizarTabelaLeads(elementos.campoBusca.value);
+      });
+  }
+
+  function renderizarTabelaLeads(filtro){
+    filtro = (filtro || "").toLowerCase().trim();
+    var lista = !filtro ? leadsAtuais : leadsAtuais.filter(function(l){
+      return [l.nome_marca, l.nicho, l.status, l.contato_nome, l.email]
+        .filter(Boolean).join(" ").toLowerCase().indexOf(filtro) !== -1;
+    });
+
+    elementos.contador.textContent = leadsAtuais.length + " marca(s) na lista" +
+      (filtro ? " (" + lista.length + " encontrada(s) para \"" + filtro + "\")" : "");
+
+    if(lista.length === 0){
+      elementos.corpoTabela.innerHTML = '<tr><td colspan="10" class="celula-vazia">Nenhum lead encontrado. Importe sua planilha para começar.</td></tr>';
+      return;
+    }
+
+    elementos.corpoTabela.innerHTML = lista.map(function(l){
+      var opcoesStatus = OPCOES_STATUS.map(function(op){
+        return '<option value="' + op + '"' + (op === l.status ? " selected" : "") + '>' + op + '</option>';
+      }).join("");
+      return (
+        '<tr data-id="' + l.id + '">' +
+          '<td><strong>' + celula(l.nome_marca) + '</strong></td>' +
+          '<td>' + celula(l.contato_nome) + '</td>' +
+          '<td>' + celula(l.email) + '</td>' +
+          '<td>' + celula(l.telefone) + '</td>' +
+          '<td>' + celula(l.instagram) + '</td>' +
+          '<td>' + celula(l.nicho) + '</td>' +
+          '<td><select class="status-select" data-id="' + l.id + '">' + opcoesStatus + '</select></td>' +
+          '<td>' + celula(l.origem) + '</td>' +
+          '<td>' + formatarData(l.criado_em) + '</td>' +
+          '<td><button class="btn-excluir" data-id="' + l.id + '">Excluir</button></td>' +
+        '</tr>'
+      );
+    }).join("");
+  }
+
+  function atualizarStatusLead(id, novoStatus){
+    return requisicaoAutenticada("/rest/v1/leads?id=eq." + id, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", "Prefer": "return=minimal" },
+      body: JSON.stringify({ status: novoStatus })
+    }).then(function(res){
+      if(!res.ok) throw new Error("Não foi possível atualizar o status.");
+      var lead = leadsAtuais.find(function(l){ return l.id === id; });
+      if(lead) lead.status = novoStatus;
+    });
+  }
+
+  function excluirLead(id){
+    return requisicaoAutenticada("/rest/v1/leads?id=eq." + id, { method: "DELETE", headers: { "Prefer": "return=minimal" } })
+      .then(function(res){
+        if(!res.ok) throw new Error("Não foi possível excluir.");
+        leadsAtuais = leadsAtuais.filter(function(l){ return l.id !== id; });
+        renderizarTabelaLeads(elementos.campoBusca.value);
+      });
+  }
+
+  /* ===================== LEITURA DO CSV ===================== */
+
+  function normalizarTexto(s){
+    return (s || "").toString().normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+  }
+
+  function detectarDelimitador(linhaAmostra){
+    var virgulas = (linhaAmostra.match(/,/g) || []).length;
+    var pontoVirgulas = (linhaAmostra.match(/;/g) || []).length;
+    return pontoVirgulas > virgulas ? ";" : ",";
+  }
+
+  function analisarCSV(texto){
+    if(texto.charCodeAt(0) === 0xFEFF) texto = texto.slice(1);
+    var primeiraLinha = texto.split(/\r\n|\n/)[0] || "";
+    var delimitador = detectarDelimitador(primeiraLinha);
+
+    var linhas = [];
+    var linhaAtual = [];
+    var campo = "";
+    var dentroDeAspas = false;
+
+    for(var i = 0; i < texto.length; i++){
+      var c = texto[i];
+      var proximo = texto[i + 1];
+      if(dentroDeAspas){
+        if(c === '"'){
+          if(proximo === '"'){ campo += '"'; i++; }
+          else { dentroDeAspas = false; }
+        } else {
+          campo += c;
+        }
+      } else if(c === '"'){
+        dentroDeAspas = true;
+      } else if(c === delimitador){
+        linhaAtual.push(campo);
+        campo = "";
+      } else if(c === "\n"){
+        linhaAtual.push(campo);
+        linhas.push(linhaAtual);
+        linhaAtual = [];
+        campo = "";
+      } else if(c === "\r"){
+        // ignora, o \n seguinte fecha a linha
+      } else {
+        campo += c;
+      }
+    }
+    if(campo.length || linhaAtual.length){
+      linhaAtual.push(campo);
+      linhas.push(linhaAtual);
+    }
+    return linhas.filter(function(l){ return l.some(function(v){ return v.trim() !== ""; }); });
+  }
+
+  function sugerirCampoParaColuna(nomeColuna){
+    var norm = normalizarTexto(nomeColuna);
+    for(var campo in SINONIMOS_COLUNAS){
+      var sinonimos = SINONIMOS_COLUNAS[campo];
+      for(var j = 0; j < sinonimos.length; j++){
+        if(norm === sinonimos[j] || norm.indexOf(sinonimos[j]) !== -1){
+          return campo;
+        }
+      }
+    }
+    return "";
+  }
+
+  /* ===================== FLUXO DO MODAL DE IMPORTAÇÃO ===================== */
+
+  function abrirModalImportar(){
+    elementos.modalImportar.hidden = false;
+    mostrarEtapa("etapa-arquivo");
+    elementos.inputArquivo.value = "";
+    elementos.erroArquivo.innerHTML = "";
+    linhasImportacao = null;
+  }
+
+  function fecharModalImportar(){
+    elementos.modalImportar.hidden = true;
+  }
+
+  function mostrarEtapa(idEtapaVisivel){
+    ["etapa-arquivo", "etapa-mapeamento", "etapa-progresso", "etapa-resumo"].forEach(function(id){
+      document.getElementById(id).hidden = id !== idEtapaVisivel;
+    });
+  }
+
+  function lidarComArquivoSelecionado(ev){
+    var arquivo = ev.target.files[0];
+    if(!arquivo) return;
+    elementos.erroArquivo.innerHTML = "";
+
+    var leitor = new FileReader();
+    leitor.onload = function(){
+      var linhas = analisarCSV(String(leitor.result));
+      if(linhas.length < 2){
+        elementos.erroArquivo.innerHTML = '<div class="mensagem-erro">Não encontrei linhas de dados nesse arquivo. Confira se o CSV tem um cabeçalho e pelo menos uma linha de lead.</div>';
+        return;
+      }
+      var cabecalhos = linhas[0];
+      var linhasDeDados = linhas.slice(1);
+      var mapeamento = cabecalhos.map(sugerirCampoParaColuna);
+
+      linhasImportacao = { cabecalhos: cabecalhos, linhas: linhasDeDados, mapeamento: mapeamento };
+      renderizarMapeamento();
+      mostrarEtapa("etapa-mapeamento");
+    };
+    leitor.onerror = function(){
+      elementos.erroArquivo.innerHTML = '<div class="mensagem-erro">Não consegui ler esse arquivo. Tente exportar a planilha novamente em CSV.</div>';
+    };
+    leitor.readAsText(arquivo, "UTF-8");
+  }
+
+  function renderizarMapeamento(){
+    var opcoesCampo = Object.keys(RÓTULOS_CAMPO).map(function(chave){
+      return '<option value="' + chave + '">' + RÓTULOS_CAMPO[chave] + '</option>';
+    }).join("");
+
+    elementos.corpoMapeamento.innerHTML = linhasImportacao.cabecalhos.map(function(cabecalho, indice){
+      var exemplo = (linhasImportacao.linhas[0] || [])[indice] || "";
+      var selecionado = linhasImportacao.mapeamento[indice];
+      var opcoes = opcoesCampo.replace('value="' + selecionado + '"', 'value="' + selecionado + '" selected');
+      return (
+        '<tr>' +
+          '<td><strong>' + escapa(cabecalho) + '</strong></td>' +
+          '<td><select data-indice="' + indice + '" class="select-mapeamento">' + opcoes + '</select></td>' +
+          '<td>' + escapa(exemplo) + '</td>' +
+        '</tr>'
+      );
+    }).join("");
+
+    elementos.corpoMapeamento.querySelectorAll(".select-mapeamento").forEach(function(sel){
+      sel.addEventListener("change", function(){
+        linhasImportacao.mapeamento[Number(sel.getAttribute("data-indice"))] = sel.value;
+      });
+    });
+
+    elementos.resumoLinhas.textContent = linhasDetectadasTexto();
+  }
+
+  function linhasDetectadasTexto(){
+    return linhasImportacao.linhas.length + " linha(s) de lead encontrada(s) na planilha.";
+  }
+
+  function montarLeadsAPartirDoMapeamento(){
+    var mapeamento = linhasImportacao.mapeamento;
+    var indiceNomeMarca = mapeamento.indexOf("nome_marca");
+
+    var nomesJaExistentes = {};
+    if(elementos.checkboxPularDuplicados.checked){
+      leadsAtuais.forEach(function(l){
+        nomesJaExistentes[normalizarTexto(l.nome_marca)] = true;
+      });
+    }
+
+    var leadsParaInserir = [];
+    var ignoradosSemNome = 0;
+    var ignoradosDuplicados = 0;
+
+    linhasImportacao.linhas.forEach(function(linha){
+      var lead = {};
+      mapeamento.forEach(function(campo, indice){
+        if(!campo) return;
+        var valor = (linha[indice] || "").trim();
+        if(valor !== "") lead[campo] = valor;
+      });
+
+      if(indiceNomeMarca === -1 || !lead.nome_marca){
+        ignoradosSemNome++;
+        return;
+      }
+      if(elementos.checkboxPularDuplicados.checked && nomesJaExistentes[normalizarTexto(lead.nome_marca)]){
+        ignoradosDuplicados++;
+        return;
+      }
+      if(!lead.status) lead.status = "novo";
+      leadsParaInserir.push(lead);
+    });
+
+    return { leadsParaInserir: leadsParaInserir, ignoradosSemNome: ignoradosSemNome, ignoradosDuplicados: ignoradosDuplicados };
+  }
+
+  function importarLeadsEmLotes(leads, aoAvancar){
+    var TAMANHO_LOTE = 50;
+    var total = leads.length;
+    var enviados = 0;
+
+    function enviarProximoLote(){
+      if(enviados >= total) return Promise.resolve();
+      var lote = leads.slice(enviados, enviados + TAMANHO_LOTE);
+      return requisicaoAutenticada("/rest/v1/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Prefer": "return=minimal" },
+        body: JSON.stringify(lote)
+      }).then(function(res){
+        if(!res.ok) throw new Error("Falha ao importar um lote de leads.");
+        enviados += lote.length;
+        aoAvancar(enviados, total);
+        return enviarProximoLote();
+      });
+    }
+
+    return enviarProximoLote();
+  }
+
+  function confirmarImportacao(){
+    var resultado = montarLeadsAPartirDoMapeamento();
+
+    if(resultado.leadsParaInserir.length === 0){
+      elementos.erroArquivo.innerHTML = "";
+      elementos.corpoMapeamento.insertAdjacentHTML("beforebegin", "");
+      window.alert("Nenhuma linha nova para importar (confira se a coluna de nome da marca foi identificada corretamente).");
+      return;
+    }
+
+    mostrarEtapa("etapa-progresso");
+    elementos.textoProgresso.textContent = "Importando 0 de " + resultado.leadsParaInserir.length + "...";
+    elementos.barraProgresso.style.width = "0%";
+
+    importarLeadsEmLotes(resultado.leadsParaInserir, function(enviados, total){
+      elementos.textoProgresso.textContent = "Importando " + enviados + " de " + total + "...";
+      elementos.barraProgresso.style.width = Math.round((enviados / total) * 100) + "%";
+    }).then(function(){
+      return carregarLeads();
+    }).then(function(){
+      mostrarEtapa("etapa-resumo");
+      var partes = [resultado.leadsParaInserir.length + " lead(s) importado(s) com sucesso."];
+      if(resultado.ignoradosDuplicados) partes.push(resultado.ignoradosDuplicados + " ignorado(s) por já existirem na lista.");
+      if(resultado.ignoradosSemNome) partes.push(resultado.ignoradosSemNome + " linha(s) ignorada(s) por não terem nome de marca identificado.");
+      elementos.textoResumoFinal.innerHTML = partes.join("<br>");
+    }).catch(function(erro){
+      mostrarEtapa("etapa-mapeamento");
+      elementos.erroArquivo.innerHTML = '<div class="mensagem-erro">' + escapa(erro.message || "Não foi possível concluir a importação.") + '</div>';
+    });
+  }
+
+  /* ===================== LOGIN / LOGOUT ===================== */
+
+  function mostrarPainel(){
+    elementos.telaLogin.style.display = "none";
+    elementos.telaPainel.style.display = "block";
+    carregarLeads().catch(function(){
+      elementos.contador.textContent = "Não foi possível carregar os leads agora.";
+    });
+  }
+
+  function mostrarLogin(){
+    elementos.telaPainel.style.display = "none";
+    elementos.telaLogin.style.display = "flex";
+  }
+
+  function tentarSessaoExistente(){
+    var token = localStorage.getItem(CHAVE_ACCESS_TOKEN);
+    if(!token){ mostrarLogin(); return; }
+    requisicaoAutenticada("/rest/v1/leads?select=id&limit=1", { method: "GET" }).then(function(res){
+      if(res.ok) mostrarPainel();
+      else { limparSessao(); mostrarLogin(); }
+    }).catch(function(){ limparSessao(); mostrarLogin(); });
+  }
+
+  function configurarEventos(){
+    elementos.formLogin.addEventListener("submit", function(ev){
+      ev.preventDefault();
+      elementos.areaErroLogin.innerHTML = "";
+      elementos.botaoEntrar.disabled = true;
+      elementos.botaoEntrar.textContent = "Entrando...";
+      fazerLogin(elementos.loginEmail.value.trim(), elementos.loginSenha.value)
+        .then(mostrarPainel)
+        .catch(function(){
+          elementos.areaErroLogin.innerHTML = '<div class="mensagem-erro">E-mail ou senha incorretos.</div>';
+        })
+        .finally(function(){
+          elementos.botaoEntrar.disabled = false;
+          elementos.botaoEntrar.textContent = "Entrar";
+        });
+    });
+
+    elementos.botaoSair.addEventListener("click", function(){
+      limparSessao();
+      mostrarLogin();
+    });
+
+    elementos.campoBusca.addEventListener("input", function(){
+      renderizarTabelaLeads(elementos.campoBusca.value);
+    });
+
+    elementos.corpoTabela.addEventListener("change", function(ev){
+      if(ev.target.classList.contains("status-select")){
+        atualizarStatusLead(ev.target.getAttribute("data-id"), ev.target.value);
+      }
+    });
+
+    elementos.corpoTabela.addEventListener("click", function(ev){
+      if(ev.target.classList.contains("btn-excluir")){
+        var id = ev.target.getAttribute("data-id");
+        if(window.confirm("Excluir esse lead da lista?")) excluirLead(id);
+      }
+    });
+
+    elementos.botaoAbrirImportar.addEventListener("click", abrirModalImportar);
+    elementos.botaoFecharImportar.addEventListener("click", fecharModalImportar);
+    elementos.botaoCancelarMapeamento.addEventListener("click", fecharModalImportar);
+    elementos.botaoFecharResumo.addEventListener("click", fecharModalImportar);
+    elementos.modalImportar.addEventListener("click", function(ev){
+      if(ev.target === elementos.modalImportar) fecharModalImportar();
+    });
+    document.addEventListener("keydown", function(ev){
+      if(ev.key === "Escape" && !elementos.modalImportar.hidden) fecharModalImportar();
+    });
+
+    elementos.inputArquivo.addEventListener("change", lidarComArquivoSelecionado);
+    elementos.botaoConfirmarImportacao.addEventListener("click", confirmarImportacao);
+  }
+
+  function mapearElementos(){
+    elementos.telaLogin = document.getElementById("tela-login");
+    elementos.telaPainel = document.getElementById("tela-painel");
+    elementos.formLogin = document.getElementById("form-login");
+    elementos.loginEmail = document.getElementById("login-email");
+    elementos.loginSenha = document.getElementById("login-senha");
+    elementos.areaErroLogin = document.getElementById("area-erro-login");
+    elementos.botaoEntrar = document.getElementById("btn-entrar");
+    elementos.botaoSair = document.getElementById("btn-sair");
+
+    elementos.campoBusca = document.getElementById("campo-busca-leads");
+    elementos.contador = document.getElementById("contador-leads");
+    elementos.corpoTabela = document.getElementById("corpo-tabela-leads");
+
+    elementos.botaoAbrirImportar = document.getElementById("btn-abrir-importar");
+    elementos.modalImportar = document.getElementById("modal-importar");
+    elementos.botaoFecharImportar = document.getElementById("btn-fechar-importar");
+    elementos.inputArquivo = document.getElementById("input-arquivo-csv");
+    elementos.erroArquivo = document.getElementById("erro-arquivo");
+    elementos.corpoMapeamento = document.getElementById("corpo-tabela-mapeamento");
+    elementos.resumoLinhas = document.getElementById("resumo-linhas-detectadas");
+    elementos.checkboxPularDuplicados = document.getElementById("checkbox-pular-duplicados");
+    elementos.botaoCancelarMapeamento = document.getElementById("btn-cancelar-mapeamento");
+    elementos.botaoConfirmarImportacao = document.getElementById("btn-confirmar-importacao");
+    elementos.textoProgresso = document.getElementById("texto-progresso");
+    elementos.barraProgresso = document.getElementById("barra-progresso-preenchimento");
+    elementos.textoResumoFinal = document.getElementById("texto-resumo-final");
+    elementos.botaoFecharResumo = document.getElementById("btn-fechar-resumo");
+  }
+
+  function iniciar(){
+    mapearElementos();
+    configurarEventos();
+    tentarSessaoExistente();
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", iniciar);
+  } else {
+    iniciar();
+  }
+})();
+</script>
+</body>
+</html>
