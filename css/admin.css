@@ -27,6 +27,8 @@
   --amarelo-texto: #7a5a12;
   --verde-bg: #dbe6c8;
   --verde-texto: #4a5730;
+  --azul-suave: #5b7a94;
+  --vermelho-suave: #c1584a;
 }
 
 *,*::before,*::after{ box-sizing:border-box; }
@@ -290,3 +292,64 @@ tr.arrastando{ opacity:.4; }
 .revisar-textarea{ width:100%; min-height: 160px; padding:12px 14px; border-radius:12px; border:1.5px solid rgba(58,43,34,0.22); background: var(--papel); font-family: inherit; font-size:.88rem; margin-bottom:20px; }
 .bloco-revisao{ margin-bottom:18px; }
 .bloco-revisao h4{ font-size:.92rem; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+
+/* ---------- SELEÇÃO DE MARCAS (usada pela Prospecção) ---------- */
+.barra-selecao-marcas{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; background: var(--terracota-fraca); border-radius:12px; padding:9px 14px; margin-bottom:14px; font-size:.84rem; }
+.barra-selecao-marcas strong{ color: var(--terracota-escuro); }
+
+/* ---------- PROSPECÇÃO: CAPA ---------- */
+.capa-prospeccao{ background: linear-gradient(135deg, var(--terracota), var(--terracota-escuro)); border-radius: var(--raio-grande); padding: 28px 26px; color:#fff; margin-bottom:20px; position:relative; overflow:hidden; }
+.capa-prospeccao-topo{ display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap; }
+.capa-icone-prospeccao{ width:48px; height:48px; border-radius:12px; background: rgba(255,255,255,0.18); display:flex; align-items:center; justify-content:center; margin-bottom:12px; color:#fff; }
+.capa-prospeccao h2{ font-size:1.6rem; color:#fff; margin-bottom:6px; font-style: italic; }
+.capa-prospeccao p{ color: rgba(255,255,255,0.85); max-width:44ch; margin:0; font-size:.9rem; }
+.capa-numero-grande{ font-family: var(--serif); font-weight:400; font-size:2.3rem; text-align:right; line-height:1; color:#fff; }
+.capa-numero-legenda{ text-align:right; font-size:.76rem; color: rgba(255,255,255,0.8); }
+.capa-etiquetas{ display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+.etiqueta-capa{ background: rgba(255,255,255,0.16); border:1px solid rgba(255,255,255,0.3); border-radius:999px; padding:5px 13px; font-size:.72rem; color:#fff; }
+
+/* ---------- PROSPECÇÃO: CARTÕES DE MÉTRICA ---------- */
+.grade-metricas-prospeccao{ display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:12px; margin-bottom:20px; }
+.cartao-metrica-prospeccao{ background: var(--papel); border-radius: var(--raio); border-left:4px solid var(--tarja, var(--terracota)); padding:14px 16px; box-shadow: 0 8px 20px -16px var(--sombra); }
+.cartao-metrica-prospeccao .numero{ font-family: var(--serif); font-weight:400; font-size:1.7rem; color: var(--tarja, var(--terracota)); }
+.cartao-metrica-prospeccao .rotulo{ font-size:.8rem; color: var(--tinta-suave); margin-top:2px; }
+.cartao-metrica-prospeccao .contexto{ font-size:.7rem; color: var(--tinta-suave); margin-top:2px; }
+
+/* ---------- PROSPECÇÃO: FORMULÁRIO + PRÉVIA ---------- */
+.grade-prospeccao{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap:20px; align-items:start; }
+.coluna-preview-prospeccao{ position:sticky; top:80px; }
+@media (max-width:980px){ .grade-prospeccao{ grid-template-columns:1fr; } .coluna-preview-prospeccao{ position:static; } }
+
+.grupo-modo-prospeccao{ display:flex; gap:8px; margin-bottom:14px; }
+.botao-modo-prospeccao{ flex:1; padding:9px; border-radius:10px; border:1.5px solid rgba(58,43,34,0.22); background: var(--papel); font-size:.85rem; color: var(--tinta-suave); }
+.botao-modo-prospeccao.ativo{ border-color: var(--terracota); color: var(--terracota-escuro); background: var(--terracota-fraca); }
+
+.campo-corpo-prospeccao{ width:100%; min-height:200px; resize:vertical; }
+.campo-html-prospeccao{ font-family: 'Courier New', monospace; font-size:.82rem; }
+
+.contador-destinatarios-prospeccao{ background: var(--terracota-fraca); border-radius:10px; padding:9px 13px; font-size:.84rem; margin:8px 0 14px; }
+
+/* ---------- PROSPECÇÃO: PALCO DA PRÉVIA ---------- */
+.palco-preview-prospeccao{ background: var(--linho-escuro); border-radius: var(--raio-grande); padding:20px; }
+.janela-email-prospeccao{ background:#fff; border-radius: var(--raio); box-shadow: 0 14px 34px -18px rgba(58,43,34,0.4); overflow:hidden; color:#232323; }
+.cabecalho-janela-email-prospeccao{ display:flex; gap:12px; align-items:center; padding:14px 16px; border-bottom:1px solid rgba(0,0,0,0.08); }
+.avatar-remetente-prospeccao{ width:38px; height:38px; border-radius:50%; background: var(--terracota); color:#fff; display:flex; align-items:center; justify-content:center; font-family: var(--manuscrita); font-size:1.2rem; flex-shrink:0; }
+.assunto-preview-prospeccao{ font-weight:600; font-size:1rem; }
+.remetente-preview-prospeccao{ font-size:.76rem; color:#6b6b6b; }
+.corpo-janela-email-prospeccao{ padding:18px; max-height:460px; overflow-y:auto; }
+.dica-preview-prospeccao{ font-size:.78rem; color: var(--tinta-suave); margin-top:10px; }
+
+/* ---------- PROSPECÇÃO: MODO RASCUNHO ---------- */
+.fila-rascunho-prospeccao{ background: var(--papel); border:1.5px solid rgba(58,43,34,0.18); border-radius: var(--raio); padding:16px; }
+.fila-rascunho-topo-prospeccao{ display:flex; justify-content:space-between; font-size:.82rem; color: var(--tinta-suave); margin-bottom:10px; }
+.fila-rascunho-corpo-prospeccao{ background:#fff; border-radius:10px; padding:14px; border:1px solid rgba(58,43,34,0.12); margin-bottom:12px; white-space:pre-wrap; font-size:.86rem; }
+.fila-rascunho-botoes-prospeccao{ display:flex; gap:8px; flex-wrap:wrap; }
+
+/* ---------- PROSPECÇÃO: DISPARO E HISTÓRICO ---------- */
+.barra-progresso-disparo{ height:8px; border-radius:999px; background: rgba(58,43,34,0.12); overflow:hidden; margin-top:10px; }
+.barra-progresso-disparo > div{ height:100%; background: var(--terracota); transition:width .2s ease; }
+.aviso-cota-prospeccao{ background: var(--amarelo-bg); color: var(--amarelo-texto); border-radius:10px; padding:10px 14px; font-size:.84rem; margin-top:10px; }
+.resumo-disparo-prospeccao{ background: var(--verde-bg); color: var(--verde-texto); border-radius:10px; padding:10px 14px; font-size:.86rem; margin-top:10px; }
+.tag-status-envio{ display:inline-block; padding:2px 9px; border-radius:999px; font-size:.72rem; font-weight:600; }
+.tag-status-envio.ok{ background: var(--verde-bg); color: var(--verde-texto); }
+.tag-status-envio.erro{ background:#f0c9be; color:#7a2e1a; }

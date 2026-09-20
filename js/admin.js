@@ -11,6 +11,7 @@ const ABAS = {
   calendario: { titulo: "Calendário", render: () => window.AdminCalendario.render(document.getElementById("conteudoAba")) },
   campanhas:  { titulo: "Campanhas",  render: () => window.AdminCampanhas.render(document.getElementById("conteudoAba")) },
   checklist:  { titulo: "Checklist",  render: () => window.AdminChecklist.render(document.getElementById("conteudoAba")) },
+  prospeccao: { titulo: "Prospecção", render: () => window.AdminProspeccao.render(document.getElementById("conteudoAba")) },
 };
 
 async function iniciarAdmin() {

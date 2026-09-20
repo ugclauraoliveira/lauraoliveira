@@ -38,6 +38,9 @@ const ICONES = {
   direita:     (t) => icone('<path d="M9 5l7 7-7 7"/>', t),
   aviso:       (t) => icone('<path d="M12 3l10 18H2z"/><path d="M12 10v4"/><path d="M12 17.5v.01"/>', t),
   video:       (t) => icone('<rect x="3" y="5" width="14" height="14" rx="2"/><path d="M17 9l4-2v10l-4-2"/>', t),
+  envelope:    (t) => icone('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>', t),
+  enviar:      (t) => icone('<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/>', t),
+  copiar:      (t) => icone('<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>', t),
 };
 
 /* ---------- FORMATADORES ---------- */
@@ -53,6 +56,10 @@ function formatarData(dataISO) {
 }
 function dataDeHoje() {
   return new Date().toISOString().slice(0, 10);
+}
+function formatarDataHora(dataISO) {
+  if (!dataISO) return "";
+  return new Date(dataISO).toLocaleString("pt-BR");
 }
 function diasEntre(dataISO) {
   const hoje = new Date(dataDeHoje() + "T00:00:00");

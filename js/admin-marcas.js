@@ -29,6 +29,11 @@ window.AdminMarcas = (function () {
           <button class="btn btn-secundario" id="botaoExportarMarcas">${ICONES.baixar(16)} Baixar CSV</button>
           <button class="btn btn-primario" id="botaoNovaMarca">${ICONES.mais(16)} Adicionar</button>
         </div>
+        <div class="barra-selecao-marcas">
+          <span id="textoSelecaoMarcas"><strong>0</strong> marcas selecionadas</span>
+          <button class="link-discreto" id="botaoSelecionarVisiveisMarcas" type="button">Selecionar todas da lista atual</button>
+          <button class="link-discreto" id="botaoLimparSelecaoMarcas" type="button">Limpar seleção</button>
+        </div>
         <div class="tabela-wrap" id="areaTabelaMarcas"></div>
       </div>
     `;
@@ -36,6 +41,8 @@ window.AdminMarcas = (function () {
     document.getElementById("botaoNovaMarca").addEventListener("click", () => abrirFormularioMarca(null));
     document.getElementById("botaoExportarMarcas").addEventListener("click", exportar);
     document.getElementById("buscaMarcas").addEventListener("input", (e) => { termoBusca = e.target.value.toLowerCase(); renderTabela(); });
+    document.getElementById("botaoSelecionarVisiveisMarcas").addEventListener("click", selecionarTodasVisiveis);
+    document.getElementById("botaoLimparSelecaoMarcas").addEventListener("click", limparSelecaoTodas);
     container.querySelectorAll(".chip-filtro").forEach(chip => {
       chip.addEventListener("click", () => {
         container.querySelectorAll(".chip-filtro").forEach(c => c.classList.remove("ativo"));
@@ -48,6 +55,38 @@ window.AdminMarcas = (function () {
     const { data, error } = await window.banco.from("marcas").select("*").order("criado_em", { ascending: false });
     if (error) avisoFaltando(container, "marcas", error);
     marcasCache = data || [];
+    renderTabela();
+  }
+
+  /* ---------- Seleção (usada pela aba Prospecção) ---------- */
+
+  function contarSelecionadas() {
+    return marcasCache.filter(m => m.selecionada).length;
+  }
+
+  function atualizarTextoSelecao() {
+    const span = document.getElementById("textoSelecaoMarcas");
+    if (span) span.innerHTML = `<strong>${contarSelecionadas()}</strong> marcas selecionadas`;
+  }
+
+  async function salvarSelecaoMarca(id, valor) {
+    const marca = marcasCache.find(m => m.id === id);
+    if (marca) marca.selecionada = valor;
+    atualizarTextoSelecao();
+    const { error } = await window.banco.from("marcas").update({ selecionada: valor }).eq("id", id);
+    if (error) mostrarToast("Não consegui salvar a seleção (rode o prospeccao.sql no Supabase)", "erro");
+  }
+
+  function selecionarTodasVisiveis() {
+    const area = document.getElementById("areaTabelaMarcas");
+    area.querySelectorAll(".checkbox-selecao-marca:not([disabled])").forEach(cb => {
+      cb.checked = true;
+      salvarSelecaoMarca(cb.dataset.id, true);
+    });
+  }
+
+  function limparSelecaoTodas() {
+    marcasCache.filter(m => m.selecionada).forEach(m => salvarSelecaoMarca(m.id, false));
     renderTabela();
   }
 
@@ -67,9 +106,10 @@ window.AdminMarcas = (function () {
     if (marcasCache.length === 0) {
       area.innerHTML = `
         <table class="tabela-admin">
-          <thead><tr><th>Marca</th><th>Instagram</th><th>E-mail</th><th>Telefone</th><th>Situação</th><th>Observação</th><th>Último contato</th></tr></thead>
+          <thead><tr><th></th><th>Marca</th><th>Instagram</th><th>E-mail</th><th>Telefone</th><th>Situação</th><th>Observação</th><th>Último contato</th></tr></thead>
           <tbody>
             <tr class="linha-exemplo">
+              <td></td>
               <td>Marca Exemplo <span class="selo-exemplo">exemplo</span></td>
               <td>@marcaexemplo</td>
               <td>contato@exemplo.com</td>
@@ -81,18 +121,20 @@ window.AdminMarcas = (function () {
           </tbody>
         </table>
         <p class="vazio-explicativo">Essa é uma linha de exemplo. Apague quando cadastrar as suas marcas de verdade.</p>`;
+      atualizarTextoSelecao();
       return;
     }
 
     const lista = listaFiltrada();
     if (lista.length === 0) {
       area.innerHTML = `<p class="vazio-explicativo">Nenhuma marca encontrada com esse filtro ou busca.</p>`;
+      atualizarTextoSelecao();
       return;
     }
 
     area.innerHTML = `
       <table class="tabela-admin">
-        <thead><tr><th>Marca</th><th>Instagram</th><th>E-mail</th><th>Telefone</th><th>Situação</th><th>Observação</th><th>Último contato</th></tr></thead>
+        <thead><tr><th></th><th>Marca</th><th>Instagram</th><th>E-mail</th><th>Telefone</th><th>Situação</th><th>Observação</th><th>Último contato</th></tr></thead>
         <tbody>
           ${lista.map(m => linhaMarca(m)).join("")}
         </tbody>
@@ -101,10 +143,17 @@ window.AdminMarcas = (function () {
     area.querySelectorAll("tr[data-id]").forEach(linha => {
       const marca = lista.find(m => m.id === linha.dataset.id);
       linha.addEventListener("click", (evento) => {
-        if (evento.target.closest("a")) return;
+        if (evento.target.closest("a") || evento.target.closest("input")) return;
         abrirFormularioMarca(marca);
       });
     });
+
+    area.querySelectorAll(".checkbox-selecao-marca").forEach(cb => {
+      cb.addEventListener("click", (evento) => evento.stopPropagation());
+      cb.addEventListener("change", (evento) => salvarSelecaoMarca(cb.dataset.id, evento.target.checked));
+    });
+
+    atualizarTextoSelecao();
   }
 
   function linhaMarca(m) {
@@ -121,8 +170,11 @@ window.AdminMarcas = (function () {
       const usuario = m.instagram.replace("@", "").trim();
       instagramCelula = `<a href="https://instagram.com/${encodeURIComponent(usuario)}" target="_blank" rel="noopener">${escapeHtml(m.instagram)}</a>`;
     }
+    const temEmail = !!(m.email && m.email.trim());
     return `
       <tr data-id="${m.id}" style="cursor:pointer;">
+        <td><input type="checkbox" class="checkbox-selecao-marca" data-id="${m.id}"
+          ${m.selecionada ? "checked" : ""} ${temEmail ? "" : 'disabled title="Sem e-mail cadastrado"'}></td>
         <td>${escapeHtml(m.nome)}</td>
         <td>${instagramCelula}</td>
         <td>${escapeHtml(m.email)}</td>
@@ -230,5 +282,5 @@ window.AdminMarcas = (function () {
     );
   }
 
-  return { render };
+  return { render, SITUACOES };
 })();
