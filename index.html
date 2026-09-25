@@ -602,6 +602,18 @@
   .trabalho-corpo p{ font-size: .88rem; color: var(--tinta-suave); margin:0; }
   .trabalho-card[hidden]{ display:none; }
 
+  .trabalhos-grupo{ margin-bottom: 46px; }
+  .trabalhos-grupo:last-child{ margin-bottom: 0; }
+  .trabalhos-grupo[hidden]{ display:none; }
+  .trabalhos-grupo-titulo{
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    color: var(--terracota-escuro);
+    margin-bottom: 18px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(181,86,58,0.15);
+  }
+
   /* ===================== SERVIÇOS ===================== */
   .servicos-faixa{
     background: var(--terracota);
@@ -964,8 +976,8 @@
       <div class="filtros" id="filtrosNicho" role="group" aria-label="Filtrar trabalhos por nicho">
         <!-- preenchido via JavaScript a partir do array nichosData -->
       </div>
-      <div class="trabalhos-grid" id="trabalhosGrid">
-        <!-- preenchido via JavaScript a partir do array trabalhosData -->
+      <div id="trabalhosGrid">
+        <!-- preenchido via JavaScript: uma seção por nicho, cada uma com título e sua própria grade -->
       </div>
     </div>
   </section>

@@ -51,14 +51,20 @@
     `).join("");
   }
 
-  // ---------- FILTRO DE NICHO + TRABALHOS ----------
+  // ---------- FILTRO DE NICHO + TRABALHOS (agrupados por nicho) ----------
   if (videos.length === 0) {
     if (filtrosNicho) filtrosNicho.innerHTML = "";
     trabalhosGrid.innerHTML = `<p class="vazio-explicativo" style="text-align:center; color: var(--tinta-suave);">Seus vídeos aparecem aqui assim que forem cadastrados no painel admin.</p>`;
     return;
   }
 
-  const nichos = [...new Set(videos.map(v => (v.nicho || "").trim()).filter(Boolean))];
+  // Ordem preferida dos nichos. Qualquer nicho que não estiver nessa lista
+  // aparece depois, na ordem em que for encontrado nos vídeos.
+  const ORDEM_NICHOS = ["Tech", "Educação", "Moda e Beleza", "Autocuidado", "Experiência", "Casa & Decoração", "Promoções"];
+
+  const nichosEncontrados = [...new Set(videos.map(v => (v.nicho || "").trim()).filter(Boolean))];
+  const nichos = ORDEM_NICHOS.filter(n => nichosEncontrados.includes(n))
+    .concat(nichosEncontrados.filter(n => !ORDEM_NICHOS.includes(n)));
 
   if (filtrosNicho) {
     filtrosNicho.innerHTML = [`<button class="filtro-btn ativo" data-niche="todos" aria-pressed="true">Todos</button>`]
@@ -74,25 +80,39 @@
       botao.classList.add("ativo");
       botao.setAttribute("aria-pressed", "true");
 
-      trabalhosGrid.querySelectorAll(".trabalho-card").forEach(card => {
-        const mostrar = niche === "todos" || card.dataset.niche === niche;
-        card.hidden = !mostrar;
+      trabalhosGrid.querySelectorAll(".trabalhos-grupo").forEach(grupo => {
+        grupo.hidden = !(niche === "todos" || grupo.dataset.niche === niche);
       });
     });
   }
 
-  trabalhosGrid.innerHTML = videos.map(v => `
-    <article class="trabalho-card visivel" data-niche="${atributoSeguro(v.nicho)}">
-      <div class="trabalho-capa">
-        <div class="midia-placeholder" role="img" aria-label="${atributoSeguro(v.formato)} do trabalho ${atributoSeguro(v.titulo)}">${textoSeguro(v.formato)}</div>
-      </div>
-      <div class="trabalho-corpo">
-        <span class="trabalho-niche">${textoSeguro(v.nicho)}</span>
-        <h3>${textoSeguro(v.titulo)}</h3>
-        <p>${textoSeguro(v.marca)}</p>
-      </div>
-    </article>
-  `).join("");
+  function cartaoTrabalho(v) {
+    return `
+      <article class="trabalho-card visivel">
+        <div class="trabalho-capa">
+          <div class="midia-placeholder" role="img" aria-label="${atributoSeguro(v.formato)} do trabalho ${atributoSeguro(v.titulo)}">${textoSeguro(v.formato)}</div>
+        </div>
+        <div class="trabalho-corpo">
+          <span class="trabalho-niche">${textoSeguro(v.nicho)}</span>
+          <h3>${textoSeguro(v.titulo)}</h3>
+          <p>${textoSeguro(v.marca)}</p>
+        </div>
+      </article>`;
+  }
+
+  // Um bloco por nicho, cada um com seu título e sua própria grade.
+  // "videos" já vem ordenado por "ordem" (ver a consulta lá em cima),
+  // então dentro de cada nicho os vídeos mantêm a ordem cadastrada.
+  trabalhosGrid.innerHTML = nichos.map(nicho => {
+    const videosDoNicho = videos.filter(v => (v.nicho || "").trim() === nicho);
+    return `
+      <div class="trabalhos-grupo" data-niche="${atributoSeguro(nicho)}">
+        <h3 class="trabalhos-grupo-titulo">${textoSeguro(nicho)}</h3>
+        <div class="trabalhos-grid">
+          ${videosDoNicho.map(cartaoTrabalho).join("")}
+        </div>
+      </div>`;
+  }).join("");
 })();
 
 function textoSeguro(valor) {
