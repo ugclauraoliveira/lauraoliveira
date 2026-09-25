@@ -86,34 +86,71 @@
     });
   }
 
-  function cartaoTrabalho(v) {
-    return `
-      <article class="trabalho-card visivel">
-        <div class="trabalho-capa">
-          <div class="midia-placeholder" role="img" aria-label="${atributoSeguro(v.formato)} do trabalho ${atributoSeguro(v.titulo)}">${textoSeguro(v.formato)}</div>
-        </div>
-        <div class="trabalho-corpo">
-          <span class="trabalho-niche">${textoSeguro(v.nicho)}</span>
-          <h3>${textoSeguro(v.titulo)}</h3>
-          <p>${textoSeguro(v.marca)}</p>
-        </div>
-      </article>`;
+  function capaDoTrabalho(v) {
+    const thumb = obterThumbnailYoutube(v.link);
+    if (thumb) {
+      return `<img src="${atributoSeguro(thumb)}" alt="" loading="lazy">`;
+    }
+    return `<div class="midia-placeholder" role="img" aria-label="${atributoSeguro(v.formato)} do trabalho ${atributoSeguro(v.titulo)}">${textoSeguro(v.formato)}</div>`;
   }
 
-  // Um bloco por nicho, cada um com seu título e sua própria grade.
-  // "videos" já vem ordenado por "ordem" (ver a consulta lá em cima),
-  // então dentro de cada nicho os vídeos mantêm a ordem cadastrada.
+  function cartaoTrabalho(v) {
+    return `
+      <a class="trabalho-card visivel" href="${atributoSeguro(v.link)}" target="_blank" rel="noopener" aria-label="Assistir ao vídeo: ${textoSeguro(v.titulo)}">
+        <div class="trabalho-capa">
+          ${capaDoTrabalho(v)}
+          <div class="trabalho-badges">
+            ${v.marca ? `<span class="trabalho-selo">${textoSeguro(v.marca)}</span>` : ""}
+            ${v.destaque ? `<span class="trabalho-selo trabalho-selo-destaque">${textoSeguro(v.destaque)}</span>` : ""}
+          </div>
+          <span class="play-botao" aria-hidden="true"></span>
+        </div>
+        <div class="trabalho-corpo">
+          <h3>${textoSeguro(v.titulo)}</h3>
+          <span class="trabalho-niche">${textoSeguro(v.nicho)}</span>
+        </div>
+      </a>`;
+  }
+
+  // Um bloco por nicho, cada um com seu título, a quantidade de vídeos
+  // e sua própria grade de 5 colunas. "videos" já vem ordenado por
+  // "ordem" (ver a consulta lá em cima), então dentro de cada nicho
+  // os vídeos mantêm a ordem cadastrada.
   trabalhosGrid.innerHTML = nichos.map(nicho => {
     const videosDoNicho = videos.filter(v => (v.nicho || "").trim() === nicho);
     return `
       <div class="trabalhos-grupo" data-niche="${atributoSeguro(nicho)}">
-        <h3 class="trabalhos-grupo-titulo">${textoSeguro(nicho)}</h3>
+        <h3 class="trabalhos-grupo-titulo">${textoSeguro(nicho)}<span class="contagem">${videosDoNicho.length}</span></h3>
         <div class="trabalhos-grid">
           ${videosDoNicho.map(cartaoTrabalho).join("")}
         </div>
       </div>`;
   }).join("");
 })();
+
+/* =========================================================
+   CAPA REAL DO YOUTUBE (Shorts ou vídeo normal)
+   Usa a miniatura pública do YouTube, sem precisar guardar
+   nenhuma imagem no site. Se o link não for do YouTube ou o
+   ID não for encontrado, o card cai no bloco de degradê.
+========================================================= */
+function obterIdYoutube(link) {
+  if (!link) return null;
+  const padroes = [
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{6,})/,
+    /youtu\.be\/([a-zA-Z0-9_-]{6,})/,
+    /[?&]v=([a-zA-Z0-9_-]{6,})/,
+  ];
+  for (const padrao of padroes) {
+    const encontrado = link.match(padrao);
+    if (encontrado) return encontrado[1];
+  }
+  return null;
+}
+function obterThumbnailYoutube(link) {
+  const id = obterIdYoutube(link);
+  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
+}
 
 function textoSeguro(valor) {
   return String(valor ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
