@@ -26,6 +26,9 @@
     --manuscrita: 'Caveat', cursive;
     --raio: 22px;
     --container: 1180px;
+    --laranja-promo: #f2811b;
+    --laranja-promo-escuro: #d96f10;
+    --altura-faixa: 0px;
   }
 
   *,*::before,*::after{ box-sizing: border-box; }
@@ -129,10 +132,56 @@
     .reveal{ opacity:1; transform:none; transition:none; }
   }
 
+  /* ===================== FAIXA DE PROMOÇÃO ===================== */
+  .faixa-promo{
+    position: fixed;
+    top:0; left:0; right:0;
+    z-index: 600;
+    background: var(--laranja-promo);
+    color: var(--tinta);
+    padding: 10px 20px;
+  }
+  .faixa-promo-conteudo{
+    max-width: var(--container);
+    margin: 0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    font-size: .92rem;
+    text-align:center;
+  }
+  .faixa-promo-selo{
+    background: var(--tinta);
+    color: var(--papel);
+    font-weight: 700;
+    font-size: .74rem;
+    letter-spacing: .04em;
+    padding: 4px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .faixa-promo-texto{ font-weight: 600; }
+  .faixa-promo-separador{ opacity:.6; }
+  .faixa-promo-vagas{ font-weight: 500; }
+  .faixa-promo-link{
+    color: var(--tinta);
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    border-bottom: 2px solid var(--tinta);
+  }
+  .faixa-promo-link:hover, .faixa-promo-link:focus-visible{ color: var(--laranja-promo-escuro); border-color: var(--laranja-promo-escuro); }
+  @media (max-width: 640px){
+    .faixa-promo-conteudo{ font-size: .82rem; }
+  }
+
   /* ===================== HEADER / NAV ===================== */
   .site-header{
     position: fixed;
-    top:0; left:0; right:0;
+    top: var(--altura-faixa);
+    left:0; right:0;
     z-index: 500;
     background: rgba(242,233,220,0.9);
     backdrop-filter: blur(8px);
@@ -224,7 +273,7 @@
 
   /* ===================== HERO ===================== */
   .hero{
-    padding-top: 168px;
+    padding-top: calc(168px + var(--altura-faixa));
     padding-bottom: 60px;
     overflow: hidden;
   }
@@ -773,6 +822,18 @@
 <body>
 <a class="skip-link" href="#home">Pular para o conteúdo principal</a>
 
+<!-- ===================== FAIXA DE PROMOÇÃO ===================== -->
+<!-- O número de dias e a data da Black Friday são calculados sozinhos pelo script no fim da página. -->
+<div class="faixa-promo" id="faixaPromo">
+  <div class="faixa-promo-conteudo">
+    <span class="faixa-promo-selo">BLACK FRIDAY</span>
+    <span class="faixa-promo-texto" id="faixaPromoDias">Faltam alguns dias pra Black Friday</span>
+    <span class="faixa-promo-separador">•</span>
+    <span class="faixa-promo-vagas">poucas vagas pra gravar em novembro</span>
+    <a class="faixa-promo-link" href="#contato">reservar agenda →</a>
+  </div>
+</div>
+
 <!-- ===================== HEADER ===================== -->
 <header class="site-header">
   <div class="nav-wrap">
@@ -1261,6 +1322,36 @@
         <p>Obrigada pelo interesse. Eu envio o mídia kit completo para o e-mail informado em breve.</p>
       </div>`;
   });
+
+  /* =========================================================
+     FAIXA DE PROMOÇÃO (contagem para a Black Friday)
+  ========================================================== */
+  function blackFridayDoAno(ano) {
+    // Black Friday é sempre a quarta sexta-feira de novembro.
+    const primeiroDia = new Date(ano, 10, 1);
+    const diaDaSemana = primeiroDia.getDay(); // 0 = domingo ... 6 = sábado
+    const primeiraSexta = 1 + ((5 - diaDaSemana + 7) % 7);
+    return new Date(ano, 10, primeiraSexta + 21);
+  }
+
+  function atualizarFaixaPromo() {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    let blackFriday = blackFridayDoAno(hoje.getFullYear());
+    if (hoje > blackFriday) blackFriday = blackFridayDoAno(hoje.getFullYear() + 1);
+
+    const dias = Math.round((blackFriday - hoje) / 86400000);
+    const textoDias = document.getElementById("faixaPromoDias");
+    if (dias <= 0) textoDias.textContent = "É hoje, Black Friday!";
+    else if (dias === 1) textoDias.textContent = "Falta 1 dia pra Black Friday";
+    else textoDias.textContent = `Faltam ${dias} dias pra Black Friday`;
+
+    // Empurra o menu e o topo do site pra baixo, na altura exata da faixa.
+    const faixa = document.getElementById("faixaPromo");
+    document.documentElement.style.setProperty("--altura-faixa", faixa.offsetHeight + "px");
+  }
+  atualizarFaixaPromo();
+  window.addEventListener("resize", atualizarFaixaPromo);
 
   /* =========================================================
      ANO AUTOMÁTICO NO RODAPÉ
