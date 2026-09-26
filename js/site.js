@@ -89,7 +89,9 @@
   function capaDoTrabalho(v) {
     const thumb = obterThumbnailYoutube(v.link);
     if (thumb) {
-      return `<img src="${atributoSeguro(thumb)}" alt="" loading="lazy">`;
+      // Se a miniatura falhar ao carregar (raro, mas acontece com algum vídeo
+      // específico), "capaFalhou" troca a imagem quebrada pelo bloco de degradê.
+      return `<img src="${atributoSeguro(thumb)}" alt="" loading="lazy" data-formato="${atributoSeguro(v.formato)}" onerror="capaFalhou(this)">`;
     }
     return `<div class="midia-placeholder" role="img" aria-label="${atributoSeguro(v.formato)} do trabalho ${atributoSeguro(v.titulo)}">${textoSeguro(v.formato)}</div>`;
   }
@@ -150,6 +152,13 @@ function obterIdYoutube(link) {
 function obterThumbnailYoutube(link) {
   const id = obterIdYoutube(link);
   return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
+}
+function capaFalhou(img) {
+  const div = document.createElement("div");
+  div.className = "midia-placeholder";
+  div.setAttribute("role", "img");
+  div.textContent = img.dataset.formato || "Vídeo vertical 9:16";
+  img.replaceWith(div);
 }
 
 function textoSeguro(valor) {
