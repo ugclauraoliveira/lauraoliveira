@@ -166,6 +166,10 @@ function iniciarCarrosseis(trabalhosGrid) {
     const itensPorPagina = itensPorPaginaAtual();
     const totalPaginas = Math.max(1, Math.ceil(total / itensPorPagina));
 
+    // Quando o nicho tem menos vídeos do que cabe na tela, os cards
+    // crescem pra preencher a linha inteira em vez de deixar espaço vazio.
+    trilho.style.setProperty("--colunas-grupo", Math.min(total, itensPorPagina));
+
     let pagina = paginaPorGrupo.get(grupo) || 0;
     pagina = Math.max(0, Math.min(pagina, totalPaginas - 1));
     paginaPorGrupo.set(grupo, pagina);

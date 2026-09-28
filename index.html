@@ -586,8 +586,8 @@
     transition: transform .35s ease;
   }
   .trabalho-slot{
-    flex: 0 0 calc(100% / var(--itens-pagina));
-    max-width: calc(100% / var(--itens-pagina));
+    flex: 0 0 calc(100% / var(--colunas-grupo, var(--itens-pagina)));
+    max-width: calc(100% / var(--colunas-grupo, var(--itens-pagina)));
     padding: 0 11px;
     box-sizing: border-box;
   }
