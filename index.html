@@ -502,11 +502,69 @@
   .titulo-secao h2{ font-size: clamp(2rem, 4vw, 2.8rem); }
   .titulo-secao p{ margin: 0 auto; color: var(--tinta-suave); }
 
-  .destaques-grid{
+  .destaques-layout{
     display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 56px;
+    align-items:center;
   }
+  .destaques-coluna-texto h2{ font-size: clamp(2rem, 4vw, 2.6rem); margin-bottom: 10px; }
+  .destaques-coluna-texto p{ color: var(--tinta-suave); }
+  .destaques-print{
+    margin-top: 26px;
+    border: 1.5px dashed rgba(58,43,34,0.28);
+    border-radius: 16px;
+    padding: 18px;
+    background: rgba(58,43,34,0.03);
+  }
+  .destaques-print img{ width:100%; border-radius:12px; display:block; margin-bottom:10px; }
+  .destaques-print-placeholder{
+    font-family: var(--manuscrita);
+    font-size: 1.2rem;
+    color: var(--tinta-suave);
+    text-align:center;
+    padding: 26px 10px;
+    border-radius: 12px;
+    background: rgba(58,43,34,0.05);
+    margin-bottom: 10px;
+  }
+  .destaques-print-legenda{ font-size: .82rem; color: var(--tinta-suave); margin:0; }
+
+  :root{ --destaques-itens: 2; }
+  @media (max-width: 480px){ :root{ --destaques-itens: 1; } }
+  .destaques-carrossel{ position:relative; }
+  .destaques-pista{ overflow:hidden; margin: 0 -11px; }
+  .destaques-trilho{ display:flex; transition: transform .35s ease; }
+  .destaque-slot{
+    flex: 0 0 calc(100% / var(--destaques-itens));
+    max-width: calc(100% / var(--destaques-itens));
+    padding: 0 11px;
+    box-sizing: border-box;
+  }
+  .seta-destaque{
+    position:absolute;
+    top:50%;
+    transform: translateY(-50%);
+    width: 44px; height:44px;
+    border-radius:50%;
+    border:none;
+    background: var(--papel);
+    box-shadow: 0 10px 24px -12px var(--sombra);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.3rem;
+    z-index:3;
+  }
+  .seta-destaque-anterior{ left: -18px; }
+  .seta-destaque-proxima{ right: -18px; }
+  .seta-destaque:disabled{ opacity:.35; }
+  @media (max-width: 900px){
+    .destaques-layout{ grid-template-columns: 1fr; }
+    .seta-destaque-anterior{ left: 4px; }
+    .seta-destaque-proxima{ right: 4px; }
+  }
+
   .destaque-card{
     text-decoration:none;
     display:block;
@@ -1106,11 +1164,9 @@
   @media (max-width: 980px){
     .hero-grid, .sobre-grid, .contato-grid{ grid-template-columns: 1fr; }
     .foto-principal-wrap{ order:-1; }
-    .destaques-grid{ grid-template-columns: 1fr; max-width: 380px; margin:0 auto; }
     .servicos-grid{ grid-template-columns: repeat(2,1fr); }
     .metricas-grid{ grid-template-columns: repeat(2,1fr); }
     .resultados-grid{ grid-template-columns: 1fr; }
-    .depoimentos-grid{ grid-template-columns: 1fr; }
   }
   @media (max-width: 560px){
     section{ padding: 64px 0; }
@@ -1243,14 +1299,27 @@
 
   <!-- ===================== 3. CONTEÚDOS DE DESTAQUE ===================== -->
   <section id="destaques">
-    <div class="container">
-      <div class="titulo-secao reveal">
+    <div class="container destaques-layout">
+      <div class="destaques-coluna-texto reveal">
         <span class="eyebrow">destaques</span>
         <h2>Conteúdos que já viralizaram</h2>
         <p>Alguns dos vídeos que mais performaram para as marcas que confiaram no meu trabalho.</p>
+        <div class="destaques-print">
+          <!-- Espaço pro print de comprovação que a marca mandou pra Laura.
+               Quando ela enviar a imagem, troca esse bloco por:
+               <img src="img/print-comprovacao.jpg" alt="Print de comprovação enviado pela marca"> -->
+          <div class="destaques-print-placeholder">Print de comprovação</div>
+          <p class="destaques-print-legenda">Espaço reservado pro print que a marca te mandou confirmando o resultado. Me manda a imagem que eu coloco aqui.</p>
+        </div>
       </div>
-      <div class="destaques-grid" id="destaquesGrid">
-        <!-- preenchido via JavaScript a partir do array destaquesData -->
+      <div class="destaques-carrossel reveal">
+        <button type="button" class="seta-destaque seta-destaque-anterior" aria-label="Ver destaques anteriores">‹</button>
+        <div class="destaques-pista">
+          <div class="destaques-trilho" id="destaquesGrid">
+            <!-- preenchido via JavaScript a partir dos vídeos marcados como destaque -->
+          </div>
+        </div>
+        <button type="button" class="seta-destaque seta-destaque-proxima" aria-label="Ver mais destaques">›</button>
       </div>
     </div>
   </section>

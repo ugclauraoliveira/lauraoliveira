@@ -31,26 +31,29 @@
     videos = [];
   }
 
-  // ---------- DESTAQUES ----------
+  // ---------- DESTAQUES (carrossel que passa sozinho a cada 5s) ----------
   const destaques = videos.filter(v => (v.destaque || "").trim() !== "");
   if (destaques.length === 0) {
-    destaquesGrid.innerHTML = `<p class="vazio-explicativo" style="grid-column:1/-1; text-align:center; color: var(--tinta-suave);">Assim que você marcar um vídeo como destaque no painel admin, ele aparece aqui.</p>`;
+    destaquesGrid.innerHTML = `<p class="vazio-explicativo" style="text-align:center; color: var(--tinta-suave);">Assim que você marcar um vídeo como destaque no painel admin, ele aparece aqui.</p>`;
   } else {
     destaquesGrid.innerHTML = destaques.map(v => `
-      <a class="destaque-card visivel" href="${atributoSeguro(v.link)}" target="_blank" rel="noopener" aria-label="Assistir ao vídeo: ${textoSeguro(v.titulo)}">
-        <div class="destaque-capa">
-          ${capaDoTrabalho(v)}
-          <span class="play-botao" aria-hidden="true"></span>
-        </div>
-        <div class="destaque-info">
-          <span class="destaque-numero">${textoSeguro(v.destaque)}</span>
-          <span class="destaque-rotulo">${textoSeguro(v.nicho)}</span>
-          <h3>${textoSeguro(v.titulo)}</h3>
-          <p class="destaque-contexto">${v.marca ? "Trabalho para " + textoSeguro(v.marca) : ""}</p>
-        </div>
-      </a>
+      <div class="destaque-slot">
+        <a class="destaque-card visivel" href="${atributoSeguro(v.link)}" target="_blank" rel="noopener" aria-label="Assistir ao vídeo: ${textoSeguro(v.titulo)}">
+          <div class="destaque-capa">
+            ${capaDoTrabalho(v)}
+            <span class="play-botao" aria-hidden="true"></span>
+          </div>
+          <div class="destaque-info">
+            <span class="destaque-numero">${textoSeguro(v.destaque)}</span>
+            <span class="destaque-rotulo">${textoSeguro(v.nicho)}</span>
+            <h3>${textoSeguro(v.titulo)}</h3>
+            <p class="destaque-contexto">${v.marca ? "Trabalho para " + textoSeguro(v.marca) : ""}</p>
+          </div>
+        </a>
+      </div>
     `).join("");
   }
+  iniciarCarrosselDestaques(destaques.length);
 
   // ---------- YOUTUBE ADS (vídeos marcados com o campo "YouTube Ads") ----------
   // Esse campo é separado do "Destaque": um vídeo pode aparecer só aqui,
@@ -158,6 +161,61 @@
 
   iniciarCarrosseis(trabalhosGrid);
 })();
+
+/* =========================================================
+   CARROSSEL DOS DESTAQUES
+   Passa sozinho a cada 5 segundos, e também dá pra usar as
+   setinhas pra navegar manualmente.
+========================================================= */
+function iniciarCarrosselDestaques(totalVideos) {
+  const pista = document.querySelector(".destaques-pista");
+  const trilho = document.getElementById("destaquesGrid");
+  const botaoAnterior = document.querySelector(".seta-destaque-anterior");
+  const botaoProxima = document.querySelector(".seta-destaque-proxima");
+  if (!pista || !trilho || !botaoAnterior || !botaoProxima) return;
+
+  function itensPorPaginaDestaques() {
+    return window.innerWidth <= 480 ? 1 : 2;
+  }
+
+  let pagina = 0;
+  let temporizador = null;
+
+  function atualizar() {
+    const itensPorPagina = itensPorPaginaDestaques();
+    const totalPaginas = Math.max(1, Math.ceil(totalVideos / itensPorPagina));
+    pagina = ((pagina % totalPaginas) + totalPaginas) % totalPaginas;
+    trilho.style.transform = `translateX(-${pagina * pista.clientWidth}px)`;
+
+    const precisaDeSetas = totalVideos > itensPorPagina;
+    botaoAnterior.hidden = !precisaDeSetas;
+    botaoProxima.hidden = !precisaDeSetas;
+  }
+
+  function reiniciarAutoAvanco() {
+    clearInterval(temporizador);
+    if (totalVideos <= itensPorPaginaDestaques()) return;
+    temporizador = setInterval(() => { pagina++; atualizar(); }, 5000);
+  }
+
+  if (totalVideos === 0) {
+    botaoAnterior.hidden = true;
+    botaoProxima.hidden = true;
+    return;
+  }
+
+  botaoAnterior.addEventListener("click", () => { pagina--; atualizar(); reiniciarAutoAvanco(); });
+  botaoProxima.addEventListener("click", () => { pagina++; atualizar(); reiniciarAutoAvanco(); });
+
+  atualizar();
+  reiniciarAutoAvanco();
+
+  let redimensionando = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(redimensionando);
+    redimensionando = setTimeout(() => { atualizar(); reiniciarAutoAvanco(); }, 120);
+  });
+}
 
 /* =========================================================
    CARROSSEL DOS TRABALHOS
