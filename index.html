@@ -345,13 +345,39 @@
   .foto-recorte.com-foto{
     padding: 0;
   }
-  .foto-recorte.com-foto img{
+  .foto-recorte.com-foto img,
+  .foto-recorte.com-foto video{
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
     border-radius: 2px;
   }
+
+  /* Borda branca animada, girando ao redor da foto/vídeo de capa */
+  @property --angulo-borda-viva{
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+  }
+  .foto-borda-viva::before{
+    content:"";
+    position:absolute;
+    inset:-13px;
+    z-index:-1;
+    border-radius: 22px;
+    background: conic-gradient(from var(--angulo-borda-viva), rgba(255,255,255,0.15) 0deg, #fff 50deg, rgba(255,255,255,0.15) 100deg, rgba(255,255,255,0.15) 360deg);
+    box-shadow: 0 0 16px 2px rgba(255,255,255,0.6);
+    animation: girar-borda-viva 3s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes girar-borda-viva{
+    to{ --angulo-borda-viva: 360deg; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .foto-borda-viva::before{ animation: none; }
+  }
+
   .carimbo{
     position:absolute;
     bottom: -22px;
@@ -1255,8 +1281,10 @@
       </div>
 
       <div class="foto-principal-wrap">
-        <div class="foto-recorte com-foto">
-          <img src="img/laura-capa.jpg" alt="Laura Oliveira sorrindo para a câmera">
+        <div class="foto-recorte com-foto foto-borda-viva">
+          <video class="foto-video" autoplay loop muted playsinline aria-label="Laura Oliveira, vídeo em loop">
+            <source src="video/laura-capa-loop.mp4" type="video/mp4">
+          </video>
           <div class="carimbo">feito à mão</div>
         </div>
       </div>
