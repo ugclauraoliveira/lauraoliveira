@@ -151,7 +151,7 @@ window.AdminPortfolio = (function () {
     if (videos.length === 0) {
       area.innerHTML = `
         <table class="tabela-admin">
-          <thead><tr><th></th><th>Título</th><th>Marca</th><th>Nicho</th><th>Formato</th><th>Destaque</th><th>Visível</th><th></th></tr></thead>
+          <thead><tr><th></th><th>Título</th><th>Marca</th><th>Nicho</th><th>Formato</th><th>Destaque</th><th>YouTube Ads</th><th>Visível</th><th></th></tr></thead>
           <tbody>
             <tr class="linha-exemplo">
               <td>${ICONES.alcinha(16)}</td>
@@ -160,6 +160,7 @@ window.AdminPortfolio = (function () {
               <td>skincare</td>
               <td>Vídeo vertical 9:16</td>
               <td>2,4M views</td>
+              <td></td>
               <td>${ICONES.olhoAberto(16)}</td>
               <td></td>
             </tr>
@@ -171,7 +172,7 @@ window.AdminPortfolio = (function () {
 
     area.innerHTML = `
       <table class="tabela-admin">
-        <thead><tr><th></th><th>Título</th><th>Marca</th><th>Nicho</th><th>Formato</th><th>Destaque</th><th>Visível</th><th></th></tr></thead>
+        <thead><tr><th></th><th>Título</th><th>Marca</th><th>Nicho</th><th>Formato</th><th>Destaque</th><th>YouTube Ads</th><th>Visível</th><th></th></tr></thead>
         <tbody id="corpoTabelaVideos">
           ${videos.map(v => linhaVideo(v)).join("")}
         </tbody>
@@ -200,6 +201,7 @@ window.AdminPortfolio = (function () {
         <td>${escapeHtml(v.nicho)}</td>
         <td>${escapeHtml(v.formato)}</td>
         <td>${escapeHtml(v.destaque)}</td>
+        <td>${escapeHtml(v.youtube_ads)}</td>
         <td><button class="btn-icone acao-olho" title="${v.visivel ? "Esconder do site" : "Mostrar no site"}">${v.visivel ? ICONES.olhoAberto(18) : ICONES.olhoFechado(18)}</button></td>
         <td class="celula-acoes">
           <button class="btn-icone acao-editar" title="Editar">${ICONES.lapis(16)}</button>
@@ -291,6 +293,10 @@ window.AdminPortfolio = (function () {
             <input id="campoDestaqueVideo" value="${attrEsc(video?.destaque || "")}" placeholder="deixe vazio se não for destaque">
           </div>
         </div>
+        <div class="campo-admin">
+          <label for="campoYoutubeAdsVideo">Selo na aba YouTube Ads (ex: 2,3M views)</label>
+          <input id="campoYoutubeAdsVideo" value="${attrEsc(video?.youtube_ads || "")}" placeholder="deixe vazio pra não aparecer na aba YouTube Ads">
+        </div>
         <div class="campo-admin" style="flex-direction:row; align-items:center; gap:8px;">
           <input type="checkbox" id="campoVisivelVideo" style="width:16px;height:16px;" ${video ? (video.visivel ? "checked" : "") : "checked"}>
           <label for="campoVisivelVideo" style="margin:0;">Visível no site</label>
@@ -308,6 +314,7 @@ window.AdminPortfolio = (function () {
         formato: document.getElementById("campoFormatoVideo").value.trim(),
         marca: document.getElementById("campoMarcaVideo").value.trim(),
         destaque: document.getElementById("campoDestaqueVideo").value.trim(),
+        youtube_ads: document.getElementById("campoYoutubeAdsVideo").value.trim(),
         visivel: document.getElementById("campoVisivelVideo").checked,
       };
 

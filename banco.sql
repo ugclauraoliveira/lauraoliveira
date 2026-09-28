@@ -20,22 +20,26 @@ create extension if not exists pgcrypto;
 
 -- =========================================================================
 -- TABELA 1: VIDEOS
--- Os vídeos que aparecem no seu portfólio público (seções "destaques"
--- e "trabalhos"). O que tiver algo escrito no campo "destaque" (ex:
--- "2,4M views") entra na seção de destaques. Todo vídeo visível entra
--- na grade de trabalhos, filtrável por nicho.
+-- Os vídeos que aparecem no seu portfólio público (seções "destaques",
+-- "youtube ads" e "trabalhos"). O que tiver algo escrito no campo
+-- "destaque" (ex: "2,4M views") entra na seção de destaques. O que tiver
+-- algo escrito em "youtube_ads" entra na aba YouTube Ads — são campos
+-- independentes, um vídeo pode estar em um, no outro, nos dois ou em
+-- nenhum. Todo vídeo visível entra na grade de trabalhos, filtrável
+-- por nicho.
 -- =========================================================================
 create table if not exists public.videos (
-  id         uuid primary key default gen_random_uuid(),
-  titulo     text not null,
-  link       text not null,
-  nicho      text not null default '',
-  formato    text not null default '',
-  marca      text not null default '',
-  destaque   text not null default '',       -- ex: "2,4M views". Vazio = não aparece em destaques
-  ordem      integer not null default 0,     -- define a ordem de exibição no site
-  visivel    boolean not null default true,  -- olhinho aceso/apagado no admin
-  criado_em  timestamptz not null default now()
+  id           uuid primary key default gen_random_uuid(),
+  titulo       text not null,
+  link         text not null,
+  nicho        text not null default '',
+  formato      text not null default '',
+  marca        text not null default '',
+  destaque     text not null default '',       -- ex: "2,4M views". Vazio = não aparece em destaques
+  youtube_ads  text not null default '',       -- ex: "2,3M views". Vazio = não aparece na aba YouTube Ads
+  ordem        integer not null default 0,     -- define a ordem de exibição no site
+  visivel      boolean not null default true,  -- olhinho aceso/apagado no admin
+  criado_em    timestamptz not null default now()
 );
 
 -- =========================================================================

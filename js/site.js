@@ -52,16 +52,18 @@
     `).join("");
   }
 
-  // ---------- YOUTUBE ADS (os 2 vídeos de maior destaque) ----------
+  // ---------- YOUTUBE ADS (vídeos marcados com o campo "YouTube Ads") ----------
+  // Esse campo é separado do "Destaque": um vídeo pode aparecer só aqui,
+  // só em Destaques, nos dois, ou em nenhum.
   if (youtubeAdsGrid) {
-    const destaquesParaYoutube = destaques.slice(0, 2);
+    const destaquesParaYoutube = videos.filter(v => (v.youtube_ads || "").trim() !== "").slice(0, 2);
     if (destaquesParaYoutube.length === 0) {
-      youtubeAdsGrid.innerHTML = `<p class="vazio-explicativo" style="color: rgba(255,253,248,0.75);">Marque vídeos como destaque no painel admin pra eles aparecerem aqui.</p>`;
+      youtubeAdsGrid.innerHTML = `<p class="vazio-explicativo" style="color: rgba(255,253,248,0.75);">Marque vídeos como "YouTube Ads" no painel admin pra eles aparecerem aqui.</p>`;
     } else {
       youtubeAdsGrid.innerHTML = destaquesParaYoutube.map(v => `
         <a class="destaque-card youtube-ads-card" href="${atributoSeguro(v.link)}" target="_blank" rel="noopener" aria-label="Assistir ao vídeo: ${textoSeguro(v.titulo)}">
           ${capaDoTrabalho(v)}
-          <span class="youtube-ads-selo">${textoSeguro(v.destaque)}</span>
+          <span class="youtube-ads-selo">${textoSeguro(v.youtube_ads)}</span>
           <span class="play-botao" aria-hidden="true"></span>
         </a>
       `).join("");
