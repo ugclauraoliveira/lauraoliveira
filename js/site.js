@@ -115,20 +115,93 @@
   }
 
   // Um bloco por nicho, cada um com seu título, a quantidade de vídeos
-  // e sua própria grade de 5 colunas. "videos" já vem ordenado por
-  // "ordem" (ver a consulta lá em cima), então dentro de cada nicho
-  // os vídeos mantêm a ordem cadastrada.
+  // e um carrossel mostrando alguns por vez (ver "iniciarCarrosseis").
+  // "videos" já vem ordenado por "ordem" (ver a consulta lá em cima),
+  // então dentro de cada nicho os vídeos mantêm a ordem cadastrada.
   trabalhosGrid.innerHTML = nichos.map(nicho => {
     const videosDoNicho = videos.filter(v => (v.nicho || "").trim() === nicho);
     return `
       <div class="trabalhos-grupo" data-niche="${atributoSeguro(nicho)}">
-        <h3 class="trabalhos-grupo-titulo">${textoSeguro(nicho)}<span class="contagem">${videosDoNicho.length}</span></h3>
-        <div class="trabalhos-grid">
-          ${videosDoNicho.map(cartaoTrabalho).join("")}
+        <div class="trabalhos-grupo-cabecalho">
+          <h3 class="trabalhos-grupo-titulo">${textoSeguro(nicho)}<span class="contagem">${videosDoNicho.length}</span></h3>
+          <div class="trabalhos-grupo-setas">
+            <button type="button" class="seta-carrossel seta-anterior" aria-label="Ver vídeos anteriores de ${textoSeguro(nicho)}">‹</button>
+            <button type="button" class="seta-carrossel seta-proxima" aria-label="Ver mais vídeos de ${textoSeguro(nicho)}">›</button>
+          </div>
+        </div>
+        <div class="trabalhos-pista">
+          <div class="trabalhos-trilho">
+            ${videosDoNicho.map(v => `<div class="trabalho-slot">${cartaoTrabalho(v)}</div>`).join("")}
+          </div>
         </div>
       </div>`;
   }).join("");
+
+  iniciarCarrosseis(trabalhosGrid);
 })();
+
+/* =========================================================
+   CARROSSEL DOS TRABALHOS
+   Mostra só alguns vídeos por vez (a quantidade muda sozinha
+   conforme a largura da tela) e usa as setinhas pra avançar.
+========================================================= */
+function itensPorPaginaAtual() {
+  const largura = window.innerWidth;
+  if (largura <= 420) return 1;
+  if (largura <= 680) return 2;
+  if (largura <= 1100) return 3;
+  return 5;
+}
+
+function iniciarCarrosseis(trabalhosGrid) {
+  const grupos = Array.from(trabalhosGrid.querySelectorAll(".trabalhos-grupo"));
+  const paginaPorGrupo = new WeakMap();
+
+  function atualizarGrupo(grupo) {
+    const pista = grupo.querySelector(".trabalhos-pista");
+    const trilho = grupo.querySelector(".trabalhos-trilho");
+    const botaoAnterior = grupo.querySelector(".seta-anterior");
+    const botaoProxima = grupo.querySelector(".seta-proxima");
+    const total = trilho.children.length;
+    const itensPorPagina = itensPorPaginaAtual();
+    const totalPaginas = Math.max(1, Math.ceil(total / itensPorPagina));
+
+    let pagina = paginaPorGrupo.get(grupo) || 0;
+    pagina = Math.max(0, Math.min(pagina, totalPaginas - 1));
+    paginaPorGrupo.set(grupo, pagina);
+
+    trilho.style.transform = `translateX(-${pagina * pista.clientWidth}px)`;
+
+    const precisaDeSetas = total > itensPorPagina;
+    grupo.querySelector(".trabalhos-grupo-setas").hidden = !precisaDeSetas;
+    if (precisaDeSetas) {
+      botaoAnterior.disabled = pagina === 0;
+      botaoProxima.disabled = pagina >= totalPaginas - 1;
+    }
+  }
+
+  document.documentElement.style.setProperty("--itens-pagina", itensPorPaginaAtual());
+
+  grupos.forEach(grupo => {
+    paginaPorGrupo.set(grupo, 0);
+    grupo.querySelector(".seta-anterior").addEventListener("click", () => {
+      paginaPorGrupo.set(grupo, (paginaPorGrupo.get(grupo) || 0) - 1);
+      atualizarGrupo(grupo);
+    });
+    grupo.querySelector(".seta-proxima").addEventListener("click", () => {
+      paginaPorGrupo.set(grupo, (paginaPorGrupo.get(grupo) || 0) + 1);
+      atualizarGrupo(grupo);
+    });
+    atualizarGrupo(grupo);
+  });
+
+  let redimensionando = null;
+  window.addEventListener("resize", () => {
+    document.documentElement.style.setProperty("--itens-pagina", itensPorPaginaAtual());
+    clearTimeout(redimensionando);
+    redimensionando = setTimeout(() => grupos.forEach(atualizarGrupo), 120);
+  });
+}
 
 /* =========================================================
    CAPA REAL DO YOUTUBE (Shorts ou vídeo normal)

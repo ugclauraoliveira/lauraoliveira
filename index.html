@@ -575,14 +575,22 @@
   .filtro-btn:hover{ background: rgba(58,43,34,0.08); }
   .filtro-btn.ativo{ background: var(--terracota); border-color: var(--terracota); color: var(--papel); }
 
-  .trabalhos-grid{
-    display:grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 22px;
+  :root{ --itens-pagina: 5; }
+
+  .trabalhos-pista{
+    overflow: hidden;
+    margin: 0 -11px;
   }
-  @media (max-width: 1100px){ .trabalhos-grid{ grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 680px){ .trabalhos-grid{ grid-template-columns: repeat(2, 1fr); gap:16px; } }
-  @media (max-width: 420px){ .trabalhos-grid{ grid-template-columns: 1fr; } }
+  .trabalhos-trilho{
+    display:flex;
+    transition: transform .35s ease;
+  }
+  .trabalho-slot{
+    flex: 0 0 calc(100% / var(--itens-pagina));
+    max-width: calc(100% / var(--itens-pagina));
+    padding: 0 11px;
+    box-sizing: border-box;
+  }
 
   .trabalho-card{
     text-decoration:none;
@@ -635,13 +643,19 @@
   .trabalhos-grupo{ margin-bottom: 46px; }
   .trabalhos-grupo:last-child{ margin-bottom: 0; }
   .trabalhos-grupo[hidden]{ display:none; }
+  .trabalhos-grupo-cabecalho{
+    display:flex;
+    align-items:flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(181,86,58,0.15);
+  }
   .trabalhos-grupo-titulo{
     font-family: var(--serif);
     font-size: 1.4rem;
     color: var(--terracota-escuro);
-    margin-bottom: 18px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid rgba(181,86,58,0.15);
   }
   .trabalhos-grupo-titulo .contagem{
     font-family: var(--corpo);
@@ -650,6 +664,22 @@
     color: var(--tinta-suave);
     margin-left: 8px;
   }
+  .trabalhos-grupo-setas{ display:flex; gap:8px; flex-shrink:0; }
+  .seta-carrossel{
+    width: 36px; height:36px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(58,43,34,0.22);
+    background: var(--papel);
+    color: var(--tinta);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 1.1rem;
+    line-height:1;
+    transition: background-color .15s ease, opacity .15s ease;
+  }
+  .seta-carrossel:hover:not(:disabled){ background: rgba(58,43,34,0.08); }
+  .seta-carrossel:disabled{ opacity:.35; cursor:default; }
 
   /* ===================== SERVIÇOS ===================== */
   .servicos-faixa{
