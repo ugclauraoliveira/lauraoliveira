@@ -875,6 +875,98 @@
   .depoimento-autor{ font-weight: 600; font-size: .92rem; }
   .depoimento-empresa{ font-size: .84rem; color: var(--tinta-suave); }
 
+  /* ===================== DEPOIMENTOS REAIS (prints e vídeo) ===================== */
+  #depoimentos-reais{ background: var(--linho-escuro); }
+  .depoimentos-reais-cabecalho{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap: 24px;
+    flex-wrap:wrap;
+    margin-bottom: 44px;
+  }
+  .depoimentos-reais-subtexto{ max-width: 320px; color: var(--tinta-suave); margin:0; text-align:right; }
+  @media (max-width: 700px){ .depoimentos-reais-subtexto{ text-align:left; } }
+
+  :root{ --depo-itens: 3; }
+  .depoimentos-carrossel{ position:relative; }
+  .depoimentos-reais-pista{ overflow:hidden; margin: 0 -11px; }
+  .depoimentos-reais-trilho{ display:flex; transition: transform .35s ease; }
+  .depoimento-real-slot{
+    flex: 0 0 calc(100% / var(--depo-itens));
+    max-width: calc(100% / var(--depo-itens));
+    padding: 0 11px;
+    box-sizing: border-box;
+  }
+  .seta-depoimento{
+    position:absolute;
+    top:50%;
+    transform: translateY(-50%);
+    width: 44px; height:44px;
+    border-radius:50%;
+    border:none;
+    background: var(--papel);
+    box-shadow: 0 10px 24px -12px var(--sombra);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.3rem;
+    z-index:3;
+  }
+  .seta-depoimento-anterior{ left: -18px; }
+  .seta-depoimento-proxima{ right: -18px; }
+  .seta-depoimento:disabled{ opacity:.35; }
+  @media (max-width: 860px){
+    .seta-depoimento-anterior{ left: 4px; }
+    .seta-depoimento-proxima{ right: 4px; }
+  }
+
+  .depoimento-real-card{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    background: var(--papel);
+    border-radius: 18px;
+    padding: 26px 22px;
+    box-shadow: 0 14px 28px -18px var(--sombra);
+  }
+  .depoimento-real-topo{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .depoimento-real-avatar{
+    width:46px; height:46px;
+    border-radius:50%;
+    background: linear-gradient(150deg, var(--oliva), var(--terracota));
+    color: var(--papel);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family: var(--serif);
+    font-size:1.2rem;
+    flex-shrink:0;
+  }
+  .depoimento-real-nome{ font-weight:600; font-size:.98rem; }
+  .depoimento-real-estrelas{ color:#d99a1b; font-size:.8rem; letter-spacing:2px; }
+  .depoimento-real-texto{ font-size:.92rem; color: var(--tinta-suave); flex:1; margin: 4px 0 14px; }
+  .depoimento-real-rodape{
+    border-top: 1px solid rgba(58,43,34,0.12);
+    padding-top: 12px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: .88rem;
+    color: var(--terracota-escuro);
+  }
+  .depoimento-real-video{
+    width:100%;
+    height: 220px;
+    border-radius: 12px;
+    overflow:hidden;
+    margin-bottom: 14px;
+    background:#000;
+  }
+  .depoimento-real-video video{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  @media (max-width: 860px){ :root{ --depo-itens: 2; } }
+  @media (max-width: 560px){ :root{ --depo-itens: 1; } }
+
   /* ===================== CONTATO ===================== */
   #contato{ background: var(--linho-escuro); }
   .contato-grid{
@@ -1074,6 +1166,7 @@
         <li><a href="#trabalhos">trabalhos</a></li>
         <li><a href="#servicos">serviços</a></li>
         <li><a href="#numeros">números</a></li>
+        <li><a href="#depoimentos-reais">depoimentos</a></li>
         <li><a href="#contato">contato</a></li>
       </ul>
     </nav>
@@ -1258,6 +1351,28 @@
     </div>
   </section>
 
+  <!-- ===================== DEPOIMENTOS REAIS ===================== -->
+  <section id="depoimentos-reais">
+    <div class="container">
+      <div class="depoimentos-reais-cabecalho reveal">
+        <div>
+          <span class="eyebrow">depoimentos</span>
+          <h2>O que dizem sobre o trabalho</h2>
+        </div>
+        <p class="depoimentos-reais-subtexto">Prints e vídeos reais de marcas e parceiros depois de receber o material pronto.</p>
+      </div>
+      <div class="depoimentos-carrossel reveal">
+        <button type="button" class="seta-depoimento seta-depoimento-anterior" aria-label="Ver depoimentos anteriores">‹</button>
+        <div class="depoimentos-reais-pista">
+          <div class="depoimentos-reais-trilho" id="depoimentosReaisGrid">
+            <!-- preenchido via JavaScript a partir do array depoimentosReaisData -->
+          </div>
+        </div>
+        <button type="button" class="seta-depoimento seta-depoimento-proxima" aria-label="Ver mais depoimentos">›</button>
+      </div>
+    </div>
+  </section>
+
   <!-- ===================== 7. BORA CRIAR JUNTOS ===================== -->
   <section id="contato">
     <div class="container contato-grid">
@@ -1402,6 +1517,46 @@
     { nome: "Cliente 04", empresa: "Empresa 04", texto: "Escreva aqui o depoimento do Cliente 04 sobre a experiência de trabalhar com a Laura." }
   ];
 
+  // Depoimentos reais (prints e vídeo de conversas de WhatsApp com marcas).
+  // Os nomes das marcas não foram informados nos prints, por isso usamos
+  // "Cliente 0X" como no restante do site. O texto de cada print é real.
+  // O único nome real disponível é o do vídeo, onde a marca "Preveja"
+  // aparece escrita na própria conversa.
+  const depoimentosReaisData = [
+    {
+      nome: "Cliente 01",
+      iniciais: "01",
+      texto: "Acredita que o campeão até agora foi aquele primeiro vídeo que você me enviou pra analisar 😊",
+      fonte: "Print real de conversa no WhatsApp"
+    },
+    {
+      nome: "Cliente 02",
+      iniciais: "02",
+      texto: "Socorro, eu amei! Ficou muito bom, vamos arrasar! Aprovadíssimo ✅",
+      fonte: "Print real de conversa no WhatsApp"
+    },
+    {
+      nome: "Cliente 03",
+      iniciais: "03",
+      texto: "Está perfeito o vídeo! Ficou muito bom, bem editado, gravação de qualidade. Parabéns, Laura! ✨",
+      fonte: "Print real de conversa no WhatsApp"
+    },
+    {
+      nome: "Cliente 04",
+      iniciais: "04",
+      texto: "Quero aproveitar e agradecer pelo seu trabalho! Gostei muito de trabalhar com você e com certeza vamos ter mais vídeos. Já tive muito problema com demora na comunicação e entrega sem capricho, e com você foi tudo impecável. Continue assim, é um grande diferencial! ❤️",
+      fonte: "Print real de conversa no WhatsApp"
+    },
+    {
+      nome: "Preveja",
+      iniciais: "PV",
+      video: "video/depoimento-video.mp4",
+      poster: "video/depoimento-video-poster.jpg",
+      texto: "Conteúdo aprovado pela marca! Ameiii, obrigada, amei, amei, amei! 🎉",
+      fonte: "Vídeo real de conversa no WhatsApp"
+    }
+  ];
+
   /* =========================================================
      RENDERIZAÇÃO
   ========================================================== */
@@ -1459,6 +1614,76 @@
       <p class="depoimento-empresa">${d.empresa}</p>
     </div>
   `).join("");
+
+  // Depoimentos reais (prints e vídeo de WhatsApp)
+  const depoimentosReaisGrid = document.getElementById("depoimentosReaisGrid");
+  depoimentosReaisGrid.innerHTML = depoimentosReaisData.map(d => `
+    <div class="depoimento-real-slot reveal">
+      <div class="depoimento-real-card">
+        <div class="depoimento-real-topo">
+          <span class="depoimento-real-avatar">${d.iniciais}</span>
+          <div>
+            <div class="depoimento-real-nome">${d.nome}</div>
+            <div class="depoimento-real-estrelas">★★★★★</div>
+          </div>
+        </div>
+        ${d.video ? `
+        <div class="depoimento-real-video">
+          <video controls preload="metadata" poster="${d.poster}">
+            <source src="${d.video}" type="video/mp4">
+          </video>
+        </div>` : ""}
+        <p class="depoimento-real-texto">"${d.texto}"</p>
+        <div class="depoimento-real-rodape">${d.fonte}</div>
+      </div>
+    </div>
+  `).join("");
+
+  // Carrossel dos depoimentos reais (mesma lógica do carrossel de trabalhos:
+  // mostra alguns por vez, com setinhas pra ver os outros)
+  (function iniciarCarrosselDepoimentos(){
+    const pista = document.querySelector(".depoimentos-reais-pista");
+    const trilho = document.getElementById("depoimentosReaisGrid");
+    const botaoAnterior = document.querySelector(".seta-depoimento-anterior");
+    const botaoProxima = document.querySelector(".seta-depoimento-proxima");
+    if(!pista || !trilho || !botaoAnterior || !botaoProxima) return;
+
+    function itensPorPaginaDepoimentos(){
+      const largura = window.innerWidth;
+      if (largura <= 560) return 1;
+      if (largura <= 860) return 2;
+      return 3;
+    }
+
+    let pagina = 0;
+
+    function atualizar(){
+      const total = trilho.children.length;
+      const itensPorPagina = itensPorPaginaDepoimentos();
+      const totalPaginas = Math.max(1, Math.ceil(total / itensPorPagina));
+      pagina = Math.max(0, Math.min(pagina, totalPaginas - 1));
+      trilho.style.transform = `translateX(-${pagina * pista.clientWidth}px)`;
+
+      const precisaDeSetas = total > itensPorPagina;
+      botaoAnterior.hidden = !precisaDeSetas;
+      botaoProxima.hidden = !precisaDeSetas;
+      if (precisaDeSetas) {
+        botaoAnterior.disabled = pagina === 0;
+        botaoProxima.disabled = pagina >= totalPaginas - 1;
+      }
+    }
+
+    botaoAnterior.addEventListener("click", () => { pagina--; atualizar(); });
+    botaoProxima.addEventListener("click", () => { pagina++; atualizar(); });
+
+    atualizar();
+
+    let redimensionando = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(redimensionando);
+      redimensionando = setTimeout(atualizar, 120);
+    });
+  })();
 
   /* =========================================================
      MENU SANDUÍCHE
