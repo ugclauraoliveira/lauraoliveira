@@ -879,6 +879,47 @@
   .modal-caixa button[type="submit"]{ width:100%; justify-content:center; }
   .modal-confirmacao{ text-align:center; padding: 10px 0; }
 
+  /* ===================== MODAL DE VÍDEO (assistir sem sair do site) ===================== */
+  .modal-video-fundo{
+    position: fixed; inset:0;
+    background: rgba(20,14,10,0.88);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+    z-index: 950;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity .25s ease;
+  }
+  .modal-video-fundo.aberto{ opacity:1; pointer-events:auto; }
+  .modal-video-fechar{
+    position:absolute;
+    top: 20px; right: 24px;
+    width: 40px; height:40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color:#fff;
+    font-size: 1.15rem;
+    line-height:1;
+  }
+  .modal-video-fechar:hover{ background: rgba(255,255,255,0.28); }
+  .modal-video-caixa{ height: min(88vh, 780px); width:auto; }
+  .modal-video-proporcao{
+    position:relative;
+    height:100%;
+    width:auto;
+    aspect-ratio: 9/16;
+    max-width: 92vw;
+    margin: 0 auto;
+    border-radius: 16px;
+    overflow:hidden;
+    background:#000;
+    box-shadow: 0 30px 70px -20px rgba(0,0,0,0.7);
+  }
+  .modal-video-proporcao iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+
   /* ===================== RESPONSIVO ===================== */
   @media (max-width: 980px){
     .hero-grid, .sobre-grid, .contato-grid{ grid-template-columns: 1fr; }
@@ -1147,6 +1188,16 @@
     <p class="rodape-copy">© <span id="anoAtual"></span> Laura Oliveira. Todos os direitos reservados.</p>
   </div>
 </footer>
+
+<!-- ===================== MODAL DE VÍDEO ===================== -->
+<div class="modal-video-fundo" id="modalVideoFundo" role="dialog" aria-modal="true" aria-label="Reprodutor de vídeo">
+  <button class="modal-video-fechar" id="modalVideoFechar" aria-label="Fechar vídeo">✕</button>
+  <div class="modal-video-caixa">
+    <div class="modal-video-proporcao">
+      <iframe id="modalVideoIframe" src="" title="Vídeo" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
 
 <!-- ===================== CARD DE CAPTURA ===================== -->
 <div class="modal-fundo" id="modalCaptura" role="dialog" aria-modal="true" aria-labelledby="modalTituloCaptura">

@@ -238,6 +238,46 @@ function capaFalhou(img) {
   img.replaceWith(div);
 }
 
+/* =========================================================
+   MODAL DE VÍDEO
+   Ao clicar num card de destaque ou de trabalho, o vídeo do
+   YouTube abre por cima da própria página (sem sair do site).
+   Se o link não for do YouTube, o clique segue o comportamento
+   normal (abre em outra aba).
+========================================================= */
+(function configurarModalVideo() {
+  const fundo = document.getElementById("modalVideoFundo");
+  const iframe = document.getElementById("modalVideoIframe");
+  const botaoFechar = document.getElementById("modalVideoFechar");
+  if (!fundo || !iframe || !botaoFechar) return;
+
+  function abrirVideo(idVideo) {
+    iframe.src = `https://www.youtube.com/embed/${idVideo}?autoplay=1&rel=0`;
+    fundo.classList.add("aberto");
+    document.body.style.overflow = "hidden";
+  }
+  function fecharVideo() {
+    fundo.classList.remove("aberto");
+    iframe.src = "";
+    document.body.style.overflow = "";
+  }
+
+  document.addEventListener("click", (evento) => {
+    const card = evento.target.closest(".destaque-card, .trabalho-card");
+    if (!card) return;
+    const idVideo = obterIdYoutube(card.getAttribute("href"));
+    if (!idVideo) return; // não é do YouTube: deixa abrir normal em outra aba
+    evento.preventDefault();
+    abrirVideo(idVideo);
+  });
+
+  botaoFechar.addEventListener("click", fecharVideo);
+  fundo.addEventListener("click", (evento) => { if (evento.target === fundo) fecharVideo(); });
+  document.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape" && fundo.classList.contains("aberto")) fecharVideo();
+  });
+})();
+
 function textoSeguro(valor) {
   return String(valor ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
