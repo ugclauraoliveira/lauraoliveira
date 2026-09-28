@@ -14,6 +14,7 @@
   const destaquesGrid = document.getElementById("destaquesGrid");
   const filtrosNicho = document.getElementById("filtrosNicho");
   const trabalhosGrid = document.getElementById("trabalhosGrid");
+  const youtubeAdsGrid = document.getElementById("youtubeAdsGrid");
   if (!destaquesGrid || !trabalhosGrid) return;
 
   let videos = [];
@@ -38,7 +39,7 @@
     destaquesGrid.innerHTML = destaques.map(v => `
       <a class="destaque-card visivel" href="${atributoSeguro(v.link)}" target="_blank" rel="noopener" aria-label="Assistir ao vídeo: ${textoSeguro(v.titulo)}">
         <div class="destaque-capa">
-          <div class="midia-placeholder" role="img" aria-label="Capa vertical 9:16 do conteúdo">${textoSeguro(v.formato) || "capa vertical 9:16"}</div>
+          ${capaDoTrabalho(v)}
           <span class="play-botao" aria-hidden="true"></span>
         </div>
         <div class="destaque-info">
@@ -49,6 +50,22 @@
         </div>
       </a>
     `).join("");
+  }
+
+  // ---------- YOUTUBE ADS (os 2 vídeos de maior destaque) ----------
+  if (youtubeAdsGrid) {
+    const destaquesParaYoutube = destaques.slice(0, 2);
+    if (destaquesParaYoutube.length === 0) {
+      youtubeAdsGrid.innerHTML = `<p class="vazio-explicativo" style="color: rgba(255,253,248,0.75);">Marque vídeos como destaque no painel admin pra eles aparecerem aqui.</p>`;
+    } else {
+      youtubeAdsGrid.innerHTML = destaquesParaYoutube.map(v => `
+        <a class="destaque-card youtube-ads-card" href="${atributoSeguro(v.link)}" target="_blank" rel="noopener" aria-label="Assistir ao vídeo: ${textoSeguro(v.titulo)}">
+          ${capaDoTrabalho(v)}
+          <span class="youtube-ads-selo">${textoSeguro(v.destaque)}</span>
+          <span class="play-botao" aria-hidden="true"></span>
+        </a>
+      `).join("");
+    }
   }
 
   // ---------- FILTRO DE NICHO + TRABALHOS (agrupados por nicho) ----------

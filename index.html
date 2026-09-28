@@ -554,6 +554,108 @@
   .destaque-info h3{ font-size: 1.15rem; margin-bottom: 4px; }
   .destaque-contexto{ font-size: .92rem; color: var(--tinta-suave); margin:0; }
 
+  /* ===================== YOUTUBE ADS ===================== */
+  #youtube-ads{
+    background: var(--tinta);
+    color: var(--papel);
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 110px;
+  }
+  #youtube-ads .eyebrow{ color: var(--rosa, #e8a48a); }
+  .youtube-ads-grid{
+    display:grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 56px;
+    align-items:center;
+  }
+  .youtube-ads-titulo{
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+    margin-bottom: 20px;
+    color: var(--papel);
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .youtube-ads-icone{
+    width: 52px; height: 36px;
+    background: #ff2d2d;
+    border-radius: 10px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .youtube-ads-icone svg{ width:20px; height:20px; }
+  .youtube-ads-frase{ font-size: 1.15rem; line-height:1.5; color: rgba(255,253,248,0.85); margin-bottom: 14px; }
+  .youtube-ads-destaque-texto{ font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--papel); margin:0; }
+
+  .youtube-ads-videos{ display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
+  .youtube-ads-card{
+    position:relative;
+    display:block;
+    border-radius: 16px;
+    overflow:hidden;
+    aspect-ratio: 9/16;
+    background: linear-gradient(160deg, var(--tinta-suave), var(--terracota-escuro));
+    text-decoration:none;
+    transition: transform .3s ease;
+  }
+  .youtube-ads-card:hover{ transform: translateY(-4px); }
+  .youtube-ads-card img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .youtube-ads-card .midia-placeholder{ position:absolute; inset:0; border-radius:0; }
+  .youtube-ads-selo{
+    position:absolute;
+    top:10px; left:10px;
+    background:#ff2d2d;
+    color:#fff;
+    font-size:.68rem;
+    font-weight:700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing:.02em;
+    z-index:2;
+  }
+  .youtube-ads-card .play-botao{ width:48px; height:48px; }
+  .youtube-ads-card .play-botao::before{ border-width: 8px 0 8px 13px; margin-left:3px; }
+
+  .faixa-diagonal{
+    position:absolute;
+    left:-10%; right:-10%; bottom:-16px;
+    overflow:hidden;
+    transform: rotate(-3deg);
+    pointer-events:none;
+  }
+  .faixa-diagonal-trilho{
+    display:flex;
+    width: max-content;
+    background: var(--terracota);
+    padding: 11px 0;
+    animation: rolar-marcas 26s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .faixa-diagonal-trilho{ animation: none; }
+  }
+  .faixa-diagonal-trilho span{
+    font-family: var(--corpo);
+    font-weight:600;
+    font-size:.82rem;
+    color: var(--papel);
+    white-space:nowrap;
+    padding: 0 22px;
+    text-transform: uppercase;
+    letter-spacing:.04em;
+  }
+
+  @media (max-width: 900px){
+    .youtube-ads-grid{ grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px){
+    .youtube-ads-videos{ grid-template-columns: 1fr; max-width: 260px; margin: 0 auto; }
+  }
+
   /* ===================== TRABALHOS / FILTRO ===================== */
   #trabalhos{ background: var(--linho-escuro); }
   .filtros{
@@ -719,6 +821,7 @@
     margin-bottom: 76px;
   }
   .metrica-card{
+    min-width: 0;
     text-align:center;
     padding: 30px 16px;
     background: var(--papel);
@@ -730,6 +833,7 @@
     font-size: 2.6rem;
     color: var(--terracota-escuro);
     display:block;
+    overflow-wrap: break-word;
   }
   .metrica-rotulo{ font-size: .9rem; color: var(--tinta-suave); }
 
@@ -966,6 +1070,7 @@
       <ul class="nav-links" id="menuPrincipal">
         <li><a href="#sobre">sobre</a></li>
         <li><a href="#destaques">destaques</a></li>
+        <li><a href="#youtube-ads">youtube</a></li>
         <li><a href="#trabalhos">trabalhos</a></li>
         <li><a href="#servicos">serviços</a></li>
         <li><a href="#numeros">números</a></li>
@@ -1068,6 +1173,31 @@
       </div>
       <div class="destaques-grid" id="destaquesGrid">
         <!-- preenchido via JavaScript a partir do array destaquesData -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== YOUTUBE ADS ===================== -->
+  <section id="youtube-ads">
+    <div class="container youtube-ads-grid">
+      <div class="reveal">
+        <span class="eyebrow">youtube ads</span>
+        <h2 class="youtube-ads-titulo">Sua marca no YouTube
+          <span class="youtube-ads-icone" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M8 6l12 6-12 6V6z" fill="#fff"/></svg>
+          </span>
+        </h2>
+        <p class="youtube-ads-frase">Mais visibilidade, mais estratégia, mais resultado!</p>
+        <p class="youtube-ads-destaque-texto">Tudo isso com vídeos pensados para o YouTube Ads.</p>
+      </div>
+      <div class="youtube-ads-videos reveal" id="youtubeAdsGrid">
+        <!-- preenchido via JavaScript com os 2 vídeos de maior destaque -->
+      </div>
+    </div>
+    <div class="faixa-diagonal" aria-hidden="true">
+      <div class="faixa-diagonal-trilho">
+        <span>@_alauraoliveira · ugc creator</span><span>@_alauraoliveira · ugc creator</span><span>@_alauraoliveira · ugc creator</span><span>@_alauraoliveira · ugc creator</span><span>@_alauraoliveira · ugc creator</span><span>@_alauraoliveira · ugc creator</span>
+        <span>@_alauraoliveira · ugc creator</span><span>@_alauraoliveira · ugc creator</span><span>@_alauraoliveira · ugc creator</span><span>@_alauraoliveira · ugc creator</span><span>@_alauraoliveira · ugc creator</span><span>@_alauraoliveira · ugc creator</span>
       </div>
     </div>
   </section>
