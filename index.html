@@ -860,21 +860,6 @@
   .resultado-card h4{ font-size: 1rem; margin-bottom: 6px; color: var(--oliva-escuro); }
   .resultado-card p{ font-size: .92rem; margin:0; color: var(--tinta-suave); }
 
-  .depoimentos-grid{
-    display:grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-  }
-  .depoimento-card{
-    background: var(--papel);
-    border-radius: 18px;
-    padding: 26px;
-    box-shadow: 0 14px 26px -18px var(--sombra);
-  }
-  .depoimento-card p{ font-size: .98rem; margin-bottom: 14px; }
-  .depoimento-autor{ font-weight: 600; font-size: .92rem; }
-  .depoimento-empresa{ font-size: .84rem; color: var(--tinta-suave); }
-
   /* ===================== DEPOIMENTOS REAIS (prints e vídeo) ===================== */
   #depoimentos-reais{ background: var(--linho-escuro); }
   .depoimentos-reais-cabecalho{
@@ -1331,8 +1316,8 @@
     <div class="container">
       <div class="titulo-secao reveal">
         <span class="eyebrow">resultados</span>
-        <h2>Números e depoimentos</h2>
-        <p>O que os números mostram e o que as marcas dizem sobre trabalhar comigo.</p>
+        <h2>Números e resultados</h2>
+        <p>O que os números mostram sobre o meu trabalho.</p>
       </div>
 
       <div class="metricas-grid" id="metricasGrid">
@@ -1342,11 +1327,6 @@
       <p class="subtitulo-bloco">resultados de campanha</p>
       <div class="resultados-grid" id="resultadosGrid">
         <!-- preenchido via JavaScript a partir do array resultadosData -->
-      </div>
-
-      <p class="subtitulo-bloco">o que dizem sobre mim</p>
-      <div class="depoimentos-grid" id="depoimentosGrid">
-        <!-- preenchido via JavaScript a partir do array depoimentosData -->
       </div>
     </div>
   </section>
@@ -1509,14 +1489,6 @@
     { cliente: "Cliente 03", resultado: "Escreva aqui o resultado da campanha, por exemplo o aumento de seguidores durante a ação." }
   ];
 
-  // Depoimentos (seção 6)
-  const depoimentosData = [
-    { nome: "Cliente 01", empresa: "Empresa 01", texto: "Escreva aqui o depoimento do Cliente 01 sobre a experiência de trabalhar com a Laura." },
-    { nome: "Cliente 02", empresa: "Empresa 02", texto: "Escreva aqui o depoimento do Cliente 02 sobre a experiência de trabalhar com a Laura." },
-    { nome: "Cliente 03", empresa: "Empresa 03", texto: "Escreva aqui o depoimento do Cliente 03 sobre a experiência de trabalhar com a Laura." },
-    { nome: "Cliente 04", empresa: "Empresa 04", texto: "Escreva aqui o depoimento do Cliente 04 sobre a experiência de trabalhar com a Laura." }
-  ];
-
   // Depoimentos reais (prints e vídeo de conversas de WhatsApp com marcas).
   // Os nomes das marcas não foram informados nos prints, por isso usamos
   // "Cliente 0X" como no restante do site. O texto de cada print é real.
@@ -1602,16 +1574,6 @@
     <div class="resultado-card reveal">
       <h4>${r.cliente}</h4>
       <p>${r.resultado}</p>
-    </div>
-  `).join("");
-
-  // Depoimentos
-  const depoimentosGrid = document.getElementById("depoimentosGrid");
-  depoimentosGrid.innerHTML = depoimentosData.map(d => `
-    <div class="depoimento-card reveal">
-      <p>"${d.texto}"</p>
-      <p class="depoimento-autor">${d.nome}</p>
-      <p class="depoimento-empresa">${d.empresa}</p>
     </div>
   `).join("");
 
