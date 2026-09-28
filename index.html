@@ -323,80 +323,38 @@
     display:flex;
     justify-content:center;
   }
-  .foto-recorte{
+  /* Vídeo de capa recortado na silhueta do cabelo (sem moldura/quadrado),
+     com um contorno desenhado à mão se movendo ao redor. */
+  .foto-silhueta{
+    position: relative;
     width: 100%;
     max-width: 360px;
-    aspect-ratio: 4/5;
-    background: linear-gradient(155deg, var(--oliva) 0%, var(--terracota) 100%);
-    border: 10px solid var(--papel);
-    border-radius: 10px;
-    box-shadow: 0 24px 48px -18px var(--sombra), 0 4px 0 var(--papel);
-    transform: rotate(-3deg);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    color: var(--papel);
-    font-family: var(--manuscrita);
-    font-size: 1.5rem;
-    padding: 24px;
-    position: relative;
+    aspect-ratio: 1080 / 1280;
   }
-  .foto-recorte.com-foto{
-    padding: 0;
-  }
-  .foto-recorte.com-foto img,
-  .foto-recorte.com-foto video{
+  .foto-video{
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 2px;
   }
-
-  /* Borda branca animada, girando ao redor da foto/vídeo de capa */
-  @property --angulo-borda-viva{
-    syntax: '<angle>';
-    inherits: false;
-    initial-value: 0deg;
+  .foto-contorno{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
   }
-  .foto-borda-viva::before{
-    content:"";
-    position:absolute;
-    inset:-13px;
-    z-index:-1;
-    border-radius: 22px;
-    background: conic-gradient(from var(--angulo-borda-viva), rgba(255,255,255,0.15) 0deg, #fff 50deg, rgba(255,255,255,0.15) 100deg, rgba(255,255,255,0.15) 360deg);
-    box-shadow: 0 0 16px 2px rgba(255,255,255,0.6);
-    animation: girar-borda-viva 3s linear infinite;
-    pointer-events:none;
+  .foto-contorno path{
+    stroke-dasharray: 8000 37786;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+    animation: tracar-contorno 6s linear infinite;
   }
-  @keyframes girar-borda-viva{
-    to{ --angulo-borda-viva: 360deg; }
+  @keyframes tracar-contorno{
+    to{ stroke-dashoffset: -37786; }
   }
   @media (prefers-reduced-motion: reduce){
-    .foto-borda-viva::before{ animation: none; }
-  }
-
-  .carimbo{
-    position:absolute;
-    bottom: -22px;
-    right: -18px;
-    width: 108px;
-    height: 108px;
-    border-radius: 50%;
-    border: 2px dashed var(--terracota-escuro);
-    background: var(--papel);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    font-family: var(--manuscrita);
-    font-size: 1.05rem;
-    color: var(--terracota-escuro);
-    transform: rotate(8deg);
-    box-shadow: 0 8px 18px -8px var(--sombra);
-    padding: 6px;
+    .foto-contorno path{ animation: none; }
   }
 
   /* faixa de marcas */
@@ -1281,11 +1239,45 @@
       </div>
 
       <div class="foto-principal-wrap">
-        <div class="foto-recorte com-foto foto-borda-viva">
+        <div class="foto-silhueta">
           <video class="foto-video" autoplay loop muted playsinline aria-label="Laura Oliveira, vídeo em loop">
             <source src="video/laura-capa-loop.mp4" type="video/mp4">
           </video>
-          <div class="carimbo">feito à mão</div>
+          <!-- Contorno desenhado à mão em volta do cabelo, gerado a partir do
+               próprio vídeo (silhueta rastreada com potrace). O traço brilhante
+               fica se movendo ao redor pra dar a sensação de "em movimento". -->
+          <svg class="foto-contorno" viewBox="0 0 1080 1280" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)" fill="none" stroke="#ffffff" stroke-width="40">
+              <path d="M5725 12204 c96 -46 205 -74 288 -74 49 0 91 -6 115 -16 117 -51 169
+-68 282 -90 69 -13 136 -24 150 -24 40 0 299 -134 362 -188 32 -26 90 -68 129
+-93 39 -24 90 -58 112 -76 105 -80 193 -134 245 -149 79 -23 237 -105 317
+-165 57 -43 71 -61 101 -125 30 -63 51 -88 135 -167 63 -58 119 -121 151 -170
+32 -49 83 -106 134 -152 46 -41 100 -93 121 -117 21 -24 43 -46 48 -50 19 -13
+197 -183 308 -293 61 -60 131 -121 156 -135 41 -22 48 -32 72 -96 14 -39 35
+-84 46 -100 11 -16 40 -67 64 -114 29 -57 67 -110 115 -160 78 -83 118 -139
+154 -215 15 -32 55 -80 108 -132 l84 -83 -6 -73 c-8 -77 12 -175 49 -248 56
+-108 251 -346 332 -403 26 -18 52 -48 65 -75 35 -73 98 -173 135 -214 52 -58
+112 -155 124 -201 6 -23 24 -81 40 -131 33 -104 45 -182 54 -355 3 -69 15
+-179 26 -245 19 -118 19 -172 17 -3160 l-3 -3040 -38 -80 c-112 -234 -274
+-397 -505 -508 l-87 -42 -4325 0 -4325 0 -82 39 c-119 56 -135 77 -143 178 -3
+51 -1 110 7 153 6 39 12 88 12 111 1 22 10 75 21 118 11 42 25 123 30 179 9
+95 13 107 59 187 81 142 84 149 77 199 -3 25 0 81 8 126 8 44 22 124 32 178
+20 111 16 137 -35 256 -16 36 -36 102 -46 145 -18 84 -28 98 -103 148 -92 61
+-142 199 -142 395 0 134 0 134 -35 200 -32 60 -35 74 -35 147 0 60 -7 99 -25
+149 -38 109 -28 420 20 592 52 185 65 250 65 323 0 41 12 116 30 190 16 68 30
+141 30 163 0 41 25 147 66 284 13 44 33 131 43 193 12 70 28 126 41 148 12 19
+41 94 65 167 23 72 59 175 78 227 20 52 51 172 71 265 19 94 49 207 65 253 39
+105 39 156 0 278 -42 133 -52 239 -53 614 -1 346 -2 339 60 675 13 71 24 153
+24 183 0 29 9 95 19 145 11 51 24 115 29 142 18 91 51 199 102 333 49 132 82
+245 94 332 17 113 123 360 218 506 25 38 55 87 66 109 11 22 46 72 77 110 78
+96 123 190 145 300 11 50 39 143 63 206 24 62 49 136 56 163 12 50 161 342
+230 452 22 33 60 101 86 150 78 146 192 301 270 367 39 33 108 91 154 131 86
+73 200 154 261 186 53 27 283 82 376 90 71 6 87 11 121 38 64 50 79 50 220 -2
+58 -22 94 -7 132 53 62 96 111 125 238 140 96 10 130 27 178 86 56 68 142 107
+258 115 95 8 145 25 212 75 34 26 122 71 175 90 27 10 103 12 325 8 280 -5
+292 -6 340 -29z"/>
+            </g>
+          </svg>
         </div>
       </div>
     </div>
