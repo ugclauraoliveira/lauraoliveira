@@ -1082,20 +1082,47 @@
   footer{
     background: var(--tinta);
     color: var(--linho);
-    padding: 48px 0 28px;
-    text-align:center;
+    padding: 26px 0;
   }
-  footer .marca-nome{ color: var(--linho); font-size: 1.6rem; }
-  .rodape-redes{
+  .rodape-linha{
     display:flex;
-    justify-content:center;
-    gap: 22px;
-    margin: 18px 0;
+    align-items:center;
+    justify-content:space-between;
+    gap: 20px;
     flex-wrap:wrap;
   }
-  .rodape-redes a{ text-decoration:none; color: var(--linho); opacity:.85; font-size:.92rem; }
+  footer .rodape-nome{
+    color: var(--linho);
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    margin: 0;
+  }
+  .rodape-tagline{
+    font-size: .74rem;
+    color: var(--linho);
+    opacity: .6;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin: 2px 0 0;
+  }
+  .rodape-redes{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    flex-wrap:wrap;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .rodape-redes a{ text-decoration:none; color: var(--linho); opacity:.85; }
   .rodape-redes a:hover{ opacity:1; text-decoration:underline; }
-  .rodape-copy{ font-size: .8rem; opacity:.6; }
+  .rodape-separador{ opacity:.4; }
+  .rodape-copy{ color: var(--linho); opacity:.6; }
+  @media (max-width: 640px){
+    .rodape-linha{ flex-direction:column; text-align:center; }
+  }
 
   /* ===================== CARD DE CAPTURA (MODAL) ===================== */
   .modal-fundo{
@@ -1545,15 +1572,18 @@
 
 <!-- ===================== 8. RODAPÉ ===================== -->
 <footer>
-  <div class="container">
-    <p class="marca-nome" style="font-family: var(--serif); font-style: italic;">Laura Oliveira</p>
-    <p style="max-width:100%; color: var(--linho); opacity:.8;">UGC Creator em Santo Antonio da Platina</p>
+  <div class="container rodape-linha">
+    <div>
+      <p class="rodape-nome">Laura Oliveira</p>
+      <p class="rodape-tagline">UGC Creator em Santo Antonio da Platina</p>
+    </div>
     <nav class="rodape-redes" aria-label="Redes sociais">
-      <a href="https://instagram.com/_alauraoliveira" target="_blank" rel="noopener">Instagram: @_alauraoliveira</a>
-      <a href="https://wa.me/5543999747945" target="_blank" rel="noopener">WhatsApp: (43) 99974-7945</a>
       <a href="mailto:ugclauraoliveira@gmail.com">ugclauraoliveira@gmail.com</a>
+      <span class="rodape-separador" aria-hidden="true">·</span>
+      <a href="https://instagram.com/_alauraoliveira" target="_blank" rel="noopener">Instagram</a>
+      <span class="rodape-separador" aria-hidden="true">·</span>
+      <span class="rodape-copy">© <span id="anoAtual"></span></span>
     </nav>
-    <p class="rodape-copy">© <span id="anoAtual"></span> Laura Oliveira. Todos os direitos reservados.</p>
   </div>
 </footer>
 
