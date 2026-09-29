@@ -38,18 +38,14 @@
   } else {
     destaquesGrid.innerHTML = destaques.map(v => `
       <div class="destaque-slot">
+        ${v.marca ? `<p class="destaque-marca">${textoSeguro(v.marca)}</p>` : ""}
         <a class="destaque-card visivel" href="${atributoSeguro(v.link)}" target="_blank" rel="noopener" aria-label="Assistir ao vídeo: ${textoSeguro(v.titulo)}">
           <div class="destaque-capa">
             ${capaDoTrabalho(v)}
             <span class="play-botao" aria-hidden="true"></span>
           </div>
-          <div class="destaque-info">
-            <span class="destaque-numero">${textoSeguro(v.destaque)}</span>
-            <span class="destaque-rotulo">${textoSeguro(v.nicho)}</span>
-            <h3>${textoSeguro(v.titulo)}</h3>
-            <p class="destaque-contexto">${v.marca ? "Trabalho para " + textoSeguro(v.marca) : ""}</p>
-          </div>
         </a>
+        ${v.destaque ? `<p class="destaque-legenda">${textoSeguro(v.destaque)}</p>` : ""}
       </div>
     `).join("");
   }

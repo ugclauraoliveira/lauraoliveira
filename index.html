@@ -522,15 +522,14 @@
     background: rgba(58,43,34,0.03);
     max-width: 240px;
   }
-  .destaques-print img{ width:100%; border-radius:12px; display:block; margin-bottom:10px; }
-  .destaques-print-legenda{ font-size: .82rem; color: var(--tinta-suave); margin:0; }
+  .destaques-print img{ width:100%; border-radius:12px; display:block; }
 
   .destaques-carrossel{ position:relative; }
   .destaques-pista{ overflow:hidden; }
   .destaques-trilho{ display:flex; align-items:center; transition: transform .5s ease; }
   .destaque-slot{
-    flex: 0 0 64%;
-    max-width: 64%;
+    flex: 0 0 46%;
+    max-width: 46%;
     margin: 0 14px;
     box-sizing: border-box;
     transition: opacity .45s ease, filter .45s ease, transform .45s ease;
@@ -565,15 +564,23 @@
     .destaques-layout{ grid-template-columns: 1fr; }
   }
   @media (max-width: 480px){
-    .destaque-slot{ flex-basis: 80%; max-width: 80%; margin: 0 8px; }
+    .destaque-slot{ flex-basis: 62%; max-width: 62%; margin: 0 8px; }
     .seta-destaque-anterior{ left: 2px; }
     .seta-destaque-proxima{ right: 2px; }
   }
 
+  .destaque-marca{
+    text-align:center;
+    font-size: .82rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.07em;
+    color: var(--tinta);
+    margin: 0 0 10px;
+  }
   .destaque-card{
     text-decoration:none;
     display:block;
-    background: var(--papel);
     border-radius: var(--raio);
     overflow:hidden;
     box-shadow: 0 18px 36px -18px var(--sombra);
@@ -606,17 +613,14 @@
     border-color: transparent transparent transparent var(--terracota-escuro);
     margin-left: 4px;
   }
-  .destaque-info{ padding: 20px; }
-  .destaque-numero{
+  .destaque-legenda{
+    text-align:center;
     font-family: var(--serif);
-    font-size: 1.9rem;
+    font-style: italic;
+    font-size: 1.05rem;
     color: var(--terracota-escuro);
-    display:block;
-    line-height: 1.1;
+    margin: 14px 0 0;
   }
-  .destaque-rotulo{ font-size: .82rem; color: var(--tinta-suave); margin-bottom: 10px; display:block; }
-  .destaque-info h3{ font-size: 1.15rem; margin-bottom: 4px; }
-  .destaque-contexto{ font-size: .92rem; color: var(--tinta-suave); margin:0; }
 
   /* ===================== YOUTUBE ADS ===================== */
   #youtube-ads{
@@ -1365,7 +1369,6 @@
         <p>Alguns dos vídeos que mais performaram para as marcas que confiaram no meu trabalho.</p>
         <div class="destaques-print">
           <img src="img/print-comprovacao-destaques.jpg" alt="Print de comprovação: marca confirmando que o vídeo foi o que mais rendeu">
-          <p class="destaques-print-legenda">Print real de uma marca confirmando o resultado de um dos vídeos.</p>
         </div>
       </div>
       <div class="destaques-carrossel reveal">
