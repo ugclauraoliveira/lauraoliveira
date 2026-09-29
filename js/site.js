@@ -174,38 +174,40 @@ function iniciarCarrosselDestaques(totalVideos) {
   const botaoProxima = document.querySelector(".seta-destaque-proxima");
   if (!pista || !trilho || !botaoAnterior || !botaoProxima) return;
 
-  function itensPorPaginaDestaques() {
-    return window.innerWidth <= 480 ? 1 : 2;
-  }
-
-  let pagina = 0;
-  let temporizador = null;
-
-  function atualizar() {
-    const itensPorPagina = itensPorPaginaDestaques();
-    const totalPaginas = Math.max(1, Math.ceil(totalVideos / itensPorPagina));
-    pagina = ((pagina % totalPaginas) + totalPaginas) % totalPaginas;
-    trilho.style.transform = `translateX(-${pagina * pista.clientWidth}px)`;
-
-    const precisaDeSetas = totalVideos > itensPorPagina;
-    botaoAnterior.hidden = !precisaDeSetas;
-    botaoProxima.hidden = !precisaDeSetas;
-  }
-
-  function reiniciarAutoAvanco() {
-    clearInterval(temporizador);
-    if (totalVideos <= itensPorPaginaDestaques()) return;
-    temporizador = setInterval(() => { pagina++; atualizar(); }, 5000);
-  }
-
   if (totalVideos === 0) {
     botaoAnterior.hidden = true;
     botaoProxima.hidden = true;
     return;
   }
 
-  botaoAnterior.addEventListener("click", () => { pagina--; atualizar(); reiniciarAutoAvanco(); });
-  botaoProxima.addEventListener("click", () => { pagina++; atualizar(); reiniciarAutoAvanco(); });
+  let indiceAtivo = 0;
+  let temporizador = null;
+
+  function atualizar() {
+    indiceAtivo = ((indiceAtivo % totalVideos) + totalVideos) % totalVideos;
+    const slots = Array.from(trilho.children);
+
+    slots.forEach((slot, i) => slot.classList.toggle("destaque-slot-ativo", i === indiceAtivo));
+
+    const ativo = slots[indiceAtivo];
+    if (ativo) {
+      const centroAtivo = ativo.offsetLeft + ativo.offsetWidth / 2;
+      trilho.style.transform = `translateX(${pista.clientWidth / 2 - centroAtivo}px)`;
+    }
+
+    const precisaDeSetas = totalVideos > 1;
+    botaoAnterior.hidden = !precisaDeSetas;
+    botaoProxima.hidden = !precisaDeSetas;
+  }
+
+  function reiniciarAutoAvanco() {
+    clearInterval(temporizador);
+    if (totalVideos <= 1) return;
+    temporizador = setInterval(() => { indiceAtivo++; atualizar(); }, 5000);
+  }
+
+  botaoAnterior.addEventListener("click", () => { indiceAtivo--; atualizar(); reiniciarAutoAvanco(); });
+  botaoProxima.addEventListener("click", () => { indiceAtivo++; atualizar(); reiniciarAutoAvanco(); });
 
   atualizar();
   reiniciarAutoAvanco();
@@ -213,7 +215,7 @@ function iniciarCarrosselDestaques(totalVideos) {
   let redimensionando = null;
   window.addEventListener("resize", () => {
     clearTimeout(redimensionando);
-    redimensionando = setTimeout(() => { atualizar(); reiniciarAutoAvanco(); }, 120);
+    redimensionando = setTimeout(atualizar, 120);
   });
 }
 
@@ -235,7 +237,6 @@ function iniciarCarrosseis(trabalhosGrid) {
   const paginaPorGrupo = new WeakMap();
 
   function atualizarGrupo(grupo) {
-    const pista = grupo.querySelector(".trabalhos-pista");
     const trilho = grupo.querySelector(".trabalhos-trilho");
     const botaoAnterior = grupo.querySelector(".seta-anterior");
     const botaoProxima = grupo.querySelector(".seta-proxima");
@@ -251,7 +252,15 @@ function iniciarCarrosseis(trabalhosGrid) {
     pagina = Math.max(0, Math.min(pagina, totalPaginas - 1));
     paginaPorGrupo.set(grupo, pagina);
 
-    trilho.style.transform = `translateX(-${pagina * pista.clientWidth}px)`;
+    // Em vez de andar por múltiplos exatos de "itensPorPagina" (o que deixa
+    // a última página com buracos quando sobra menos vídeo do que cabe na
+    // tela), o índice inicial fica "grudado" no fim: a última página sempre
+    // mostra a tela cheia, repetindo alguns cards da página anterior se
+    // precisar.
+    const indiceMaximo = Math.max(0, total - itensPorPagina);
+    const indiceInicial = Math.min(pagina * itensPorPagina, indiceMaximo);
+    const larguraSlot = trilho.children[0] ? trilho.children[0].offsetWidth : 0;
+    trilho.style.transform = `translateX(-${indiceInicial * larguraSlot}px)`;
 
     const precisaDeSetas = total > itensPorPagina;
     grupo.querySelector(".trabalhos-grupo-setas").hidden = !precisaDeSetas;

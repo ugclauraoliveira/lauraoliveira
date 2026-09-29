@@ -525,16 +525,23 @@
   .destaques-print img{ width:100%; border-radius:12px; display:block; margin-bottom:10px; }
   .destaques-print-legenda{ font-size: .82rem; color: var(--tinta-suave); margin:0; }
 
-  :root{ --destaques-itens: 2; }
-  @media (max-width: 480px){ :root{ --destaques-itens: 1; } }
   .destaques-carrossel{ position:relative; }
-  .destaques-pista{ overflow:hidden; margin: 0 -11px; }
-  .destaques-trilho{ display:flex; transition: transform .35s ease; }
+  .destaques-pista{ overflow:hidden; }
+  .destaques-trilho{ display:flex; align-items:center; transition: transform .5s ease; }
   .destaque-slot{
-    flex: 0 0 calc(100% / var(--destaques-itens));
-    max-width: calc(100% / var(--destaques-itens));
-    padding: 0 11px;
+    flex: 0 0 64%;
+    max-width: 64%;
+    margin: 0 14px;
     box-sizing: border-box;
+    transition: opacity .45s ease, filter .45s ease, transform .45s ease;
+    opacity: .32;
+    filter: blur(3px);
+    transform: scale(.86);
+  }
+  .destaque-slot.destaque-slot-ativo{
+    opacity: 1;
+    filter: none;
+    transform: scale(1);
   }
   .seta-destaque{
     position:absolute;
@@ -551,13 +558,16 @@
     font-size:1.3rem;
     z-index:3;
   }
-  .seta-destaque-anterior{ left: -18px; }
-  .seta-destaque-proxima{ right: -18px; }
+  .seta-destaque-anterior{ left: -6px; }
+  .seta-destaque-proxima{ right: -6px; }
   .seta-destaque:disabled{ opacity:.35; }
   @media (max-width: 900px){
     .destaques-layout{ grid-template-columns: 1fr; }
-    .seta-destaque-anterior{ left: 4px; }
-    .seta-destaque-proxima{ right: 4px; }
+  }
+  @media (max-width: 480px){
+    .destaque-slot{ flex-basis: 80%; max-width: 80%; margin: 0 8px; }
+    .seta-destaque-anterior{ left: 2px; }
+    .seta-destaque-proxima{ right: 2px; }
   }
 
   .destaque-card{
@@ -575,6 +585,7 @@
     position:relative;
     background: linear-gradient(160deg, var(--tinta-suave), var(--terracota-escuro));
   }
+  .destaque-capa img{ width:100%; height:100%; object-fit:cover; display:block; }
   .destaque-capa .midia-placeholder{ position:absolute; inset:0; border-radius:0; }
   .play-botao{
     position:absolute;
