@@ -128,10 +128,10 @@
             ${v.destaque ? `<span class="trabalho-selo trabalho-selo-destaque">${textoSeguro(v.destaque)}</span>` : ""}
           </div>
           <span class="play-botao" aria-hidden="true"></span>
-        </div>
-        <div class="trabalho-corpo">
-          <h3>${textoSeguro(v.titulo)}</h3>
-          <span class="trabalho-niche">${textoSeguro(v.nicho)}</span>
+          <div class="trabalho-legenda">
+            <h3>${textoSeguro(v.titulo)}</h3>
+            <span class="trabalho-niche">${textoSeguro(v.nicho)}</span>
+          </div>
         </div>
       </a>`;
   }

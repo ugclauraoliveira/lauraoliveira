@@ -762,7 +762,6 @@
   .trabalho-card{
     text-decoration:none;
     display:block;
-    background: var(--papel);
     border-radius: 16px;
     overflow:hidden;
     box-shadow: 0 14px 28px -18px var(--sombra);
@@ -776,7 +775,7 @@
   }
   .trabalho-capa img{ width:100%; height:100%; object-fit:cover; display:block; }
   .trabalho-capa .midia-placeholder{ position:absolute; inset:0; border-radius:0; font-size:.85rem; }
-  .trabalho-badges{ position:absolute; top:10px; left:10px; right:10px; display:flex; flex-wrap:wrap; gap:6px; }
+  .trabalho-badges{ position:absolute; top:10px; left:10px; right:10px; display:flex; flex-wrap:wrap; gap:6px; z-index:2; }
   .trabalho-selo{
     background: var(--tinta);
     color: var(--papel);
@@ -793,18 +792,24 @@
     width: 42px; height:42px;
     opacity:0;
     transition: opacity .2s ease;
+    z-index:2;
   }
   .trabalho-capa .play-botao::before{ border-width:7px 0 7px 12px; margin-left:3px; }
   .trabalho-card:hover .play-botao, .trabalho-card:focus-visible .play-botao{ opacity:1; }
-  .trabalho-corpo{ padding: 12px 14px 16px; }
+  .trabalho-legenda{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    padding: 40px 14px 14px;
+    background: linear-gradient(to top, rgba(20,14,10,0.82) 0%, rgba(20,14,10,0.5) 55%, transparent 100%);
+  }
+  .trabalho-legenda h3{ font-size: .98rem; margin:0 0 2px; color:#fff; }
   .trabalho-niche{
     font-size: .7rem;
     text-transform: uppercase;
-    color: var(--oliva-escuro);
+    color: rgba(255,255,255,0.8);
     font-weight: 600;
     letter-spacing: .04em;
   }
-  .trabalho-corpo h3{ font-size: .98rem; margin: 3px 0 0; color: var(--tinta); }
   .trabalho-card[hidden]{ display:none; }
 
   .trabalhos-grupo{ margin-bottom: 46px; }
