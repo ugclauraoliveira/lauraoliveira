@@ -368,7 +368,8 @@
   }
   .faixa-marcas-trilho{
     display:flex;
-    gap: 56px;
+    align-items:center;
+    gap: 28px;
     width: max-content;
     animation: rolar-marcas 32s linear infinite;
   }
@@ -379,13 +380,17 @@
     from{ transform: translateX(0); }
     to{ transform: translateX(-50%); }
   }
-  .faixa-marcas-trilho span{
-    font-family: var(--serif);
-    font-style: italic;
-    font-size: 1.15rem;
-    color: var(--tinta-suave);
-    opacity: .75;
-    white-space: nowrap;
+  .faixa-marcas-item{
+    flex-shrink:0;
+    width: 64px;
+    height: 64px;
+  }
+  .faixa-marcas-item img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display:block;
   }
 
   /* ===================== OBJETOS FLUTUANTES (CSS puro) ===================== */
@@ -1537,8 +1542,15 @@
 
   // Marcas que já trabalharam com a Laura (faixa da capa)
   const marcasData = [
-    "Marca 01","Marca 02","Marca 03","Marca 04","Marca 05","Marca 06",
-    "Marca 07","Marca 08","Marca 09","Marca 10","Marca 11","Marca 12"
+    { nome: "Joingo", logo: "img/marcas/joingo.png" },
+    { nome: "MC", logo: "img/marcas/mc.png" },
+    { nome: "Reviva+", logo: "img/marcas/reviva.png" },
+    { nome: "Wisecat", logo: "img/marcas/wisecat.png" },
+    { nome: "O Rei da Promo", logo: "img/marcas/o-rei-da-promo.png" },
+    { nome: "Pizzaria Passione", logo: "img/marcas/passione.png" },
+    { nome: "Promoções do Fazolli", logo: "img/marcas/fazolli.png" },
+    { nome: "Marca parceira", logo: "img/marcas/promo-icone.png" },
+    { nome: "PreVeja.me", logo: "img/marcas/preveja.png" }
   ];
 
   // Os conteúdos de destaque e os trabalhos por nicho (seções 3 e 4) agora
@@ -1620,7 +1632,11 @@
 
   // Faixa de marcas (duplicada para permitir o loop contínuo)
   const trilhoMarcas = document.getElementById("trilhoMarcas");
-  const marcasHtml = marcasData.map(m => `<span>${m}</span>`).join("");
+  const marcasHtml = marcasData.map(m => `
+    <span class="faixa-marcas-item">
+      <img src="${m.logo}" alt="${m.nome}" loading="lazy">
+    </span>
+  `).join("");
   trilhoMarcas.innerHTML = marcasHtml + marcasHtml;
 
   // Destaques, filtro de nicho e trabalhos: preenchidos pelo js/site.js
