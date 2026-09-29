@@ -1034,6 +1034,11 @@
     gap: 56px;
   }
   .campo{ margin-bottom: 18px; display:flex; flex-direction:column; gap:6px; }
+  .campo-linha{ display:flex; gap:18px; }
+  .campo-linha .campo{ flex:1; min-width:0; }
+  @media (max-width: 480px){
+    .campo-linha{ flex-direction:column; gap:0; }
+  }
   .campo label{ font-size: .88rem; font-weight: 500; }
   .campo input, .campo textarea{
     padding: 13px 16px;
@@ -1520,7 +1525,7 @@
       <div class="reveal">
         <span class="eyebrow">contato</span>
         <h2>Bora criar <em>juntos</em>?</h2>
-        <p>Me conta um pouco sobre a sua marca e o que você precisa. Eu respondo rapidinho.</p>
+        <p>Me conta um pouco sobre a sua marca e o que<br>você precisa. Eu respondo rapidinho.</p>
 
         <div class="contato-canais">
           <a class="canal-linha" href="mailto:ugclauraoliveira@gmail.com">
@@ -1537,13 +1542,15 @@
 
       <div class="reveal">
         <form id="formularioContato" novalidate>
-          <div class="campo">
-            <label for="campoNome">Nome</label>
-            <input type="text" id="campoNome" name="nome" placeholder="Seu nome" required autocomplete="name">
-          </div>
-          <div class="campo">
-            <label for="campoEmail">E-mail</label>
-            <input type="email" id="campoEmail" name="email" placeholder="voce@marca.com" required autocomplete="email">
+          <div class="campo-linha">
+            <div class="campo">
+              <label for="campoNome">Nome</label>
+              <input type="text" id="campoNome" name="nome" placeholder="Seu nome" required autocomplete="name">
+            </div>
+            <div class="campo">
+              <label for="campoEmail">E-mail</label>
+              <input type="email" id="campoEmail" name="email" placeholder="voce@marca.com" required autocomplete="email">
+            </div>
           </div>
           <div class="campo">
             <label for="campoMarca">Marca / Empresa</label>
