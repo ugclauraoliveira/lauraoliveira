@@ -886,52 +886,6 @@
   .servico-card h3{ color: var(--papel); font-size: 1.2rem; }
   .servico-card p{ color: rgba(255,253,248,0.85); font-size: .94rem; margin:0; }
 
-  /* ===================== NÚMEROS E DEPOIMENTOS ===================== */
-  .metricas-grid{
-    display:grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-    margin-bottom: 76px;
-  }
-  .metrica-card{
-    min-width: 0;
-    text-align:center;
-    padding: 30px 16px;
-    background: var(--papel);
-    border-radius: 18px;
-    box-shadow: 0 14px 26px -18px var(--sombra);
-  }
-  .metrica-valor{
-    font-family: var(--serif);
-    font-size: 2.6rem;
-    color: var(--terracota-escuro);
-    display:block;
-    overflow-wrap: break-word;
-  }
-  .metrica-rotulo{ font-size: .9rem; color: var(--tinta-suave); }
-
-  .subtitulo-bloco{
-    text-align:center;
-    font-family: var(--manuscrita);
-    font-size: 1.6rem;
-    color: var(--terracota-escuro);
-    margin-bottom: 28px;
-  }
-
-  .resultados-grid{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-bottom: 76px;
-  }
-  .resultado-card{
-    background: var(--linho-escuro);
-    border-left: 4px solid var(--oliva);
-    border-radius: 12px;
-    padding: 24px;
-  }
-  .resultado-card h4{ font-size: 1rem; margin-bottom: 6px; color: var(--oliva-escuro); }
-  .resultado-card p{ font-size: .92rem; margin:0; color: var(--tinta-suave); }
 
   /* ===================== DEPOIMENTOS REAIS (prints e vídeo) ===================== */
   #depoimentos-reais{ background: var(--linho-escuro); }
@@ -1218,8 +1172,6 @@
     .hero-grid, .sobre-grid, .contato-grid{ grid-template-columns: 1fr; }
     .foto-principal-wrap{ order:-1; }
     .servicos-grid{ grid-template-columns: repeat(2,1fr); }
-    .metricas-grid{ grid-template-columns: repeat(2,1fr); }
-    .resultados-grid{ grid-template-columns: 1fr; }
   }
   @media (max-width: 560px){
     section{ padding: 64px 0; }
@@ -1259,7 +1211,6 @@
         <li><a href="#trabalhos">trabalhos</a></li>
         <!-- Aba "youtube ads" arquivada por enquanto (ver seção comentada mais abaixo) -->
         <li><a href="#servicos">serviços</a></li>
-        <li><a href="#numeros">números</a></li>
         <li><a href="#depoimentos-reais">depoimentos</a></li>
         <li><a href="#contato">contato</a></li>
       </ul>
@@ -1478,26 +1429,6 @@
     </div>
   </section>
 
-  <!-- ===================== 6. NÚMEROS E DEPOIMENTOS ===================== -->
-  <section id="numeros">
-    <div class="container">
-      <div class="titulo-secao reveal">
-        <span class="eyebrow">resultados</span>
-        <h2>Números e resultados</h2>
-        <p>O que os números mostram sobre o meu trabalho.</p>
-      </div>
-
-      <div class="metricas-grid" id="metricasGrid">
-        <!-- preenchido via JavaScript a partir do array metricasData, com contador animado -->
-      </div>
-
-      <p class="subtitulo-bloco">resultados de campanha</p>
-      <div class="resultados-grid" id="resultadosGrid">
-        <!-- preenchido via JavaScript a partir do array resultadosData -->
-      </div>
-    </div>
-  </section>
-
   <!-- ===================== DEPOIMENTOS REAIS ===================== -->
   <section id="depoimentos-reais">
     <div class="container">
@@ -1675,27 +1606,10 @@
   const servicosData = [
     { titulo: "Vídeo UGC", descricao: "Vídeo autêntico gravado no meu celular, com roteiro aprovado antes da gravação, pronto para anúncio ou postagem orgânica." },
     { titulo: "Corte para anúncio", descricao: "Edição do vídeo em formatos e durações pensados para performar como anúncio pago." },
-    { titulo: "Fotos do produto", descricao: "Fotos estáticas e em uso do produto, com luz natural e composição pensada para redes sociais." },
+    { titulo: "Clips", descricao: "Vídeos curtos para anúncios em marketplaces que mostram o produto em uso, destacam seus detalhes e ajudam o cliente a decidir pela compra." },
     { titulo: "Unboxing", descricao: "Abertura do produto com reação genuína, mostrando embalagem, textura e primeira impressão." },
     { titulo: "Publicação no meu perfil", descricao: "Postagem do conteúdo no meu Instagram, levando o seu produto até a minha audiência." },
     { titulo: "Pacote mensal", descricao: "Conjunto de vídeos e fotos entregues todo mês, para a sua marca sempre ter conteúdo novo." }
-  ];
-
-  // Métricas com contador animado (seção 6)
-  // valor: número real para animar. Se ainda não tiver o número, deixe valor como null
-  // e preencha "placeholder" com um texto claro para editar depois.
-  const metricasData = [
-    { valor: 200, sufixo: "+", rotulo: "vídeos entregues", placeholder: null },
-    { valor: 43, sufixo: "", rotulo: "marcas atendidas", placeholder: null },
-    { valor: null, sufixo: "", rotulo: "views somadas em todas as plataformas", placeholder: "SEU NÚMERO" },
-    { valor: null, sufixo: "", rotulo: "roteiros aprovados na primeira versão", placeholder: "SEU NÚMERO" }
-  ];
-
-  // Resultados de campanha (seção 6)
-  const resultadosData = [
-    { cliente: "Cliente 01", resultado: "Escreva aqui o resultado da campanha, por exemplo o aumento nas vendas do lançamento." },
-    { cliente: "Cliente 02", resultado: "Escreva aqui o resultado da campanha, por exemplo mais comentários e salvamentos no post." },
-    { cliente: "Cliente 03", resultado: "Escreva aqui o resultado da campanha, por exemplo o aumento de seguidores durante a ação." }
   ];
 
   // Depoimentos reais (prints e vídeo de conversas de WhatsApp com marcas).
@@ -1763,32 +1677,6 @@
       <span class="servico-numero">${String(i+1).padStart(2,"0")}</span>
       <h3>${s.titulo}</h3>
       <p>${s.descricao}</p>
-    </div>
-  `).join("");
-
-  // Métricas
-  const metricasGrid = document.getElementById("metricasGrid");
-  metricasGrid.innerHTML = metricasData.map((m, i) => {
-    if(m.valor === null){
-      return `
-        <div class="metrica-card reveal">
-          <span class="metrica-valor">${m.placeholder}</span>
-          <span class="metrica-rotulo">${m.rotulo}</span>
-        </div>`;
-    }
-    return `
-      <div class="metrica-card reveal">
-        <span class="metrica-valor" data-contador data-final="${m.valor}" data-sufixo="${m.sufixo}">0${m.sufixo}</span>
-        <span class="metrica-rotulo">${m.rotulo}</span>
-      </div>`;
-  }).join("");
-
-  // Resultados de campanha
-  const resultadosGrid = document.getElementById("resultadosGrid");
-  resultadosGrid.innerHTML = resultadosData.map(r => `
-    <div class="resultado-card reveal">
-      <h4>${r.cliente}</h4>
-      <p>${r.resultado}</p>
     </div>
   `).join("");
 
@@ -1901,43 +1789,6 @@
 
     document.querySelectorAll(".reveal").forEach(el => observador.observe(el));
   }
-
-  /* =========================================================
-     CONTADOR ANIMADO NAS MÉTRICAS
-  ========================================================== */
-  function animarContador(elemento){
-    const final = parseInt(elemento.dataset.final, 10);
-    const sufixo = elemento.dataset.sufixo || "";
-    if(prefereReduzido){
-      elemento.textContent = final + sufixo;
-      return;
-    }
-    const duracao = 1400;
-    const inicio = performance.now();
-
-    function passo(agora){
-      const progresso = Math.min((agora - inicio) / duracao, 1);
-      const valorAtual = Math.floor(progresso * final);
-      elemento.textContent = valorAtual + sufixo;
-      if(progresso < 1){
-        requestAnimationFrame(passo);
-      } else {
-        elemento.textContent = final + sufixo;
-      }
-    }
-    requestAnimationFrame(passo);
-  }
-
-  const contadores = document.querySelectorAll("[data-contador]");
-  const observadorContador = new IntersectionObserver((entradas) => {
-    entradas.forEach(entrada => {
-      if(entrada.isIntersecting){
-        animarContador(entrada.target);
-        observadorContador.unobserve(entrada.target);
-      }
-    });
-  }, { threshold: 0.4 });
-  contadores.forEach(c => observadorContador.observe(c));
 
   // Formulário de contato: o envio (e a ligação com o banco de dados)
   // é tratado em js/site.js.
