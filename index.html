@@ -347,7 +347,7 @@
   }
   .foto-contorno path{
     stroke-dasharray: 8000 37786;
-    filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+    filter: url(#textura-giz) drop-shadow(0 0 6px rgba(255,255,255,0.7));
     animation: tracar-contorno 6s linear infinite;
   }
   @keyframes tracar-contorno{
@@ -1247,7 +1247,13 @@
                próprio vídeo (silhueta rastreada com potrace). O traço brilhante
                fica se movendo ao redor pra dar a sensação de "em movimento". -->
           <svg class="foto-contorno" viewBox="0 0 1080 1280" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-            <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)" fill="none" stroke="#ffffff" stroke-width="40">
+            <defs>
+              <filter id="textura-giz" x="-30%" y="-30%" width="160%" height="160%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.015 0.1" numOctaves="2" seed="7" result="ruido"/>
+                <feDisplacementMap in="SourceGraphic" in2="ruido" scale="90" xChannelSelector="R" yChannelSelector="G"/>
+              </filter>
+            </defs>
+            <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)" fill="none" stroke="#ffffff" stroke-width="90" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5725 12204 c96 -46 205 -74 288 -74 49 0 91 -6 115 -16 117 -51 169
 -68 282 -90 69 -13 136 -24 150 -24 40 0 299 -134 362 -188 32 -26 90 -68 129
 -93 39 -24 90 -58 112 -76 105 -80 193 -134 245 -149 79 -23 237 -105 317
