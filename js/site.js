@@ -384,15 +384,24 @@ function atributoSeguro(valor) {
 
     const nome = document.getElementById("campoNome").value.trim();
     const email = document.getElementById("campoEmail").value.trim();
+    const marca = document.getElementById("campoMarca").value.trim();
+    const orcamento = document.getElementById("campoOrcamento").value.trim();
     const mensagem = document.getElementById("campoMensagem").value.trim();
     const botaoEnviar = formularioContato.querySelector('button[type="submit"]');
     botaoEnviar.disabled = true;
+
+    // Marca/empresa e orçamento não têm coluna própria no banco, então
+    // entram junto da mensagem no campo "obs" pra ficar tudo num só lugar.
+    const partesObs = [];
+    if (marca) partesObs.push("Marca/empresa: " + marca);
+    if (orcamento) partesObs.push("Orçamento estimado: " + orcamento);
+    partesObs.push(mensagem);
 
     try {
       await window.banco.from("marcas").insert({
         nome: nome,
         email: email,
-        obs: mensagem,
+        obs: partesObs.join("\n"),
         situacao: "lead",
         ultimo_contato: new Date().toISOString().slice(0, 10),
       });

@@ -1027,6 +1027,7 @@
 
   /* ===================== CONTATO ===================== */
   #contato{ background: var(--linho-escuro); }
+  #contato h2 em{ color: var(--terracota); font-style: italic; }
   .contato-grid{
     display:grid;
     grid-template-columns: 1fr 1fr;
@@ -1055,23 +1056,27 @@
   }
   .confirmacao-envio h3{ color: var(--papel); }
 
-  .contato-canais{ display:flex; flex-direction:column; gap:16px; align-items:flex-start; }
-  .canal-btn{
+  .contato-canais{ display:flex; flex-direction:column; gap:16px; align-items:flex-start; margin-top:26px; }
+  .canal-linha{
     display:flex;
     align-items:center;
     gap: 12px;
-    width: 100%;
-    max-width: 320px;
-    padding: 16px 20px;
-    border-radius: 14px;
-    background: var(--papel);
     text-decoration:none;
+    color: var(--tinta);
     font-weight: 500;
-    box-shadow: 0 10px 20px -14px var(--sombra);
-    transition: transform .2s ease;
+    transition: opacity .2s ease;
   }
-  .canal-btn:hover{ transform: translateX(4px); }
-  .canal-icone{ font-size: 1.3rem; }
+  .canal-linha:hover{ opacity:.7; }
+  .canal-icone{
+    width: 38px; height:38px;
+    flex-shrink:0;
+    border-radius: 50%;
+    border: 1.5px solid var(--terracota);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 1.05rem;
+  }
 
   /* ===================== RODAPÉ ===================== */
   footer{
@@ -1487,41 +1492,51 @@
     <div class="container contato-grid">
       <div class="reveal">
         <span class="eyebrow">contato</span>
-        <h2>Bora criar juntos?</h2>
+        <h2>Bora criar <em>juntos</em>?</h2>
         <p>Me conta um pouco sobre a sua marca e o que você precisa. Eu respondo rapidinho.</p>
 
+        <div class="contato-canais">
+          <a class="canal-linha" href="mailto:ugclauraoliveira@gmail.com">
+            <span class="canal-icone" aria-hidden="true">✉️</span> ugclauraoliveira@gmail.com
+          </a>
+          <a class="canal-linha" href="https://instagram.com/_alauraoliveira" target="_blank" rel="noopener">
+            <span class="canal-icone" aria-hidden="true">📷</span> @_alauraoliveira
+          </a>
+          <a class="canal-linha" href="https://wa.me/5543999747945" target="_blank" rel="noopener">
+            <span class="canal-icone" aria-hidden="true">💬</span> (43) 99974-7945
+          </a>
+        </div>
+      </div>
+
+      <div class="reveal">
         <form id="formularioContato" novalidate>
           <div class="campo">
             <label for="campoNome">Nome</label>
-            <input type="text" id="campoNome" name="nome" required autocomplete="name">
+            <input type="text" id="campoNome" name="nome" placeholder="Seu nome" required autocomplete="name">
           </div>
           <div class="campo">
             <label for="campoEmail">E-mail</label>
-            <input type="email" id="campoEmail" name="email" required autocomplete="email">
+            <input type="email" id="campoEmail" name="email" placeholder="voce@marca.com" required autocomplete="email">
           </div>
           <div class="campo">
-            <label for="campoMensagem">Mensagem</label>
-            <textarea id="campoMensagem" name="mensagem" required></textarea>
+            <label for="campoMarca">Marca / Empresa</label>
+            <input type="text" id="campoMarca" name="marca" placeholder="Nome da marca" autocomplete="organization">
           </div>
-          <button type="submit" class="botao botao-primario">Enviar mensagem</button>
+          <div class="campo">
+            <label for="campoOrcamento">Orçamento estimado</label>
+            <input type="text" id="campoOrcamento" name="orcamento" placeholder="Ex: R$ 1.000 a R$ 5.000">
+          </div>
+          <div class="campo">
+            <label for="campoMensagem">Conta sobre o projeto</label>
+            <textarea id="campoMensagem" name="mensagem" placeholder="Categoria, formato, prazo, objetivo da campanha..." required></textarea>
+          </div>
+          <button type="submit" class="botao botao-primario">Enviar mensagem <span aria-hidden="true">↗</span></button>
         </form>
 
         <div class="confirmacao-envio" id="confirmacaoEnvio" hidden role="status" aria-live="polite">
           <h3>Mensagem enviada!</h3>
           <p>Obrigada pelo contato. Eu volto para você em breve pelo e-mail informado.</p>
         </div>
-      </div>
-
-      <div class="reveal contato-canais">
-        <a class="canal-btn" href="https://wa.me/5543999747945" target="_blank" rel="noopener">
-          <span class="canal-icone" aria-hidden="true">💬</span> Chamar no WhatsApp
-        </a>
-        <a class="canal-btn" href="mailto:ugclauraoliveira@gmail.com">
-          <span class="canal-icone" aria-hidden="true">✉️</span> ugclauraoliveira@gmail.com
-        </a>
-        <a class="canal-btn" href="https://instagram.com/_alauraoliveira" target="_blank" rel="noopener">
-          <span class="canal-icone" aria-hidden="true">📷</span> @_alauraoliveira
-        </a>
       </div>
     </div>
   </section>
