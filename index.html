@@ -411,11 +411,17 @@
     .objeto-decorativo{ display:none; }
   }
 
-  .obj-radio{ top: 8%; right: 4%; --rot:-4deg; width:96px; height:64px; }
-  .obj-radio .corpo{ width:96px; height:56px; background: var(--oliva); border-radius:10px; position:relative; box-shadow: inset 0 -6px 0 var(--oliva-escuro), 0 10px 20px -10px var(--sombra); }
-  .obj-radio .corpo::before{ content:""; position:absolute; left:10px; top:10px; width:36px; height:36px; border-radius:50%; background: var(--papel); box-shadow: inset 0 0 0 4px var(--oliva-escuro); }
-  .obj-radio .corpo::after{ content:""; position:absolute; right:10px; top:14px; width:26px; height:26px; border-radius:6px; background: var(--terracota); }
-  .obj-radio .antena{ position:absolute; top:-26px; right:14px; width:3px; height:28px; background: var(--tinta-suave); transform: rotate(18deg); }
+  .obj-celular{ top: 26%; right: 4%; --rot:-4deg; width:54px; height:100px; }
+  .obj-celular .corpo{ width:54px; height:100px; background: var(--oliva); border-radius:14px; position:relative; box-shadow: 0 10px 20px -10px var(--sombra); }
+  .obj-celular .corpo::before{ content:""; position:absolute; inset:7px 6px 14px 6px; background: var(--papel); border-radius:8px; }
+  .obj-celular .corpo::after{ content:""; position:absolute; bottom:5px; left:50%; transform:translateX(-50%); width:18px; height:3px; border-radius:2px; background: var(--oliva-escuro); }
+  .obj-celular .camera{ position:absolute; top:3px; left:50%; transform:translateX(-50%); width:6px; height:6px; border-radius:50%; background: var(--oliva-escuro); z-index:1; }
+
+  .obj-laptop{ bottom: 20%; right: 8%; --rot:4deg; width:88px; height:62px; display:none; }
+  @media (min-width: 1120px){ .obj-laptop{ display:block; } }
+  .obj-laptop .tela{ position:relative; width:70px; height:46px; margin:0 auto; background: var(--tinta-suave); border-radius:6px 6px 0 0; box-shadow: 0 10px 18px -10px var(--sombra); }
+  .obj-laptop .tela::after{ content:""; position:absolute; inset:4px; background: var(--papel); border-radius:2px; opacity:.9; }
+  .obj-laptop .base{ width:88px; height:8px; background: var(--tinta-suave); border-radius: 3px 3px 8px 8px; margin-top:-1px; }
 
   .obj-skincare{ top: 42%; left: 2%; --rot:3deg; width:78px; height:110px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; }
   .obj-skincare .bulbo{ width:20px; height:26px; background: var(--oliva); border-radius: 10px 10px 3px 3px; }
@@ -1208,9 +1214,13 @@
   <!-- ===================== 1. CAPA ===================== -->
   <section id="home" class="hero">
     <!-- objetos decorativos em CSS puro, apenas visuais -->
-    <div class="objeto-decorativo obj-radio" aria-hidden="true">
-      <div class="antena"></div>
+    <div class="objeto-decorativo obj-celular" aria-hidden="true">
+      <div class="camera"></div>
       <div class="corpo"></div>
+    </div>
+    <div class="objeto-decorativo obj-laptop" aria-hidden="true">
+      <div class="tela"></div>
+      <div class="base"></div>
     </div>
     <div class="objeto-decorativo obj-skincare" aria-hidden="true">
       <div class="bulbo"></div>
