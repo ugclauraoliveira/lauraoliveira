@@ -510,9 +510,10 @@
     display:grid;
     grid-template-columns: 0.9fr 1.1fr;
     gap: 56px;
-    align-items:center;
+    align-items: stretch;
   }
-  .destaques-coluna-texto h2{ font-size: clamp(2rem, 4vw, 2.6rem); margin-bottom: 10px; }
+  .destaques-coluna-texto{ display:flex; flex-direction:column; justify-content:space-between; }
+  .destaques-coluna-texto h2{ font-size: clamp(2rem, 4vw, 2.6rem); line-height: 1.15; margin-bottom: 10px; }
   .destaques-coluna-texto p{ color: var(--tinta-suave); }
   .destaques-print{
     margin-top: 26px;
@@ -1353,9 +1354,11 @@
   <section id="destaques">
     <div class="container destaques-layout">
       <div class="destaques-coluna-texto reveal">
-        <span class="eyebrow">destaques</span>
-        <h2>Conteúdos que já viralizaram</h2>
-        <p>Alguns dos vídeos que mais performaram para as marcas que confiaram no meu trabalho.</p>
+        <div>
+          <span class="eyebrow">destaques</span>
+          <h2>Conteúdos que melhor performaram</h2>
+          <p>Alguns dos vídeos que mais performaram para as marcas que confiaram no meu trabalho.</p>
+        </div>
         <div class="destaques-print">
           <img src="img/print-comprovacao-destaques.jpg" alt="Print de comprovação: marca confirmando que o vídeo foi o que mais rendeu">
         </div>
