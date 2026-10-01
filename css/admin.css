@@ -353,3 +353,96 @@ tr.arrastando{ opacity:.4; }
 .tag-status-envio{ display:inline-block; padding:2px 9px; border-radius:999px; font-size:.72rem; font-weight:600; }
 .tag-status-envio.ok{ background: var(--verde-bg); color: var(--verde-texto); }
 .tag-status-envio.erro{ background:#f0c9be; color:#7a2e1a; }
+
+/* ---------- ROTEIROS ---------- */
+.emoji-nav{ width:18px; text-align:center; font-size:15px; line-height:1; flex-shrink:0; }
+.modal-admin-caixa.modal-largo{ max-width: 720px; }
+
+.rot-topo{ background: linear-gradient(135deg, var(--terracota), var(--terracota-escuro)); border-radius: var(--raio-grande); padding: 24px 24px 20px; color:#fff; margin-bottom:20px; }
+.rot-titulo{ font-size:1.6rem; color:#fff; font-style:italic; margin-bottom:4px; }
+.rot-frase{ color: rgba(255,255,255,0.88); margin:0 0 16px; font-size:.9rem; max-width:60ch; }
+.rot-linha-link{ display:flex; gap:10px; align-items:center; }
+.rot-campo-link{ flex:1; min-width:0; padding:10px 16px; border-radius:999px; border:none; background: var(--papel); font-size:.88rem; color: var(--tinta); }
+.rot-seletor{ padding:9px 12px; border-radius:999px; border:none; background: var(--papel); font-size:.84rem; color: var(--tinta); }
+.rot-topo .btn-primario{ background: var(--tinta); }
+.rot-topo .btn-primario:hover{ background:#22180f; }
+.rot-topo .btn-secundario{ border-color: rgba(255,255,255,0.6); color:#fff; }
+.rot-topo .btn-secundario:hover{ background: rgba(255,255,255,0.12); }
+
+.rot-aviso{ margin-top:14px; border-radius:12px; padding:11px 14px; font-size:.86rem; line-height:1.55; color: var(--tinta); background: var(--papel); }
+.rot-aviso a{ color: var(--terracota-escuro); font-weight:500; }
+.rot-aviso-info{ background: var(--amarelo-bg); color: var(--amarelo-texto); }
+.rot-aviso-ok{ background: var(--verde-bg); color: var(--verde-texto); }
+.rot-aviso-erro{ background: #f4e1da; color: var(--terracota-escuro); }
+.rot-passos{ margin:6px 0 0; padding-left:20px; }
+.rot-passos li{ list-style: decimal; margin-bottom:2px; }
+.rot-botao-aviso{ margin-top:8px; background: var(--papel); }
+.rot-mini{ font-size:.76rem; opacity:.8; }
+.rot-relogio{ display:inline-block; animation: rot-girar 2s linear infinite; }
+@keyframes rot-girar{ 0%{ transform: rotate(0deg); } 45%{ transform: rotate(180deg); } 50%{ transform: rotate(180deg); } 95%{ transform: rotate(360deg); } 100%{ transform: rotate(360deg); } }
+
+.rot-config summary{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; cursor:pointer; font-family: var(--serif); font-size:1rem; list-style:none; }
+.rot-config summary::-webkit-details-marker{ display:none; }
+.rot-config-resumo{ font-family: var(--corpo); font-size:.78rem; color: var(--tinta-suave); }
+.rot-config-pendente{ box-shadow: inset 0 0 0 2px var(--terracota), 0 10px 26px -18px var(--sombra); }
+.rot-config-pendente .rot-config-resumo{ color: var(--terracota-escuro); font-weight:500; }
+.rot-config-corpo{ margin-top:14px; }
+.rot-linha-chave{ display:flex; gap:10px; }
+.rot-linha-chave input{ flex:1; min-width:0; padding: 9px 14px; border-radius: 999px; border: 1.5px solid rgba(58,43,34,0.22); background: var(--papel); font-size:.86rem; }
+.rot-saldo{ font-size:.84rem; margin:10px 0 0; color: var(--tinta); }
+.rot-saldo:empty{ display:none; }
+.rot-dica{ font-size:.8rem; color: var(--tinta-suave); margin:8px 0 0; }
+.rot-dica a{ color: var(--terracota-escuro); }
+
+.rot-cabeca-biblioteca{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+.rot-cabeca-biblioteca h2{ margin:0; }
+.rot-chips{ margin-top:-4px; }
+
+.rot-lista{ display:flex; flex-direction:column; gap:14px; }
+.rot-card{ display:grid; grid-template-columns: 150px 1fr; gap:18px; background: var(--papel); border-radius: var(--raio); padding:12px; border:1px solid rgba(58,43,34,0.1); box-shadow: 0 8px 20px -16px var(--sombra); border-left:4px solid var(--terracota); }
+.rot-card-minha{ border-left-color: var(--oliva); }
+.rot-card.rot-com-video{ grid-template-columns: 320px 1fr; }
+.rot-capa{ position:relative; aspect-ratio: 9/16; border-radius: 10px; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background: linear-gradient(160deg, var(--tinta-suave), var(--terracota-escuro)); background-size:cover; background-position:center; color:#fff; }
+.rot-capa-instagram{ background-image: linear-gradient(160deg, #c1584a, #8f4028 55%, #5c4a3d); }
+.rot-capa-tiktok{ background-image: linear-gradient(160deg, #3a2b22, #5c4a3d); }
+.rot-capa-youtube{ background-color: #3a2b22; }
+.rot-capa-manual{ background-image: linear-gradient(160deg, var(--oliva), var(--oliva-escuro)); }
+.rot-capa-emoji{ font-size:2rem; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3)); }
+.rot-botao-video{ background: rgba(255,253,248,0.95); color: var(--tinta); border:none; border-radius:999px; padding:7px 14px; font-size:.8rem; font-weight:500; text-decoration:none; box-shadow: 0 6px 14px -6px rgba(0,0,0,0.5); }
+.rot-botao-video:hover{ background:#fff; }
+.rot-capa-legenda{ font-size:.74rem; opacity:.85; }
+.rot-capa iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; background:#fff; }
+
+.rot-info{ min-width:0; display:flex; flex-direction:column; gap:6px; }
+.rot-info-topo{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-size:.76rem; color: var(--tinta-suave); }
+.rot-etiqueta{ display:inline-flex; align-items:center; padding:3px 11px; border-radius:999px; font-size:.74rem; font-weight:600; }
+.rot-etiqueta-minha{ background: var(--verde-bg); color: var(--verde-texto); }
+.rot-etiqueta-outra{ background: var(--terracota-fraca); color: var(--terracota-escuro); }
+.rot-card-titulo{ font-size:1.1rem; line-height:1.25; margin-top:2px; }
+.rot-sem-titulo{ color: var(--tinta-suave); font-style:italic; }
+.rot-perfil{ margin:0; font-size:.84rem; color: var(--terracota-escuro); font-weight:500; }
+.rot-tags{ display:flex; flex-wrap:wrap; gap:6px; }
+.rot-tag{ font-size:.72rem; padding:2px 9px; border-radius:999px; background: var(--linho-escuro); color: var(--tinta-suave); }
+.rot-trecho{ margin:4px 0 0; font-size:.86rem; color: var(--tinta); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; white-space:pre-line; }
+.rot-status{ margin-top:4px; border-radius:10px; padding:9px 12px; font-size:.84rem; }
+.rot-status-processando{ background: var(--amarelo-bg); color: var(--amarelo-texto); }
+.rot-status-falhou{ background:#f4e1da; color: var(--terracota-escuro); }
+.rot-acoes{ display:flex; flex-wrap:wrap; gap:8px; margin-top:auto; padding-top:8px; }
+.rot-acoes .btn{ padding:6px 13px; font-size:.8rem; }
+.rot-btn-apagar:hover{ color: var(--terracota-escuro); border-color: var(--terracota-escuro); background: var(--terracota-fraca); }
+.rot-caixa-grande{ min-height: 260px !important; line-height:1.55; }
+
+@media (max-width: 760px){
+  .rot-linha-link{ flex-direction:column; align-items:stretch; }
+  .rot-linha-link .btn{ justify-content:center; }
+  .rot-campo-link, .rot-seletor{ width:100%; }
+  .rot-linha-chave{ flex-direction:column; }
+  .rot-linha-chave .btn{ justify-content:center; }
+  .rot-card{ grid-template-columns: 84px 1fr; gap:12px; padding:10px; }
+  .rot-capa{ gap:6px; }
+  .rot-capa-emoji{ font-size:1.4rem; }
+  .rot-botao-video{ padding:5px 8px; font-size:.68rem; }
+  .rot-card.rot-com-video{ grid-template-columns: 1fr; }
+  .rot-card.rot-com-video .rot-capa{ width:100%; max-width:340px; margin:0 auto; }
+  .rot-card-titulo{ font-size:1rem; }
+}
