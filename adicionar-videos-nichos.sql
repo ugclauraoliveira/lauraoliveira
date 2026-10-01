@@ -28,18 +28,18 @@ insert into public.videos (titulo, link, nicho, formato, marca, ordem)
 values (
   'Friskies',
   'https://youtube.com/shorts/2QL4iwySW6M?feature=share',
-  'Casa e Pet',
+  'Casa e Gastronomia',
   'Vídeo vertical 9:16',
   'Friskies',
-  (select coalesce(max(ordem), 0) + 1 from public.videos where nicho = 'Casa e Pet')
+  (select coalesce(max(ordem), 0) + 1 from public.videos where nicho = 'Casa e Gastronomia')
 );
 
 insert into public.videos (titulo, link, nicho, formato, marca, ordem)
 values (
   'Glasu | Suvinil',
   'https://youtube.com/shorts/TxDCXYPZ9oI?feature=share',
-  'Casa e Pet',
+  'Casa e Gastronomia',
   'Vídeo vertical 9:16',
   'Glasu | Suvinil',
-  (select coalesce(max(ordem), 0) + 1 from public.videos where nicho = 'Casa e Pet')
+  (select coalesce(max(ordem), 0) + 1 from public.videos where nicho = 'Casa e Gastronomia')
 );
