@@ -418,9 +418,14 @@ function atributoSeguro(valor) {
 /* =========================================================
    REGISTRO SIMPLES DE VISITA -> tabela "visitas"
    Não usa nenhum serviço externo e não pede nada ao visitante.
+   Se você estiver logada (editando no painel admin), a sessão é
+   a mesma em todo o site, então essa visita não é contabilizada.
 ========================================================= */
 (async function registrarVisita() {
   try {
+    const { data: sessaoAtual } = await window.banco.auth.getSession();
+    if (sessaoAtual.session) return;
+
     let origem = "direto";
     if (document.referrer) {
       try { origem = new URL(document.referrer).hostname; } catch (e) { /* referrer inválido, mantém "direto" */ }

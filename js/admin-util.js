@@ -89,6 +89,7 @@ function avisoFaltando(container, nomeTabela, erro) {
 /* ---------- MODAL (janela de adicionar/editar) ---------- */
 function abrirModalAdmin(tituloHtml, corpoHtml) {
   const fundo = document.getElementById("modalAdmin");
+  fundo.querySelector(".modal-admin-caixa").classList.remove("modal-largo");
   fundo.querySelector(".modal-admin-titulo").innerHTML = tituloHtml;
   fundo.querySelector(".modal-admin-corpo").innerHTML = corpoHtml;
   fundo.classList.add("aberto");
