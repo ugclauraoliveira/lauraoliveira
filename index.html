@@ -285,7 +285,7 @@
     align-items:center;
   }
   .hero-titulo{
-    font-size: clamp(2.6rem, 6vw, 4.6rem);
+    font-size: clamp(2.2rem, 4.5vw, 3.5rem);
     line-height: 1.05;
     margin-bottom: 18px;
   }
@@ -1242,7 +1242,7 @@
     <div class="container hero-grid">
       <div>
         <span class="eyebrow">portfólio UGC</span>
-        <h1 class="hero-titulo">Laura Oliveira, <em>criadora de conteúdo de conversão</em> para a sua marca</h1>
+        <h1 class="hero-titulo"><em>criadora de conteúdo de conversão</em> para sua marca</h1>
         <p class="hero-frase">Eu gravo como quem indica para uma amiga: vídeos e fotos autênticos que fazem a sua marca soar de verdade nas redes.</p>
         <div class="hero-botoes">
           <a class="botao botao-primario" href="#contato">Falar comigo</a>
@@ -1746,21 +1746,13 @@
 
   /* =========================================================
      FOTO DA CAPA PISCANDO
-     Alterna entre as duas fotos (olhos abertos / piscando) de vez
-     em quando, em momentos aleatórios, pra parecer uma piscada
-     natural em vez de algo mecânico e repetitivo.
+     Alterna entre as duas fotos (olhos abertos / piscando) a cada
+     1 segundo, em loop contínuo.
   ========================================================== */
   (function animarPiscadaCapa(){
     const foto = document.getElementById("fotoPrincipal");
     if(!foto || prefereReduzido) return;
-
-    function piscar(){
-      foto.classList.add("piscando");
-      setTimeout(() => foto.classList.remove("piscando"), 160);
-      const proximaPiscada = 2600 + Math.random() * 3400;
-      setTimeout(piscar, proximaPiscada);
-    }
-    setTimeout(piscar, 2200);
+    setInterval(() => foto.classList.toggle("piscando"), 1000);
   })();
 
   // Formulário de contato: o envio (e a ligação com o banco de dados)
