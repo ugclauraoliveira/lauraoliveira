@@ -323,9 +323,7 @@
     display:flex;
     justify-content:center;
   }
-  /* Foto de capa recortada (sem fundo, sem moldura), com duas versões
-     (olhos abertos / piscando) alternadas por JavaScript pra dar a
-     sensação de "viva". */
+  /* Foto de capa recortada (sem fundo, sem moldura). */
   .foto-silhueta{
     position: relative;
     width: 100%;
@@ -335,19 +333,6 @@
     display: block;
     width: 100%;
     height: auto;
-  }
-  .foto-rosto-piscando{
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity .1s ease;
-  }
-  .foto-silhueta.piscando .foto-rosto-aberta{ opacity: 0; }
-  .foto-silhueta.piscando .foto-rosto-piscando{ opacity: 1; }
-  @media (prefers-reduced-motion: reduce){
-    .foto-rosto-piscando{ transition: none; }
   }
 
   /* faixa de marcas */
@@ -1267,7 +1252,6 @@
       <div class="foto-principal-wrap">
         <div class="foto-silhueta" id="fotoPrincipal">
           <img class="foto-rosto foto-rosto-aberta" src="img/capa-rosto.png" alt="Laura Oliveira">
-          <img class="foto-rosto foto-rosto-piscando" src="img/capa-rosto-piscando.png" alt="" aria-hidden="true">
         </div>
       </div>
     </div>
@@ -1743,20 +1727,6 @@
 
     document.querySelectorAll(".reveal").forEach(el => observador.observe(el));
   }
-
-  /* =========================================================
-     FOTO DA CAPA PISCANDO
-     Piscada rápida (um flash curto) que se repete em loop contínuo,
-     bem mais seguido do que uma piscada natural.
-  ========================================================== */
-  (function animarPiscadaCapa(){
-    const foto = document.getElementById("fotoPrincipal");
-    if(!foto || prefereReduzido) return;
-    setInterval(() => {
-      foto.classList.add("piscando");
-      setTimeout(() => foto.classList.remove("piscando"), 100);
-    }, 700);
-  })();
 
   // Formulário de contato: o envio (e a ligação com o banco de dados)
   // é tratado em js/site.js.
