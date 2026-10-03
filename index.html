@@ -285,7 +285,7 @@
     align-items:center;
   }
   .hero-titulo{
-    font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+    font-size: clamp(2rem, 4vw, 3.2rem);
     line-height: 1.05;
     margin-bottom: 18px;
   }
@@ -1746,13 +1746,16 @@
 
   /* =========================================================
      FOTO DA CAPA PISCANDO
-     Alterna entre as duas fotos (olhos abertos / piscando) a cada
-     1 segundo, em loop contínuo.
+     Piscada rápida (um flash curto) que se repete em loop contínuo,
+     bem mais seguido do que uma piscada natural.
   ========================================================== */
   (function animarPiscadaCapa(){
     const foto = document.getElementById("fotoPrincipal");
     if(!foto || prefereReduzido) return;
-    setInterval(() => foto.classList.toggle("piscando"), 1000);
+    setInterval(() => {
+      foto.classList.add("piscando");
+      setTimeout(() => foto.classList.remove("piscando"), 100);
+    }, 700);
   })();
 
   // Formulário de contato: o envio (e a ligação com o banco de dados)
