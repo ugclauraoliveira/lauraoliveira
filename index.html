@@ -323,7 +323,12 @@
     display:flex;
     justify-content:center;
   }
-  /* Foto de capa recortada (sem fundo, sem moldura). */
+  /* Foto de capa recortada (sem fundo, sem moldura), com duas versões
+     (olhos abertos / piscando) alternadas por JavaScript. A foto de
+     olhos abertos fica sempre visível por baixo (opacidade 1 o tempo
+     todo), e só a foto piscando aparece/desaparece por cima — assim
+     nunca existe um instante em que as duas ficam parcialmente
+     transparentes ao mesmo tempo, o que causava o "flash" branco. */
   .foto-silhueta{
     position: relative;
     width: 100%;
@@ -333,6 +338,18 @@
     display: block;
     width: 100%;
     height: auto;
+  }
+  .foto-rosto-piscando{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity .1s ease;
+  }
+  .foto-silhueta.piscando .foto-rosto-piscando{ opacity: 1; }
+  @media (prefers-reduced-motion: reduce){
+    .foto-rosto-piscando{ transition: none; }
   }
 
   /* faixa de marcas */
@@ -1252,6 +1269,7 @@
       <div class="foto-principal-wrap">
         <div class="foto-silhueta" id="fotoPrincipal">
           <img class="foto-rosto foto-rosto-aberta" src="img/capa-rosto.png" alt="Laura Oliveira">
+          <img class="foto-rosto foto-rosto-piscando" src="img/capa-rosto-piscando.png" alt="" aria-hidden="true">
         </div>
       </div>
     </div>
@@ -1727,6 +1745,21 @@
 
     document.querySelectorAll(".reveal").forEach(el => observador.observe(el));
   }
+
+  /* =========================================================
+     FOTO DA CAPA PISCANDO
+     Piscada rápida que se repete em loop contínuo. A foto de olhos
+     abertos fica sempre visível por baixo, então não há "flash"
+     branco entre uma foto e outra.
+  ========================================================== */
+  (function animarPiscadaCapa(){
+    const foto = document.getElementById("fotoPrincipal");
+    if(!foto || prefereReduzido) return;
+    setInterval(() => {
+      foto.classList.add("piscando");
+      setTimeout(() => foto.classList.remove("piscando"), 100);
+    }, 700);
+  })();
 
   // Formulário de contato: o envio (e a ligação com o banco de dados)
   // é tratado em js/site.js.
