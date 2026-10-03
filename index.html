@@ -379,6 +379,11 @@
     flex-shrink:0;
     width: 64px;
     height: 64px;
+    transition: transform .25s ease;
+  }
+  .faixa-marcas-item:hover{
+    transform: scale(1.35);
+    z-index: 2;
   }
   .faixa-marcas-item img{
     width: 100%;
@@ -386,6 +391,9 @@
     object-fit: cover;
     border-radius: 50%;
     display:block;
+  }
+  .faixa-marcas-trilho:has(.faixa-marcas-item:hover){
+    animation-play-state: paused;
   }
 
   /* ===================== OBJETOS FLUTUANTES (CSS puro) ===================== */
@@ -461,6 +469,7 @@
   .sobre-foto{ aspect-ratio: 4/5; }
   img.sobre-foto{ width:100%; height:100%; object-fit:cover; border-radius:16px; display:block; }
   .selos-sobre{ display:flex; flex-wrap:wrap; gap:10px; margin: 22px 0 0; }
+  .botao-sobre{ margin-top: 26px; }
   .selo-sobre{
     padding: 9px 18px;
     border-radius: 999px;
@@ -899,7 +908,7 @@
   :root{ --depo-itens: 3; }
   .depoimentos-carrossel{ position:relative; }
   .depoimentos-reais-pista{ overflow:hidden; margin: 0 -11px; }
-  .depoimentos-reais-trilho{ display:flex; transition: transform .35s ease; }
+  .depoimentos-reais-trilho{ display:flex; align-items:flex-start; transition: transform .35s ease; }
   .depoimento-real-slot{
     flex: 0 0 calc(100% / var(--depo-itens));
     max-width: calc(100% / var(--depo-itens));
@@ -930,7 +939,6 @@
   }
 
   .depoimento-real-card{
-    height:100%;
     display:flex;
     flex-direction:column;
     background: var(--papel);
@@ -951,9 +959,10 @@
     font-size:1.2rem;
     flex-shrink:0;
   }
+  .depoimento-real-avatar-logo{ object-fit:cover; background:var(--papel); border: 1px solid rgba(58,43,34,0.12); }
   .depoimento-real-nome{ font-weight:600; font-size:.98rem; }
   .depoimento-real-estrelas{ color:#d99a1b; font-size:.8rem; letter-spacing:2px; }
-  .depoimento-real-texto{ font-size:.92rem; color: var(--tinta-suave); flex:1; margin: 4px 0 14px; }
+  .depoimento-real-texto{ font-size:.92rem; color: var(--tinta-suave); margin: 4px 0 14px; }
   .depoimento-real-rodape{
     border-top: 1px solid rgba(58,43,34,0.12);
     padding-top: 12px;
@@ -1297,8 +1306,9 @@
         </ul>
         <div class="selos-sobre">
           <span class="selo-sobre selo-sobre-oliva">+200 vídeos gravados</span>
-          <span class="selo-sobre selo-sobre-neutro">Exclusividade com Rei da Promo</span>
+          <span class="selo-sobre selo-sobre-neutro">Exclusividade</span>
         </div>
+        <a class="botao botao-primario botao-sobre" href="#contato">Falar comigo</a>
       </div>
     </div>
   </section>
@@ -1562,8 +1572,8 @@
   const servicosData = [
     { titulo: "Vídeo UGC", descricao: "Vídeo autêntico gravado no meu celular, com roteiro aprovado antes da gravação, pronto para anúncio ou postagem orgânica." },
     { titulo: "Corte para anúncio", descricao: "Edição do vídeo em formatos e durações pensados para performar como anúncio pago." },
-    { titulo: "Clips", descricao: "Vídeos curtos para anúncios em marketplaces que mostram o produto em uso, destacam seus detalhes e ajudam o cliente a decidir pela compra." },
-    { titulo: "Unboxing", descricao: "Abertura do produto com reação genuína, mostrando embalagem, textura e primeira impressão." },
+    { titulo: "Clips", descricao: "Vídeos curtos mostrando o produto em uso, destacando seus detalhes para sites." },
+    { titulo: "Unboxing", descricao: "Edição dos seus vídeos para redes sociais." },
     { titulo: "Publicação no meu perfil", descricao: "Postagem do conteúdo no meu Instagram, levando o seu produto até a minha audiência." },
     { titulo: "Pacote mensal", descricao: "Conjunto de vídeos e fotos entregues todo mês, para a sua marca sempre ter conteúdo novo." }
   ];
@@ -1571,22 +1581,20 @@
   // Depoimentos reais (prints e vídeo de conversas de WhatsApp com marcas).
   const depoimentosReaisData = [
     {
-      nome: "Dreams Nutrition",
-      iniciais: "DN",
-      texto: "Ficou muito bom, Laura! Gostei demais, ficou super fluido ❤️ Maravilhosas, ficaram lindas!",
+      nome: "Fazolli",
+      iniciais: "FZ",
+      logo: "img/marcas/fazolli.png",
+      texto: "Acredita que o campeão até agora foi aquele primeiro vídeo que você me enviou pra analisar 😊",
       fonte: "Print real de conversa no WhatsApp"
     },
     {
-      nome: "Joingo",
-      iniciais: "JG",
-      texto: "Socorro, eu amei! Ficou muito bom, vamos arrasar! Aprovadíssimo ✅",
-      fonte: "Print real de conversa no WhatsApp"
-    },
-    {
-      nome: "Open English",
-      iniciais: "OE",
-      texto: "Laura, que entrega! Todos por aqui amaram muuuito e elogiaram muito sua qualidade. Seu vídeo foi 100% aprovado! Iremos começar agora mesmo o processo de pagamento. Amamos muito o seu conteúdo e esperamos trabalhar novamente com você! Muito obrigada!",
-      fonte: "Print real de conversa no WhatsApp"
+      nome: "Preveja",
+      iniciais: "PV",
+      logo: "img/marcas/preveja.png",
+      video: "video/depoimento-video.mp4",
+      poster: "video/depoimento-video-poster.jpg",
+      texto: "Conteúdo aprovado pela marca! Ameiii, obrigada, amei, amei, amei! 🎉",
+      fonte: "Vídeo real de conversa no WhatsApp"
     },
     {
       nome: "Unopar",
@@ -1595,17 +1603,23 @@
       fonte: "Print real de conversa no WhatsApp"
     },
     {
-      nome: "Preveja",
-      iniciais: "PV",
-      video: "video/depoimento-video.mp4",
-      poster: "video/depoimento-video-poster.jpg",
-      texto: "Conteúdo aprovado pela marca! Ameiii, obrigada, amei, amei, amei! 🎉",
-      fonte: "Vídeo real de conversa no WhatsApp"
+      nome: "Open English",
+      iniciais: "OE",
+      logo: "img/marcas/open-english.png",
+      texto: "Laura, que entrega! Todos por aqui amaram muuuito e elogiaram muito sua qualidade. Seu vídeo foi 100% aprovado! Iremos começar agora mesmo o processo de pagamento. Amamos muito o seu conteúdo e esperamos trabalhar novamente com você! Muito obrigada!",
+      fonte: "Print real de conversa no WhatsApp"
     },
     {
-      nome: "Fazolli",
-      iniciais: "FZ",
-      texto: "Acredita que o campeão até agora foi aquele primeiro vídeo que você me enviou pra analisar 😊",
+      nome: "Joingo",
+      iniciais: "JG",
+      logo: "img/marcas/joingo.png",
+      texto: "Socorro, eu amei! Ficou muito bom, vamos arrasar! Aprovadíssimo ✅",
+      fonte: "Print real de conversa no WhatsApp"
+    },
+    {
+      nome: "Dreams Nutrition",
+      iniciais: "DN",
+      texto: "Ficou muito bom, Laura! Gostei demais, ficou super fluido ❤️ Maravilhosas, ficaram lindas!",
       fonte: "Print real de conversa no WhatsApp"
     }
   ];
@@ -1642,7 +1656,9 @@
     <div class="depoimento-real-slot reveal">
       <div class="depoimento-real-card">
         <div class="depoimento-real-topo">
-          <span class="depoimento-real-avatar">${d.iniciais}</span>
+          ${d.logo
+            ? `<img class="depoimento-real-avatar depoimento-real-avatar-logo" src="${d.logo}" alt="${d.nome}">`
+            : `<span class="depoimento-real-avatar">${d.iniciais}</span>`}
           <div>
             <div class="depoimento-real-nome">${d.nome}</div>
             <div class="depoimento-real-estrelas">★★★★★</div>

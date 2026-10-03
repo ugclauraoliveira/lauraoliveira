@@ -176,34 +176,74 @@ function iniciarCarrosselDestaques(totalVideos) {
     return;
   }
 
-  let indiceAtivo = 0;
+  // Loop infinito de verdade: clona o primeiro e o último card e
+  // gruda um em cada ponta da trilha. Ao avançar/voltar além dos
+  // cards reais, a transição desliza até o clone (que é idêntico ao
+  // card real do outro lado); assim que ela termina, a gente pula
+  // sem animação pro card real equivalente — como os dois são
+  // iguaizinhos, ninguém percebe o pulo, e o carrossel parece não
+  // ter fim.
+  const temClones = totalVideos > 1;
+  if (temClones) {
+    const slotsReais = Array.from(trilho.children);
+    const cloneUltimo = slotsReais[slotsReais.length - 1].cloneNode(true);
+    const clonePrimeiro = slotsReais[0].cloneNode(true);
+    [cloneUltimo, clonePrimeiro].forEach(clone => {
+      clone.setAttribute("aria-hidden", "true");
+      clone.querySelectorAll("a").forEach(a => a.setAttribute("tabindex", "-1"));
+    });
+    trilho.insertBefore(cloneUltimo, trilho.firstChild);
+    trilho.appendChild(clonePrimeiro);
+  }
+
+  let indiceAtivo = temClones ? 1 : 0;
   let temporizador = null;
 
-  function atualizar() {
-    indiceAtivo = ((indiceAtivo % totalVideos) + totalVideos) % totalVideos;
+  function irPara(indice, semTransicao) {
     const slots = Array.from(trilho.children);
+    indiceAtivo = indice;
 
     slots.forEach((slot, i) => slot.classList.toggle("destaque-slot-ativo", i === indiceAtivo));
 
     const ativo = slots[indiceAtivo];
-    if (ativo) {
-      const centroAtivo = ativo.offsetLeft + ativo.offsetWidth / 2;
-      trilho.style.transform = `translateX(${pista.clientWidth / 2 - centroAtivo}px)`;
-    }
+    if (!ativo) return;
 
-    const precisaDeSetas = totalVideos > 1;
-    botaoAnterior.hidden = !precisaDeSetas;
-    botaoProxima.hidden = !precisaDeSetas;
+    if (semTransicao) trilho.style.transition = "none";
+    const centroAtivo = ativo.offsetLeft + ativo.offsetWidth / 2;
+    trilho.style.transform = `translateX(${pista.clientWidth / 2 - centroAtivo}px)`;
+    if (semTransicao) {
+      trilho.offsetHeight; // força o navegador a aplicar antes de religar a transição
+      trilho.style.transition = "";
+    }
+  }
+
+  function atualizar() {
+    irPara(indiceAtivo, false);
+  }
+
+  function avancar(passo) {
+    if (!temClones) return;
+    irPara(indiceAtivo + passo, false);
+  }
+
+  if (temClones) {
+    trilho.addEventListener("transitionend", (evento) => {
+      if (evento.propertyName !== "transform") return;
+      if (indiceAtivo === 0) irPara(totalVideos, true);
+      else if (indiceAtivo === totalVideos + 1) irPara(1, true);
+    });
   }
 
   function reiniciarAutoAvanco() {
     clearInterval(temporizador);
-    if (totalVideos <= 1) return;
-    temporizador = setInterval(() => { indiceAtivo++; atualizar(); }, 5000);
+    if (!temClones) return;
+    temporizador = setInterval(() => avancar(1), 5000);
   }
 
-  botaoAnterior.addEventListener("click", () => { indiceAtivo--; atualizar(); reiniciarAutoAvanco(); });
-  botaoProxima.addEventListener("click", () => { indiceAtivo++; atualizar(); reiniciarAutoAvanco(); });
+  botaoAnterior.hidden = !temClones;
+  botaoProxima.hidden = !temClones;
+  botaoAnterior.addEventListener("click", () => { avancar(-1); reiniciarAutoAvanco(); });
+  botaoProxima.addEventListener("click", () => { avancar(1); reiniciarAutoAvanco(); });
 
   atualizar();
   reiniciarAutoAvanco();
@@ -211,7 +251,7 @@ function iniciarCarrosselDestaques(totalVideos) {
   let redimensionando = null;
   window.addEventListener("resize", () => {
     clearTimeout(redimensionando);
-    redimensionando = setTimeout(atualizar, 120);
+    redimensionando = setTimeout(() => irPara(indiceAtivo, true), 120);
   });
 }
 
@@ -310,9 +350,19 @@ function obterIdYoutube(link) {
 }
 function obterThumbnailYoutube(link) {
   const id = obterIdYoutube(link);
-  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
+  return id ? `https://i.ytimg.com/vi/${id}/maxresdefault.jpg` : null;
 }
+// Nem todo vídeo tem miniatura na qualidade máxima (maxresdefault).
+// Se a imagem falhar, tenta qualidades menores em sequência antes de
+// desistir e mostrar o bloco de degradê.
+const QUEDA_DE_QUALIDADE = { maxresdefault: "sddefault", sddefault: "hqdefault" };
 function capaFalhou(img) {
+  const atual = img.src.match(/\/(\w+)\.jpg(?:\?.*)?$/);
+  const proxima = atual && QUEDA_DE_QUALIDADE[atual[1]];
+  if (proxima) {
+    img.src = img.src.replace(atual[1], proxima);
+    return;
+  }
   const div = document.createElement("div");
   div.className = "midia-placeholder";
   div.setAttribute("role", "img");
