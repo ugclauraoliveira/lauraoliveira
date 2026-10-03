@@ -904,7 +904,7 @@
 
 
   /* ===================== DEPOIMENTOS REAIS (prints e vídeo) ===================== */
-  #depoimentos-reais{ background: var(--linho-escuro); }
+  #depoimentos-reais{ background: var(--linho-escuro); padding-bottom: 40px; }
   .depoimentos-reais-cabecalho{
     display:flex;
     justify-content:space-between;
@@ -1051,7 +1051,7 @@
   @media (max-width: 560px){ :root{ --depo-itens: 1; } }
 
   /* ===================== CONTATO ===================== */
-  #contato{ background: var(--linho-escuro); }
+  #contato{ background: var(--linho-escuro); padding-top: 40px; }
   #contato h2{ font-size: clamp(1.9rem, 4.5vw, 3rem); }
   #contato h2 em{ color: var(--terracota); font-style: italic; }
   .contato-grid{
@@ -1250,6 +1250,8 @@
     .metricas-grid{ grid-template-columns: 1fr 1fr; }
     .hero-numeros{ gap: 22px; }
     .hero{ padding-top: 128px; }
+    #depoimentos-reais{ padding-bottom: 28px; }
+    #contato{ padding-top: 28px; }
   }
 </style>
 </head>

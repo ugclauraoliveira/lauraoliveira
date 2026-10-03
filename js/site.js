@@ -78,7 +78,7 @@
 
   // Ordem preferida dos nichos. Qualquer nicho que não estiver nessa lista
   // aparece depois, na ordem em que for encontrado nos vídeos.
-  const ORDEM_NICHOS = ["Tech & Apps", "Educação", "Moda e Beleza", "Autocuidado", "Experiência", "Casa e Gastronomia", "Promoções"];
+  const ORDEM_NICHOS = ["Tech & Apps", "Educação", "Promoções", "Moda e Beleza", "Autocuidado", "Experiência", "Casa e Gastronomia"];
 
   const nichosEncontrados = [...new Set(videos.map(v => (v.nicho || "").trim()).filter(Boolean))];
   const nichos = ORDEM_NICHOS.filter(n => nichosEncontrados.includes(n))
