@@ -41,6 +41,7 @@ const ICONES = {
   envelope:    (t) => icone('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>', t),
   enviar:      (t) => icone('<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/>', t),
   copiar:      (t) => icone('<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>', t),
+  subir:       (t) => icone('<path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/>', t),
 };
 
 /* ---------- FORMATADORES ---------- */
