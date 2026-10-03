@@ -237,7 +237,7 @@ function iniciarCarrosselDestaques(totalVideos) {
   function reiniciarAutoAvanco() {
     clearInterval(temporizador);
     if (!temClones) return;
-    temporizador = setInterval(() => avancar(1), 5000);
+    temporizador = setInterval(() => avancar(1), 3000);
   }
 
   botaoAnterior.hidden = !temClones;

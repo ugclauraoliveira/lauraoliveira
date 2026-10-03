@@ -516,18 +516,22 @@
     gap: 56px;
     align-items: stretch;
   }
-  .destaques-coluna-texto{ display:flex; flex-direction:column; justify-content:space-between; padding-bottom: 28px; }
+  .destaques-coluna-texto{ display:flex; flex-direction:column; justify-content:center; gap:26px; }
   .destaques-coluna-texto h2{ font-size: clamp(2rem, 4vw, 2.6rem); line-height: 1.15; margin-bottom: 10px; }
   .destaques-coluna-texto p{ color: var(--tinta-suave); }
-  .destaques-print{
-    margin-top: 26px;
-    border: 1.5px dashed rgba(58,43,34,0.28);
+  .destaques-prova{ display:flex; flex-direction:column; align-items:flex-start; gap:7px; }
+  .destaques-prova-bolha{
+    position:relative;
+    max-width: 320px;
+    background: #dcf8c6;
     border-radius: 16px;
-    padding: 18px;
-    background: rgba(58,43,34,0.03);
-    max-width: 240px;
+    border-top-left-radius: 4px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 22px -16px var(--sombra);
   }
-  .destaques-print img{ width:100%; border-radius:12px; display:block; }
+  .destaques-prova-bolha p{ margin:0; font-size:.94rem; line-height:1.4; color:#1f2a1a; font-weight:500; }
+  .destaques-prova-check{ display:block; text-align:right; margin-top:6px; font-size:.72rem; color:#4a7a3a; }
+  .destaques-prova-legenda{ font-size:.78rem; color: var(--tinta-suave); margin:0 0 0 4px; }
 
   .destaques-carrossel{ position:relative; }
   .destaques-pista{ overflow:hidden; }
@@ -981,6 +985,61 @@
   }
   .depoimento-real-video video{ width:100%; height:100%; object-fit:cover; display:block; }
 
+  /* Depoimento em áudio (visual de mensagem de voz do WhatsApp) */
+  .depoimento-audio{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background: var(--linho);
+    border-radius: 999px;
+    padding: 10px 14px 10px 10px;
+    margin-bottom: 14px;
+  }
+  .depoimento-audio-play{
+    flex-shrink:0;
+    width:36px; height:36px;
+    border-radius:50%;
+    border:none;
+    background: var(--oliva-escuro);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    padding:0;
+  }
+  .depoimento-audio-play svg{ width:15px; height:15px; }
+  .depoimento-audio-meio{ flex:1; min-width:0; }
+  .depoimento-audio-onda{ position:relative; height:22px; }
+  .depoimento-audio-onda-camada{
+    position:absolute; inset:0;
+    display:flex;
+    align-items:center;
+    gap:2px;
+    overflow:hidden;
+  }
+  .depoimento-audio-onda-camada span{
+    flex-shrink:0;
+    width:2px;
+    border-radius:2px;
+    background: rgba(58,43,34,0.28);
+  }
+  .depoimento-audio-onda-progresso{ width:0%; }
+  .depoimento-audio-onda-progresso span{ background: var(--oliva-escuro); }
+  .depoimento-audio-rodape{ display:flex; justify-content:space-between; align-items:center; margin-top:4px; }
+  .depoimento-audio-tempo{ font-size:.72rem; color: var(--tinta-suave); }
+  .depoimento-audio-velocidade{
+    font-size:.68rem;
+    font-weight:600;
+    color: var(--tinta-suave);
+    background: rgba(58,43,34,0.08);
+    border-radius:999px;
+    padding:2px 7px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .depoimento-audio-mic{ flex-shrink:0; font-size:1rem; color: var(--tinta-suave); opacity:.7; }
+
   @media (max-width: 860px){ :root{ --depo-itens: 2; } }
   @media (max-width: 560px){ :root{ --depo-itens: 1; } }
 
@@ -1322,8 +1381,12 @@
           <h2>Conteúdos que melhor performaram</h2>
           <p>Alguns dos vídeos que mais performaram para as marcas que confiaram no meu trabalho.</p>
         </div>
-        <div class="destaques-print">
-          <img src="img/print-comprovacao-destaques.jpg" alt="Print de comprovação: marca confirmando que o vídeo foi o que mais rendeu">
+        <div class="destaques-prova">
+          <div class="destaques-prova-bolha">
+            <p>"Top 1 que mais rendeu, disparado mesmo" 🏆</p>
+            <span class="destaques-prova-check">✓✓ marca confirmou</span>
+          </div>
+          <p class="destaques-prova-legenda">Mensagem real recebida de uma marca no WhatsApp</p>
         </div>
       </div>
       <div class="destaques-carrossel reveal">
@@ -1573,7 +1636,7 @@
     { titulo: "Vídeo UGC", descricao: "Vídeo autêntico gravado no meu celular, com roteiro aprovado antes da gravação, pronto para anúncio ou postagem orgânica." },
     { titulo: "Corte para anúncio", descricao: "Edição do vídeo em formatos e durações pensados para performar como anúncio pago." },
     { titulo: "Clips", descricao: "Vídeos curtos mostrando o produto em uso, destacando seus detalhes para sites." },
-    { titulo: "Unboxing", descricao: "Edição dos seus vídeos para redes sociais." },
+    { titulo: "Edição de vídeos", descricao: "Edição dos seus vídeos para redes sociais." },
     { titulo: "Publicação no meu perfil", descricao: "Postagem do conteúdo no meu Instagram, levando o seu produto até a minha audiência." },
     { titulo: "Pacote mensal", descricao: "Conjunto de vídeos e fotos entregues todo mês, para a sua marca sempre ter conteúdo novo." }
   ];
@@ -1581,32 +1644,24 @@
   // Depoimentos reais (prints e vídeo de conversas de WhatsApp com marcas).
   const depoimentosReaisData = [
     {
-      nome: "Fazolli",
-      iniciais: "FZ",
-      logo: "img/marcas/fazolli.png",
-      texto: "Acredita que o campeão até agora foi aquele primeiro vídeo que você me enviou pra analisar 😊",
-      fonte: "Print real de conversa no WhatsApp"
-    },
-    {
       nome: "Preveja",
       iniciais: "PV",
       logo: "img/marcas/preveja.png",
       video: "video/depoimento-video.mp4",
-      poster: "video/depoimento-video-poster.jpg",
       texto: "Conteúdo aprovado pela marca! Ameiii, obrigada, amei, amei, amei! 🎉",
       fonte: "Vídeo real de conversa no WhatsApp"
-    },
-    {
-      nome: "Unopar",
-      iniciais: "UN",
-      texto: "Quero aproveitar e agradecer pelo seu trabalho! Gostei muito de trabalhar com você e com certeza vamos ter mais vídeos. Já tive muito problema com demora na comunicação e entrega sem capricho, e com você foi tudo impecável. Continue assim, é um grande diferencial! ❤️",
-      fonte: "Print real de conversa no WhatsApp"
     },
     {
       nome: "Open English",
       iniciais: "OE",
       logo: "img/marcas/open-english.png",
       texto: "Laura, que entrega! Todos por aqui amaram muuuito e elogiaram muito sua qualidade. Seu vídeo foi 100% aprovado! Iremos começar agora mesmo o processo de pagamento. Amamos muito o seu conteúdo e esperamos trabalhar novamente com você! Muito obrigada!",
+      fonte: "Print real de conversa no WhatsApp"
+    },
+    {
+      nome: "Unopar",
+      iniciais: "UN",
+      texto: "Quero aproveitar e agradecer pelo seu trabalho! Gostei muito de trabalhar com você e com certeza vamos ter mais vídeos. Já tive muito problema com demora na comunicação e entrega sem capricho, e com você foi tudo impecável. Continue assim, é um grande diferencial! ❤️",
       fonte: "Print real de conversa no WhatsApp"
     },
     {
@@ -1652,6 +1707,14 @@
 
   // Depoimentos reais (prints e vídeo de WhatsApp)
   const depoimentosReaisGrid = document.getElementById("depoimentosReaisGrid");
+  // Alturas das barrinhas da forma de onda (decorativas, mesmo padrão
+  // repetido nas duas camadas pra ficarem alinhadas quando uma é "cortada"
+  // pra mostrar o progresso do áudio).
+  const ALTURAS_ONDA = [6,10,15,8,18,12,20,9,14,22,11,17,7,19,13,21,8,16,10,18,12,9,20,14,6,15,11,19,8,13];
+  function barrasOnda(){
+    return ALTURAS_ONDA.map(h => `<span style="height:${h}px"></span>`).join("");
+  }
+
   depoimentosReaisGrid.innerHTML = depoimentosReaisData.map(d => `
     <div class="depoimento-real-slot reveal">
       <div class="depoimento-real-card">
@@ -1665,16 +1728,82 @@
           </div>
         </div>
         ${d.video ? `
-        <div class="depoimento-real-video">
-          <video controls preload="metadata" poster="${d.poster}">
+        <div class="depoimento-audio" data-player>
+          <video preload="metadata" style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;">
             <source src="${d.video}" type="video/mp4">
           </video>
+          <button type="button" class="depoimento-audio-play" data-play aria-label="Tocar mensagem de áudio">
+            <svg data-icone-play viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg data-icone-pause viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+          </button>
+          <div class="depoimento-audio-meio">
+            <div class="depoimento-audio-onda">
+              <div class="depoimento-audio-onda-camada depoimento-audio-onda-base">${barrasOnda()}</div>
+              <div class="depoimento-audio-onda-camada depoimento-audio-onda-progresso" data-progresso>${barrasOnda()}</div>
+            </div>
+            <div class="depoimento-audio-rodape">
+              <span class="depoimento-audio-tempo" data-tempo>0:00</span>
+              <span class="depoimento-audio-velocidade" data-velocidade>1x</span>
+            </div>
+          </div>
+          <span class="depoimento-audio-mic" aria-hidden="true">🎙️</span>
         </div>` : ""}
         <p class="depoimento-real-texto">"${d.texto}"</p>
         <div class="depoimento-real-rodape">${d.fonte}</div>
       </div>
     </div>
   `).join("");
+
+  // Liga o play/pause e o relógio de cada "mensagem de áudio" de depoimento.
+  // Um toque muda a velocidade (1x / 1,5x / 2x), igual ao WhatsApp.
+  document.querySelectorAll(".depoimento-audio").forEach(player => {
+    const video = player.querySelector("video");
+    const botao = player.querySelector("[data-play]");
+    const iconePlay = player.querySelector("[data-icone-play]");
+    const iconePause = player.querySelector("[data-icone-pause]");
+    const progresso = player.querySelector("[data-progresso]");
+    const tempo = player.querySelector("[data-tempo]");
+    const velocidadeEl = player.querySelector("[data-velocidade]");
+    const velocidades = [1, 1.5, 2];
+    let velocidadeIndex = 0;
+
+    function formatarTempo(segundos){
+      const s = Math.max(0, Math.floor(segundos));
+      return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+    }
+
+    video.addEventListener("loadedmetadata", () => {
+      tempo.textContent = formatarTempo(video.duration);
+    });
+    video.addEventListener("timeupdate", () => {
+      if (video.duration) progresso.style.width = (video.currentTime / video.duration * 100) + "%";
+      tempo.textContent = formatarTempo(video.duration - video.currentTime);
+    });
+    video.addEventListener("ended", () => {
+      iconePlay.style.display = "";
+      iconePause.style.display = "none";
+      progresso.style.width = "0%";
+      tempo.textContent = formatarTempo(video.duration);
+    });
+
+    botao.addEventListener("click", () => {
+      if (video.paused) {
+        video.play();
+        iconePlay.style.display = "none";
+        iconePause.style.display = "";
+      } else {
+        video.pause();
+        iconePlay.style.display = "";
+        iconePause.style.display = "none";
+      }
+    });
+
+    velocidadeEl.addEventListener("click", () => {
+      velocidadeIndex = (velocidadeIndex + 1) % velocidades.length;
+      video.playbackRate = velocidades[velocidadeIndex];
+      velocidadeEl.textContent = velocidades[velocidadeIndex].toString().replace(".", ",") + "x";
+    });
+  });
 
   // Carrossel dos depoimentos reais (mesma lógica do carrossel de trabalhos:
   // mostra alguns por vez, com setinhas pra ver os outros)
