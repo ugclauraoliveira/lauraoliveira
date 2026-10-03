@@ -478,6 +478,13 @@
   }
   .selo-sobre-oliva{ background: rgba(109,122,76,0.16); color: var(--oliva-escuro); }
   .selo-sobre-neutro{ background: var(--papel); color: var(--tinta-suave); }
+  .selo-sobre-logo{
+    width: 34px; height:34px;
+    border-radius:50%;
+    object-fit:cover;
+    border: 2px solid var(--papel);
+    box-shadow: 0 4px 10px -4px var(--sombra);
+  }
   .promessas{ margin: 22px 0 26px; display:flex; flex-direction:column; gap:14px; }
   .promessas li{
     display:flex;
@@ -1366,6 +1373,7 @@
         <div class="selos-sobre">
           <span class="selo-sobre selo-sobre-oliva">+200 vídeos gravados</span>
           <span class="selo-sobre selo-sobre-neutro">Exclusividade</span>
+          <img class="selo-sobre-logo" src="img/marcas/o-rei-da-promo.png" alt="O Rei da Promo">
         </div>
         <a class="botao botao-primario botao-sobre" href="#contato">Falar comigo</a>
       </div>
