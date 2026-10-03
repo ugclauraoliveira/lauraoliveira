@@ -1859,7 +1859,15 @@
       const itensPorPagina = itensPorPaginaDepoimentos();
       const totalPaginas = Math.max(1, Math.ceil(total / itensPorPagina));
       pagina = Math.max(0, Math.min(pagina, totalPaginas - 1));
-      trilho.style.transform = `translateX(-${pagina * pista.clientWidth}px)`;
+
+      // Em vez de andar por múltiplos exatos de "itensPorPagina" (o que deixa
+      // a última página com espaço em branco quando sobra menos depoimento
+      // do que cabe na tela), o índice fica "grudado" no fim: a última
+      // página sempre mostra a tela cheia, igual ao carrossel de vídeos.
+      const indiceMaximo = Math.max(0, total - itensPorPagina);
+      const indiceInicial = Math.min(pagina * itensPorPagina, indiceMaximo);
+      const larguraSlot = trilho.children[0] ? trilho.children[0].offsetWidth : 0;
+      trilho.style.transform = `translateX(-${indiceInicial * larguraSlot}px)`;
 
       const precisaDeSetas = total > itensPorPagina;
       botaoAnterior.hidden = !precisaDeSetas;
