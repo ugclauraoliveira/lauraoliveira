@@ -98,12 +98,16 @@ window.AdminMarcas = (function () {
   }
 
   function listaFiltrada() {
-    return marcasCache.filter(m => {
+    const filtrada = marcasCache.filter(m => {
       const passaSituacao = filtroSituacao === "todas" || (m.situacao || "").toLowerCase() === filtroSituacao;
       const alvo = `${m.nome} ${m.instagram} ${m.email} ${m.nicho || ""}`.toLowerCase();
       const passaBusca = !termoBusca || alvo.includes(termoBusca);
       return passaSituacao && passaBusca;
     });
+    // Favoritadas sempre no topo, mantendo a ordem entre elas e entre as demais.
+    const favoritas = filtrada.filter(m => m.favorita);
+    const resto = filtrada.filter(m => !m.favorita);
+    return favoritas.concat(resto);
   }
 
   function renderTabela() {
@@ -113,9 +117,10 @@ window.AdminMarcas = (function () {
     if (marcasCache.length === 0) {
       area.innerHTML = `
         <table class="tabela-admin">
-          <thead><tr><th></th><th>Marca</th><th>Nicho</th><th>Instagram</th><th>E-mail</th><th>Telefone</th><th>Situação</th><th>Observação</th><th>Último contato</th></tr></thead>
+          <thead><tr><th></th><th></th><th>Marca</th><th>Nicho</th><th>Instagram</th><th>E-mail</th><th>Telefone</th><th>Situação</th><th>Observação</th><th>Último contato</th></tr></thead>
           <tbody>
             <tr class="linha-exemplo">
+              <td></td>
               <td></td>
               <td>Marca Exemplo <span class="selo-exemplo">exemplo</span></td>
               <td><span class="pilula pilula-etapa">Moda e Beleza</span></td>
@@ -142,7 +147,7 @@ window.AdminMarcas = (function () {
 
     area.innerHTML = `
       <table class="tabela-admin">
-        <thead><tr><th></th><th>Marca</th><th>Nicho</th><th>Instagram</th><th>E-mail</th><th>Telefone</th><th>Situação</th><th>Observação</th><th>Último contato</th></tr></thead>
+        <thead><tr><th></th><th></th><th>Marca</th><th>Nicho</th><th>Instagram</th><th>E-mail</th><th>Telefone</th><th>Situação</th><th>Observação</th><th>Último contato</th></tr></thead>
         <tbody>
           ${lista.map(m => linhaMarca(m)).join("")}
         </tbody>
@@ -151,7 +156,7 @@ window.AdminMarcas = (function () {
     area.querySelectorAll("tr[data-id]").forEach(linha => {
       const marca = lista.find(m => m.id === linha.dataset.id);
       linha.addEventListener("click", (evento) => {
-        if (evento.target.closest("a") || evento.target.closest("input")) return;
+        if (evento.target.closest("a") || evento.target.closest("input") || evento.target.closest("[data-favoritar]")) return;
         abrirFormularioMarca(marca);
       });
     });
@@ -161,7 +166,28 @@ window.AdminMarcas = (function () {
       cb.addEventListener("change", (evento) => salvarSelecaoMarca(cb.dataset.id, evento.target.checked));
     });
 
+    area.querySelectorAll("[data-favoritar]").forEach(botao => {
+      botao.addEventListener("click", (evento) => {
+        evento.stopPropagation();
+        alternarFavoritaMarca(botao.dataset.favoritar);
+      });
+    });
+
     atualizarTextoSelecao();
+  }
+
+  async function alternarFavoritaMarca(id) {
+    const marca = marcasCache.find(m => m.id === id);
+    if (!marca) return;
+    const novoValor = !marca.favorita;
+    marca.favorita = novoValor; // atualiza na hora, sem esperar o banco responder
+    renderTabela();
+    const { error } = await window.banco.from("marcas").update({ favorita: novoValor }).eq("id", id);
+    if (error) {
+      marca.favorita = !novoValor;
+      mostrarToast("Não consegui salvar (rode o adicionar-favorita-marcas.sql no Supabase)", "erro");
+      renderTabela();
+    }
   }
 
   function linhaMarca(m) {
@@ -180,7 +206,8 @@ window.AdminMarcas = (function () {
     }
     const temEmail = !!(m.email && m.email.trim());
     return `
-      <tr data-id="${m.id}" style="cursor:pointer;">
+      <tr data-id="${m.id}" class="${m.favorita ? "linha-favorita" : ""}" style="cursor:pointer;">
+        <td><button class="btn-icone" data-favoritar="${m.id}" title="${m.favorita ? "Tirar dos fixados" : "Fixar no topo"}" style="color:${m.favorita ? "var(--terracota)" : "var(--tinta-suave)"};">${ICONES.estrela(16)}</button></td>
         <td><input type="checkbox" class="checkbox-selecao-marca" data-id="${m.id}"
           ${m.selecionada ? "checked" : ""} ${temEmail ? "" : 'disabled title="Sem e-mail cadastrado"'}></td>
         <td>${escapeHtml(m.nome)}</td>
