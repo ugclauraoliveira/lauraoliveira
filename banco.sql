@@ -54,6 +54,7 @@ create table if not exists public.marcas (
   email          text not null default '',
   telefone       text not null default '',
   situacao       text not null default 'lead',
+  nicho          text not null default '',
   obs            text not null default '',
   ultimo_contato date,
   criado_em      timestamptz not null default now()
