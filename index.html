@@ -433,7 +433,7 @@
   .obj-skincare .frasco::after{ content:""; position:absolute; top:8px; left:6px; width:5px; height:44px; border-radius:4px; background: rgba(255,253,248,0.22); }
   .obj-skincare .rotulo{ width:34px; height:30px; border-radius:3px; background-color: var(--papel); background-image: linear-gradient(var(--terracota-escuro),var(--terracota-escuro)), linear-gradient(var(--tinta-suave),var(--tinta-suave)), linear-gradient(var(--tinta-suave),var(--tinta-suave)); background-repeat:no-repeat; background-size: 18px 3px, 24px 2px, 16px 2px; background-position: center 7px, center 15px, center 21px; }
 
-  .obj-xicara{ bottom: 20%; left: 6%; --rot:-2deg; width:70px; height:56px; }
+  .obj-xicara{ bottom: 184px; left: 6%; --rot:-2deg; width:70px; height:56px; }
   .obj-xicara .pires{ width:70px; height:10px; background: var(--tinta-suave); border-radius:50%; margin-top:44px; opacity:.5; }
   .obj-xicara .copo{ width:52px; height:40px; background: var(--papel); border: 3px solid var(--tinta-suave); border-radius: 0 0 20px 20px; margin: 0 auto; position:relative; }
   .obj-xicara .alca{ position:absolute; right:-14px; top:8px; width:16px; height:18px; border: 3px solid var(--tinta-suave); border-left:none; border-radius: 0 10px 10px 0; }
@@ -776,10 +776,28 @@
     transition: transform .35s ease;
   }
   .trabalho-slot{
+    position: relative;
     flex: 0 0 calc(100% / var(--colunas-grupo, var(--itens-pagina)));
     max-width: calc(100% / var(--colunas-grupo, var(--itens-pagina)));
     padding: 0 11px;
     box-sizing: border-box;
+  }
+  .trabalho-selo-canto{
+    position: absolute;
+    z-index: 3;
+    left: 25px;
+    bottom: -10px;
+    transform: rotate(-7deg);
+    background: var(--terracota);
+    color: #fff;
+    font-size: .66rem;
+    font-weight: 700;
+    letter-spacing: .01em;
+    padding: 6px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+    box-shadow: 0 6px 14px -6px var(--sombra);
+    pointer-events: none;
   }
 
   .trabalho-card{

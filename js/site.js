@@ -114,6 +114,17 @@
     return `<div class="midia-placeholder" role="img" aria-label="${atributoSeguro(v.formato)} do trabalho ${atributoSeguro(v.titulo)}">${textoSeguro(v.formato)}</div>`;
   }
 
+  // Selo especial de canto: fica "preso" na ponta do card, metade em cima
+  // do vídeo e metade pra fora (por isso fica fora do <a>, que recorta o
+  // conteúdo nos cantos arredondados). Hoje é só pro vídeo da Open English
+  // (o figurino de gênia foi feito pela própria Laura).
+  function seloCantoTrabalho(v) {
+    if (v.marca === "Open English" && v.nicho === "Educação") {
+      return `<span class="trabalho-selo-canto">Figurino feito por mim</span>`;
+    }
+    return "";
+  }
+
   function cartaoTrabalho(v) {
     return `
       <a class="trabalho-card visivel" href="${atributoSeguro(v.link)}" target="_blank" rel="noopener" aria-label="Assistir ao vídeo: ${textoSeguro(v.titulo)}">
@@ -129,7 +140,8 @@
             <span class="trabalho-niche">${textoSeguro(v.nicho)}</span>
           </div>
         </div>
-      </a>`;
+      </a>
+      ${seloCantoTrabalho(v)}`;
   }
 
   // Um bloco por nicho, cada um com seu título, a quantidade de vídeos
