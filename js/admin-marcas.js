@@ -8,6 +8,9 @@
 window.AdminMarcas = (function () {
 
   const SITUACOES = ["lead", "conversando", "cliente", "parada"];
+  // Mesma lista de nichos já usada no portfólio público (js/site.js), pra
+  // ficar tudo com o mesmo nome. Esse campo aceita texto livre também.
+  const NICHOS_PADRAO = ["Tech & Apps", "Educação", "Promoções", "Moda e Beleza", "Autocuidado", "Experiência", "Casa e Gastronomia"];
   let marcasCache = [];
   let filtroSituacao = "todas";
   let termoBusca = "";
@@ -26,6 +29,7 @@ window.AdminMarcas = (function () {
           <button class="chip-filtro" data-situacao="cliente">Cliente</button>
           <button class="chip-filtro" data-situacao="parada">Parada</button>
           <div style="flex:1"></div>
+          <button class="btn btn-secundario" id="botaoSugerirNichos">${ICONES.checklist(16)} Sugerir nichos</button>
           <button class="btn btn-secundario" id="botaoImportarMarcas">${ICONES.subir(16)} Importar CSV</button>
           <button class="btn btn-secundario" id="botaoExportarMarcas">${ICONES.baixar(16)} Baixar CSV</button>
           <button class="btn btn-primario" id="botaoNovaMarca">${ICONES.mais(16)} Adicionar</button>
@@ -42,6 +46,7 @@ window.AdminMarcas = (function () {
     document.getElementById("botaoNovaMarca").addEventListener("click", () => abrirFormularioMarca(null));
     document.getElementById("botaoExportarMarcas").addEventListener("click", exportar);
     document.getElementById("botaoImportarMarcas").addEventListener("click", abrirImportarCsv);
+    document.getElementById("botaoSugerirNichos").addEventListener("click", abrirSugerirNichos);
     document.getElementById("buscaMarcas").addEventListener("input", (e) => { termoBusca = e.target.value.toLowerCase(); renderTabela(); });
     document.getElementById("botaoSelecionarVisiveisMarcas").addEventListener("click", selecionarTodasVisiveis);
     document.getElementById("botaoLimparSelecaoMarcas").addEventListener("click", limparSelecaoTodas);
@@ -93,12 +98,16 @@ window.AdminMarcas = (function () {
   }
 
   function listaFiltrada() {
-    return marcasCache.filter(m => {
+    const filtrada = marcasCache.filter(m => {
       const passaSituacao = filtroSituacao === "todas" || (m.situacao || "").toLowerCase() === filtroSituacao;
-      const alvo = `${m.nome} ${m.instagram} ${m.email}`.toLowerCase();
+      const alvo = `${m.nome} ${m.instagram} ${m.email} ${m.nicho || ""}`.toLowerCase();
       const passaBusca = !termoBusca || alvo.includes(termoBusca);
       return passaSituacao && passaBusca;
     });
+    // Favoritadas sempre no topo, mantendo a ordem entre elas e entre as demais.
+    const favoritas = filtrada.filter(m => m.favorita);
+    const resto = filtrada.filter(m => !m.favorita);
+    return favoritas.concat(resto);
   }
 
   function renderTabela() {
@@ -108,11 +117,13 @@ window.AdminMarcas = (function () {
     if (marcasCache.length === 0) {
       area.innerHTML = `
         <table class="tabela-admin">
-          <thead><tr><th></th><th>Marca</th><th>Instagram</th><th>E-mail</th><th>Telefone</th><th>Situação</th><th>Observação</th><th>Último contato</th></tr></thead>
+          <thead><tr><th></th><th></th><th>Marca</th><th>Nicho</th><th>Instagram</th><th>E-mail</th><th>Telefone</th><th>Situação</th><th>Observação</th><th>Último contato</th></tr></thead>
           <tbody>
             <tr class="linha-exemplo">
               <td></td>
+              <td></td>
               <td>Marca Exemplo <span class="selo-exemplo">exemplo</span></td>
+              <td><span class="pilula pilula-etapa">Moda e Beleza</span></td>
               <td>@marcaexemplo</td>
               <td>contato@exemplo.com</td>
               <td>(43) 90000-0000</td>
@@ -136,7 +147,7 @@ window.AdminMarcas = (function () {
 
     area.innerHTML = `
       <table class="tabela-admin">
-        <thead><tr><th></th><th>Marca</th><th>Instagram</th><th>E-mail</th><th>Telefone</th><th>Situação</th><th>Observação</th><th>Último contato</th></tr></thead>
+        <thead><tr><th></th><th></th><th>Marca</th><th>Nicho</th><th>Instagram</th><th>E-mail</th><th>Telefone</th><th>Situação</th><th>Observação</th><th>Último contato</th></tr></thead>
         <tbody>
           ${lista.map(m => linhaMarca(m)).join("")}
         </tbody>
@@ -145,7 +156,7 @@ window.AdminMarcas = (function () {
     area.querySelectorAll("tr[data-id]").forEach(linha => {
       const marca = lista.find(m => m.id === linha.dataset.id);
       linha.addEventListener("click", (evento) => {
-        if (evento.target.closest("a") || evento.target.closest("input")) return;
+        if (evento.target.closest("a") || evento.target.closest("input") || evento.target.closest("[data-favoritar]")) return;
         abrirFormularioMarca(marca);
       });
     });
@@ -155,7 +166,28 @@ window.AdminMarcas = (function () {
       cb.addEventListener("change", (evento) => salvarSelecaoMarca(cb.dataset.id, evento.target.checked));
     });
 
+    area.querySelectorAll("[data-favoritar]").forEach(botao => {
+      botao.addEventListener("click", (evento) => {
+        evento.stopPropagation();
+        alternarFavoritaMarca(botao.dataset.favoritar);
+      });
+    });
+
     atualizarTextoSelecao();
+  }
+
+  async function alternarFavoritaMarca(id) {
+    const marca = marcasCache.find(m => m.id === id);
+    if (!marca) return;
+    const novoValor = !marca.favorita;
+    marca.favorita = novoValor; // atualiza na hora, sem esperar o banco responder
+    renderTabela();
+    const { error } = await window.banco.from("marcas").update({ favorita: novoValor }).eq("id", id);
+    if (error) {
+      marca.favorita = !novoValor;
+      mostrarToast("Não consegui salvar (rode o adicionar-favorita-marcas.sql no Supabase)", "erro");
+      renderTabela();
+    }
   }
 
   function linhaMarca(m) {
@@ -174,10 +206,12 @@ window.AdminMarcas = (function () {
     }
     const temEmail = !!(m.email && m.email.trim());
     return `
-      <tr data-id="${m.id}" style="cursor:pointer;">
+      <tr data-id="${m.id}" class="${m.favorita ? "linha-favorita" : ""}" style="cursor:pointer;">
+        <td><button class="btn-icone" data-favoritar="${m.id}" title="${m.favorita ? "Tirar dos fixados" : "Fixar no topo"}" style="color:${m.favorita ? "var(--terracota)" : "var(--tinta-suave)"};">${ICONES.estrela(16)}</button></td>
         <td><input type="checkbox" class="checkbox-selecao-marca" data-id="${m.id}"
           ${m.selecionada ? "checked" : ""} ${temEmail ? "" : 'disabled title="Sem e-mail cadastrado"'}></td>
         <td>${escapeHtml(m.nome)}</td>
+        <td>${m.nicho ? `<span class="pilula pilula-etapa">${escapeHtml(m.nicho)}</span>` : `<span style="color:var(--tinta-suave);">—</span>`}</td>
         <td>${instagramCelula}</td>
         <td>${escapeHtml(m.email)}</td>
         <td style="display:flex; align-items:center; gap:6px;">${escapeHtml(m.telefone)} ${linksExtra.join("")}</td>
@@ -208,6 +242,11 @@ window.AdminMarcas = (function () {
         <div class="campo-admin">
           <label for="campoEmailMarca">E-mail</label>
           <input id="campoEmailMarca" type="email" value="${attrEsc(marca?.email || "")}">
+        </div>
+        <div class="campo-admin">
+          <label for="campoNichoMarca">Nicho</label>
+          <input id="campoNichoMarca" list="listaNichosPadraoForm" placeholder="ex: Moda e Beleza" value="${attrEsc(marca?.nicho || "")}">
+          <datalist id="listaNichosPadraoForm">${NICHOS_PADRAO.map(n => `<option value="${attrEsc(n)}">`).join("")}</datalist>
         </div>
         <div class="linha-campos">
           <div class="campo-admin">
@@ -250,6 +289,7 @@ window.AdminMarcas = (function () {
         instagram: document.getElementById("campoInstaMarca").value.trim(),
         telefone: document.getElementById("campoTelMarca").value.trim(),
         email: document.getElementById("campoEmailMarca").value.trim(),
+        nicho: document.getElementById("campoNichoMarca").value.trim(),
         situacao: document.getElementById("campoSituacaoMarca").value,
         ultimo_contato: document.getElementById("campoContatoMarca").value || null,
         obs: document.getElementById("campoObsMarca").value.trim(),
@@ -279,8 +319,8 @@ window.AdminMarcas = (function () {
     if (lista.length === 0) { mostrarToast("Não há marcas para exportar", "erro"); return; }
     exportarCsv(
       "marcas.csv",
-      ["Marca", "Instagram", "E-mail", "Telefone", "Situação", "Observação", "Último contato"],
-      lista.map(m => [m.nome, m.instagram, m.email, m.telefone, m.situacao, m.obs, formatarData(m.ultimo_contato)])
+      ["Marca", "Nicho", "Instagram", "E-mail", "Telefone", "Situação", "Observação", "Último contato"],
+      lista.map(m => [m.nome, m.nicho, m.instagram, m.email, m.telefone, m.situacao, m.obs, formatarData(m.ultimo_contato)])
     );
   }
 
@@ -296,11 +336,12 @@ window.AdminMarcas = (function () {
     instagram: ["instagram", "insta", "perfil", "arroba", "usuario", "rede social", "redesocial"],
     email: ["email", "emaildecontato", "mail", "endereodeemail"],
     telefone: ["telefone", "whatsapp", "celular", "fone", "contato", "numero", "numerodowhatsapp", "tel"],
+    nicho: ["nicho", "categoria", "segmento", "area", "tipodemarca", "ramo", "setor"],
     situacao: ["situacao", "status", "etapa"],
     obs: ["obs", "observacao", "observacoes", "notas", "nota", "comentario", "comentarios", "detalhes"],
     ultimo_contato: ["ultimocontato", "data", "dataultimocontato", "ultimafala", "dataultimafala", "dataultimocontato"],
   };
-  const ROTULOS_CAMPOS = { nome: "Marca", instagram: "Instagram", email: "E-mail", telefone: "Telefone", situacao: "Situação", obs: "Observação", ultimo_contato: "Último contato" };
+  const ROTULOS_CAMPOS = { nome: "Marca", instagram: "Instagram", email: "E-mail", telefone: "Telefone", nicho: "Nicho", situacao: "Situação", obs: "Observação", ultimo_contato: "Último contato" };
 
   let importPendente = null;
 
@@ -428,6 +469,7 @@ window.AdminMarcas = (function () {
         instagram: pegar(mapa.instagram),
         email: pegar(mapa.email),
         telefone: pegar(mapa.telefone),
+        nicho: pegar(mapa.nicho),
         obs: pegar(mapa.obs),
         ultimo_contato: converterDataBr(pegar(mapa.ultimo_contato)),
         situacaoDoArquivo: normalizarSituacao(pegar(mapa.situacao)),
@@ -497,6 +539,7 @@ window.AdminMarcas = (function () {
       instagram: r.instagram,
       email: r.email,
       telefone: r.telefone,
+      nicho: r.nicho,
       obs: r.obs,
       ultimo_contato: r.ultimo_contato,
       situacaoFinal: r.situacaoDoArquivo || situacaoPadrao,
@@ -526,6 +569,101 @@ window.AdminMarcas = (function () {
 
     fecharModalAdmin();
     mostrarToast(`${registros.length} marca(s) importada(s)`);
+    render(document.getElementById("conteudoAba"));
+  }
+
+  /* =======================================================
+     SUGERIR NICHOS A PARTIR DOS VÍDEOS JÁ PUBLICADOS
+     Em vez de chutar, olha os vídeos que você já cadastrou:
+     se uma marca sem nicho já tem vídeo no portfólio, o nicho
+     sugerido é o mesmo que esse vídeo já usa.
+  ======================================================= */
+
+  async function abrirSugerirNichos() {
+    const marcasSemNicho = marcasCache.filter(m => !m.nicho || !m.nicho.trim());
+    if (marcasSemNicho.length === 0) {
+      mostrarToast("Todas as marcas já têm um nicho preenchido");
+      return;
+    }
+
+    abrirModalAdmin("Sugerir nichos", `<p class="vazio-explicativo">Procurando vídeos publicados dessas marcas...</p>`);
+
+    const { data: videos, error } = await window.banco.from("videos").select("marca, nicho");
+    if (error) {
+      document.querySelector("#modalAdmin .modal-admin-corpo").innerHTML = `<p class="vazio-explicativo">Não consegui ler a tabela de vídeos pra sugerir os nichos.</p>`;
+      return;
+    }
+
+    const nichoPorMarca = {};
+    (videos || []).forEach(v => {
+      const chave = normalizarTexto(v.marca);
+      if (chave && v.nicho && v.nicho.trim() && !nichoPorMarca[chave]) nichoPorMarca[chave] = v.nicho.trim();
+    });
+
+    const sugestoes = marcasSemNicho.map(m => ({
+      id: m.id,
+      nome: m.nome,
+      sugestao: nichoPorMarca[normalizarTexto(m.nome)] || "",
+    }));
+
+    renderSugestoesNicho(sugestoes);
+  }
+
+  function renderSugestoesNicho(sugestoes) {
+    const corpo = document.querySelector("#modalAdmin .modal-admin-corpo");
+    const encontradas = sugestoes.filter(s => s.sugestao).length;
+
+    corpo.innerHTML = `
+      <p style="font-size:.84rem; color:var(--tinta-suave); margin-bottom:14px;">
+        Encontrei vídeo publicado de ${encontradas} de ${sugestoes.length} marca(s) sem nicho, e já copiei o nicho usado nesse vídeo.
+        Pra quem não apareceu nada, escolha na lista, digite um novo nicho ou deixe em branco pra pular.
+      </p>
+      <datalist id="listaNichosPadraoSugestao">${NICHOS_PADRAO.map(n => `<option value="${attrEsc(n)}">`).join("")}</datalist>
+      <div class="tabela-wrap" style="max-height:320px; overflow-y:auto;">
+        <table class="tabela-admin">
+          <thead><tr><th>Marca</th><th>Nicho sugerido</th></tr></thead>
+          <tbody>
+            ${sugestoes.map(s => `
+              <tr>
+                <td>${escapeHtml(s.nome)}</td>
+                <td><input list="listaNichosPadraoSugestao" data-nicho-id="${s.id}" value="${attrEsc(s.sugestao)}" placeholder="sem sugestão"
+                  style="width:100%; padding:7px 10px; border-radius:10px; border:1.5px solid rgba(58,43,34,0.22); background:var(--papel); font-size:.85rem;"></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+      <button class="btn btn-primario" id="botaoSalvarSugestoesNicho" style="margin-top:14px; width:100%; justify-content:center;">Salvar nichos preenchidos</button>
+    `;
+
+    document.getElementById("botaoSalvarSugestoesNicho").addEventListener("click", salvarSugestoesNicho);
+  }
+
+  async function salvarSugestoesNicho() {
+    const botao = document.getElementById("botaoSalvarSugestoesNicho");
+    const textoOriginal = botao.textContent;
+    botao.disabled = true;
+    botao.textContent = "Salvando...";
+
+    const atualizacoes = [...document.querySelectorAll("[data-nicho-id]")]
+      .map(input => ({ id: input.dataset.nichoId, nicho: input.value.trim() }))
+      .filter(a => a.nicho !== "");
+
+    if (atualizacoes.length === 0) {
+      mostrarToast("Nenhum nicho preenchido pra salvar", "erro");
+      botao.disabled = false;
+      botao.textContent = textoOriginal;
+      return;
+    }
+
+    const resultados = await Promise.all(atualizacoes.map(a => window.banco.from("marcas").update({ nicho: a.nicho }).eq("id", a.id)));
+
+    if (resultados.some(r => r.error)) {
+      mostrarToast("Alguns nichos não foram salvos, tente de novo", "erro");
+    } else {
+      mostrarToast(`${atualizacoes.length} nicho(s) salvo(s)`);
+    }
+    fecharModalAdmin();
     render(document.getElementById("conteudoAba"));
   }
 
