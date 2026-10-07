@@ -45,6 +45,7 @@
             <span class="play-botao" aria-hidden="true"></span>
           </div>
         </a>
+        ${v.marca === "O Rei da Promo" ? `<img class="destaque-selo-canto" src="img/marcas/o-rei-da-promo.png" alt="O Rei da Promo">` : ""}
         ${v.destaque ? `<p class="destaque-legenda">${textoSeguro(v.destaque)}</p>` : ""}
       </div>
     `).join("");
