@@ -547,7 +547,6 @@
   .destaques-pista{ overflow:hidden; }
   .destaques-trilho{ display:flex; align-items:center; transition: transform .5s ease; }
   .destaque-slot{
-    position: relative;
     flex: 0 0 46%;
     max-width: 46%;
     margin: 0 14px;
@@ -556,19 +555,6 @@
     opacity: .32;
     filter: blur(3px);
     transform: scale(.86);
-  }
-  .destaque-selo-canto{
-    position: absolute;
-    z-index: 3;
-    top: 20px;
-    right: 16px;
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--papel);
-    box-shadow: 0 6px 14px -6px var(--sombra);
-    transform: rotate(6deg);
   }
   .destaque-slot.destaque-slot-ativo{
     opacity: 1;
