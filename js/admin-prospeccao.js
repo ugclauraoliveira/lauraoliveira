@@ -592,6 +592,35 @@ window.AdminProspeccao = (function () {
     return dados;
   }
 
+  // Busca, na tabela de histórico, o motivo real do último envio que falhou
+  // pra esse e-mail (é a função carteiro que grava esse texto lá).
+  async function buscarMotivoUltimaFalha(email) {
+    try {
+      const { data } = await window.banco
+        .from("email_envios")
+        .select("erro, criado_em")
+        .eq("email", email.toLowerCase())
+        .eq("status", "erro")
+        .order("criado_em", { ascending: false })
+        .limit(1);
+      return data && data[0] ? data[0].erro : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function mostrarErroEnvioDetalhado(titulo, motivo) {
+    abrirModalAdmin(titulo, `
+      <p style="margin-bottom:10px;">O Resend recusou o envio com esta mensagem:</p>
+      <p style="background: var(--linho); border-radius:10px; padding:12px 14px; font-size:.85rem; font-family:'Courier New', monospace; word-break:break-word;">${escapeHtml(motivo)}</p>
+      <p style="font-size:.84rem; color:var(--tinta-suave); margin-top:14px;">
+        As causas mais comuns: a chave RESEND_API_KEY não foi colada nas Secrets da função, ou você ainda não verificou
+        um domínio no Resend (sem domínio verificado, ele só entrega e-mail de teste pro e-mail que você usou pra
+        criar a conta no Resend).
+      </p>
+    `);
+  }
+
   function enviarTeste() {
     const template = montarTemplateAtual();
     if (!template.assunto || !template.corpoHtml) {
@@ -603,8 +632,14 @@ window.AdminProspeccao = (function () {
     const textoOriginal = botao.textContent;
     botao.textContent = "Enviando teste...";
     chamarFuncaoEnviarEmails([{ email: EMAIL_AUTORIZADO, nomeMarca: "Marca de Teste" }], template.assunto, template.corpoHtml)
-      .then((resultado) => {
-        mostrarToast(resultado.enviados > 0 ? "Teste enviado! Confira sua caixa de entrada." : "O teste não foi enviado.", resultado.enviados > 0 ? "sucesso" : "erro");
+      .then(async (resultado) => {
+        if (resultado.enviados > 0) {
+          mostrarToast("Teste enviado! Confira sua caixa de entrada.", "sucesso");
+          return;
+        }
+        mostrarToast("O teste não foi enviado. Veja o motivo na janela que abriu.", "erro");
+        const motivo = await buscarMotivoUltimaFalha(EMAIL_AUTORIZADO);
+        mostrarErroEnvioDetalhado("Por que o teste não foi enviado", motivo || "Não encontrei o motivo no histórico. Confira se a Edge Function enviar-emails está publicada no Supabase.");
       })
       .catch((erro) => mostrarToast("Não deu pra mandar o teste: " + erro.message, "erro"))
       .finally(() => { botao.disabled = false; botao.textContent = textoOriginal; });
