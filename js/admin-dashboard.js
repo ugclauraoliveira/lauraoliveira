@@ -35,7 +35,10 @@ window.AdminDashboard = (function () {
       <div class="grade-cartoes-metrica" id="gradeCartoesDash"></div>
 
       <div class="cartao">
-        <h2>Lembretes</h2>
+        <div class="barra-filtros" style="margin-bottom:0;">
+          <h2 style="flex:1; margin:0;">Lembretes</h2>
+          <button class="btn btn-secundario" id="botaoNotificacoesDash"></button>
+        </div>
         <div id="areaLembretesDash"></div>
       </div>
     `;
@@ -45,6 +48,7 @@ window.AdminDashboard = (function () {
     $("botaoNovaPropostaDash").addEventListener("click", () => irParaAba("propostas"));
     $("botaoOcultarValoresDash").addEventListener("click", alternarOcultarValores);
     atualizarIconeOcultar();
+    atualizarBotaoNotificacoes();
 
     const [campanhasResultado, lembretesResultado, propostasResultado, lancamentosResultado, configResultado] = await Promise.all([
       window.banco.from("campanhas").select("*"),
@@ -68,6 +72,7 @@ window.AdminDashboard = (function () {
 
     renderCards();
     renderLembretes();
+    verificarNotificacoes();
   }
 
   function alternarOcultarValores() {
@@ -155,6 +160,7 @@ window.AdminDashboard = (function () {
 
     // Concluído fica visível, só riscado (não some da lista) — só sai mudando
     // a data ou apagando.
+    const atrasados = lembretesCache.filter((l) => !l.concluido && l.data < hojeStr);
     const deHoje = lembretesCache.filter((l) => l.data === hojeStr);
     const proximos = lembretesCache.filter((l) => l.data > hojeStr && l.data <= em7diasStr);
 
@@ -171,7 +177,10 @@ window.AdminDashboard = (function () {
           <span class="pino-prioridade" style="background:${corPrioridade(l.prioridade)};"></span>
           <span class="texto-lembrete" data-editar="${l.id}">
             <strong>${escapeHtml(l.titulo)}</strong>
-            <span class="meta-lembrete">${formatarData(l.data)}${l.hora ? " · " + l.hora.slice(0, 5) : ""}${l.vinculo ? " · " + escapeHtml(l.vinculo) : ""}</span>
+            <span class="meta-lembrete">
+              ${formatarData(l.data)}${l.hora ? " · " + l.hora.slice(0, 5) : ""}${l.vinculo ? " · " + escapeHtml(l.vinculo) : ""}
+              ${(!l.concluido && l.data < hojeStr) ? `<span class="etiqueta-prazo etiqueta-atrasado">há ${diasEntre(l.data)} dia(s)</span>` : ""}
+            </span>
           </span>
         </div>
       `).join("");
@@ -179,6 +188,7 @@ window.AdminDashboard = (function () {
 
     area.innerHTML = `
       <div class="lista-lembretes-dashboard">
+        ${atrasados.length ? `<h3>Ficou pra trás</h3>${listaHtml(atrasados)}` : ""}
         <h3>Hoje</h3>
         ${listaHtml(deHoje)}
         <h3>Próximos 7 dias</h3>
@@ -271,6 +281,74 @@ window.AdminDashboard = (function () {
       mostrarToast(editando ? "Lembrete atualizado" : "Lembrete adicionado");
       render(document.getElementById("conteudoAba"));
     });
+  }
+
+  /* ---------- NOTIFICAÇÃO DE LEMBRETES ----------
+     Isso só funciona enquanto você está com o admin aberto no
+     navegador (é uma notificação do navegador, não um push de
+     celular de verdade, que exigiria um servidor à parte). Mas
+     já avisa na hora se o lembrete é de hoje e você está com a
+     aba aberta ou minimizada. */
+
+  const CHAVE_NOTIFICADOS_HOJE = "painelLembretesNotificadosHoje";
+
+  function notificacoesSuportadas() {
+    return typeof Notification !== "undefined";
+  }
+
+  function atualizarBotaoNotificacoes() {
+    const botao = $("botaoNotificacoesDash");
+    if (!botao) return;
+    if (!notificacoesSuportadas()) { botao.style.display = "none"; return; }
+
+    if (Notification.permission === "granted") {
+      botao.textContent = "Notificações ativadas";
+      botao.disabled = true;
+    } else if (Notification.permission === "denied") {
+      botao.textContent = "Notificações bloqueadas pelo navegador";
+      botao.disabled = true;
+    } else {
+      botao.textContent = "Ativar notificações";
+      botao.disabled = false;
+      botao.onclick = async () => {
+        await Notification.requestPermission();
+        atualizarBotaoNotificacoes();
+        verificarNotificacoes();
+      };
+    }
+  }
+
+  function notificadosHoje() {
+    try {
+      const salvo = JSON.parse(localStorage.getItem(CHAVE_NOTIFICADOS_HOJE) || "{}");
+      if (salvo.data !== dataDeHoje()) return new Set();
+      return new Set(salvo.ids || []);
+    } catch (e) {
+      return new Set();
+    }
+  }
+
+  function salvarNotificadosHoje(conjunto) {
+    localStorage.setItem(CHAVE_NOTIFICADOS_HOJE, JSON.stringify({ data: dataDeHoje(), ids: [...conjunto] }));
+  }
+
+  function verificarNotificacoes() {
+    if (!notificacoesSuportadas() || Notification.permission !== "granted") return;
+
+    const hojeStr = dataDeHoje();
+    const jaNotificados = notificadosHoje();
+    const pendentes = lembretesCache.filter((l) => !l.concluido && l.data <= hojeStr && !jaNotificados.has(l.id));
+
+    pendentes.forEach((l) => {
+      try {
+        new Notification(l.data < hojeStr ? `Atrasado: ${l.titulo}` : `Lembrete de hoje: ${l.titulo}`, {
+          body: l.vinculo ? `Ligado a ${l.vinculo}` : "Sem mais detalhes",
+        });
+      } catch (e) { /* alguns navegadores de celular não deixam criar assim; ignora sem quebrar nada */ }
+      jaNotificados.add(l.id);
+    });
+
+    if (pendentes.length) salvarNotificadosHoje(jaNotificados);
   }
 
   return { render };
