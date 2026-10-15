@@ -135,9 +135,10 @@ window.AdminDashboard = (function () {
     const em7dias = new Date(); em7dias.setDate(em7dias.getDate() + 7);
     const em7diasStr = em7dias.toISOString().slice(0, 10);
 
-    const pendentes = lembretesCache.filter((l) => !l.concluido);
-    const deHoje = pendentes.filter((l) => l.data === hojeStr);
-    const proximos = pendentes.filter((l) => l.data > hojeStr && l.data <= em7diasStr);
+    // Concluído fica visível, só riscado (não some da lista) — só sai mudando
+    // a data ou apagando.
+    const deHoje = lembretesCache.filter((l) => l.data === hojeStr);
+    const proximos = lembretesCache.filter((l) => l.data > hojeStr && l.data <= em7diasStr);
 
     if (lembretesCache.length === 0) {
       area.innerHTML = `<p class="vazio-explicativo">Nenhum lembrete ainda. Use o botão "+ Lembrete" acima pra criar o primeiro.</p>`;
