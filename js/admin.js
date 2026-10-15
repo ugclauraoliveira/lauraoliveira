@@ -5,14 +5,28 @@
    Este é o ÚLTIMO script carregado, depois de todas as abas.
 ========================================================= */
 
+// Painel simples usado pelas abas que ainda vão ganhar sua funcionalidade
+// de verdade nas próximas etapas (Dashboard, Propostas, Financeiro, Instagram).
+function renderEmConstrucao(nomeAba, descricao) {
+  document.getElementById("conteudoAba").innerHTML = `
+    <div class="cartao">
+      <h2>${escapeHtml(nomeAba)}</h2>
+      <p class="vazio-explicativo" style="text-align:left; padding:10px 0 0;">${escapeHtml(descricao)}</p>
+    </div>`;
+}
+
 const ABAS = {
+  dashboard:  { titulo: "Dashboard",   render: () => renderEmConstrucao("Dashboard", "Essa visão geral chega na próxima etapa, com os cards de faturamento, propostas, lembretes e o resumo do Instagram.") },
   portfolio:  { titulo: "Portfólio",  render: () => window.AdminPortfolio.render(document.getElementById("conteudoAba")) },
   marcas:     { titulo: "Marcas",     render: () => window.AdminMarcas.render(document.getElementById("conteudoAba")) },
+  prospeccao: { titulo: "Prospecção", render: () => window.AdminProspeccao.render(document.getElementById("conteudoAba")) },
   calendario: { titulo: "Calendário", render: () => window.AdminCalendario.render(document.getElementById("conteudoAba")) },
   campanhas:  { titulo: "Campanhas",  render: () => window.AdminCampanhas.render(document.getElementById("conteudoAba")) },
   checklist:  { titulo: "Checklist",  render: () => window.AdminChecklist.render(document.getElementById("conteudoAba")) },
-  prospeccao: { titulo: "Prospecção", render: () => window.AdminProspeccao.render(document.getElementById("conteudoAba")) },
-  roteiros:   { titulo: "📜 Roteiros", render: () => window.AdminRoteiros.render(document.getElementById("conteudoAba")) },
+  propostas:  { titulo: "Propostas",  render: () => renderEmConstrucao("Propostas", "O gerador de propostas (com link público pro cliente abrir sem login) chega numa próxima etapa.") },
+  financeiro: { titulo: "Financeiro", render: () => renderEmConstrucao("Financeiro", "O controle de recebimentos e a meta mensal chegam numa próxima etapa.") },
+  roteiros:   { titulo: "Transcrições", render: () => window.AdminRoteiros.render(document.getElementById("conteudoAba")) },
+  instagram:  { titulo: "Instagram",  render: () => renderEmConstrucao("Instagram", "O registro de métricas e o banco de ideias de conteúdo chegam numa próxima etapa.") },
 };
 
 async function iniciarAdmin() {
