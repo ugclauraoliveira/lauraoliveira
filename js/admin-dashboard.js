@@ -13,6 +13,7 @@ window.AdminDashboard = (function () {
 
   let campanhasCache = [];
   let lembretesCache = [];
+  let propostasCache = [];
 
   function $(id) { return document.getElementById(id); }
 
@@ -39,20 +40,24 @@ window.AdminDashboard = (function () {
 
     $("botaoNovoLembreteDash").addEventListener("click", () => abrirFormularioLembrete(null));
     $("botaoNovaIdeiaDash").addEventListener("click", () => mostrarToast("As ideias de conteúdo chegam na etapa do Instagram"));
-    $("botaoNovaPropostaDash").addEventListener("click", () => mostrarToast("O gerador de propostas chega na próxima etapa"));
+    $("botaoNovaPropostaDash").addEventListener("click", () => irParaAba("propostas"));
     $("botaoOcultarValoresDash").addEventListener("click", alternarOcultarValores);
     atualizarIconeOcultar();
 
-    const [campanhasResultado, lembretesResultado] = await Promise.all([
+    const [campanhasResultado, lembretesResultado, propostasResultado] = await Promise.all([
       window.banco.from("campanhas").select("*"),
       window.banco.from("lembretes").select("*").order("data", { ascending: true }),
+      window.banco.from("propostas").select("status"),
     ]);
 
     if (campanhasResultado.error) avisoFaltando(container, "campanhas", campanhasResultado.error);
     if (lembretesResultado.error) avisoFaltando(container, "lembretes (rode o adicionar-lembretes.sql no Supabase)", lembretesResultado.error);
+    // propostas ainda pode não existir (rode o adicionar-propostas.sql); sem aviso aqui
+    // pra não poluir o Dashboard, o card simplesmente mostra um traço.
 
     campanhasCache = campanhasResultado.data || [];
     lembretesCache = lembretesResultado.data || [];
+    propostasCache = propostasResultado.data || [];
 
     renderCards();
     renderLembretes();
@@ -97,10 +102,10 @@ window.AdminDashboard = (function () {
         cor: "var(--oliva)", numero: String(emProducao), rotulo: "em produção",
         contexto: campanhasCache.length ? `${entregasSemana} entrega(s) nesta semana` : "Cadastre campanhas na aba Campanhas",
       },
-      {
-        cor: "var(--azul-suave)", numero: "—", rotulo: "propostas enviadas", pendente: true,
-        contexto: "Aparece quando as Propostas estiverem prontas",
-      },
+      propostasCache.length === 0
+        ? { cor: "var(--azul-suave)", numero: "—", rotulo: "propostas enviadas", pendente: true, contexto: "Crie a primeira na aba Propostas" }
+        : { cor: "var(--azul-suave)", numero: String(propostasCache.filter((p) => p.status === "enviada").length), rotulo: "aguardando resposta",
+            contexto: `${propostasCache.filter((p) => p.status === "aceita").length} aceita(s) · ${propostasCache.filter((p) => p.status === "recusada").length} recusada(s)` },
       {
         cor: "var(--vermelho-suave)", numero: "—", rotulo: "resumo do Instagram", pendente: true,
         contexto: "Aparece quando o Instagram estiver pronto",
