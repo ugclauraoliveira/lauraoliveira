@@ -17,6 +17,7 @@ window.AdminProspeccao = (function () {
   let filaRascunho = [];
   let indiceFila = 0;
   let historicoCache = [];
+  let optoutCache = [];
   let destinatariosPendentes = null;
   let templatePendente = null;
 
@@ -186,6 +187,16 @@ window.AdminProspeccao = (function () {
           </table>
         </div>
       </div>
+
+      <div class="cartao" style="margin-top:20px;">
+        <h2>Descadastros (quem respondeu SAIR)</h2>
+        <p class="vazio-explicativo" style="text-align:left; padding:0 0 12px;">Quando alguém responder SAIR no seu e-mail, adicione o e-mail dela aqui. Ela nunca mais entra em nenhum disparo futuro.</p>
+        <form id="formularioOptoutProsp" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+          <input type="email" id="campoEmailOptoutProsp" placeholder="email@damarca.com" required style="flex:1; min-width:220px; padding:9px 12px; border-radius:10px; border:1.5px solid rgba(58,43,34,0.22); background:var(--papel); font-size:.85rem;">
+          <button type="submit" class="btn btn-secundario">${ICONES.mais(16)} Adicionar ao descadastro</button>
+        </form>
+        <div id="areaListaOptoutProsp"></div>
+      </div>
     `;
 
     ligarEventos();
@@ -198,6 +209,7 @@ window.AdminProspeccao = (function () {
     verificarBaseSemEmail(container);
     await carregarEstatisticas(container);
     await carregarHistorico(container);
+    await carregarOptout(container);
     renderizarPreview();
   }
 
@@ -220,6 +232,7 @@ window.AdminProspeccao = (function () {
 
     $("botaoPreviewTelaCheiaProsp").addEventListener("click", abrirPreviewTelaCheia);
     $("campoBuscaHistoricoProsp").addEventListener("input", () => renderizarHistorico($("campoBuscaHistoricoProsp").value));
+    $("formularioOptoutProsp").addEventListener("submit", adicionarOptout);
   }
 
   /* ---------- TEXTO E MODELO DE E-MAIL ---------- */
@@ -395,16 +408,19 @@ window.AdminProspeccao = (function () {
     } else base = [];
 
     const semEmail = base.filter((m) => !(m.email && m.email.trim())).length;
+    const emailsDescadastrados = new Set(optoutCache.map((o) => o.email.toLowerCase()));
     const vistos = {};
     const lista = [];
+    let descadastrados = 0;
     base.filter((m) => !!(m.email && m.email.trim())).forEach((m) => {
       const chave = m.email.trim().toLowerCase();
       if (vistos[chave]) return;
       vistos[chave] = true;
+      if (emailsDescadastrados.has(chave)) { descadastrados++; return; }
       lista.push({ email: m.email.trim(), nomeMarca: m.nome || "" });
     });
 
-    return { lista, comEmail: lista.length, semEmail };
+    return { lista, comEmail: lista.length, semEmail, descadastrados };
   }
 
   function atualizarContadorDestinatarios() {
@@ -412,6 +428,7 @@ window.AdminProspeccao = (function () {
     const resultado = montarListaDestinatarios(filtro);
     let texto = `${resultado.comEmail} marca(s) vão receber`;
     if (resultado.semEmail > 0) texto += `, ${resultado.semEmail} ficaram de fora por não ter e-mail`;
+    if (resultado.descadastrados > 0) texto += `, ${resultado.descadastrados} ficaram de fora por estar no descadastro`;
 
     const alvo = $("contadorDestinatariosProsp");
     if (filtro === "selecionadas" && resultado.comEmail === 0) {
@@ -503,6 +520,63 @@ window.AdminProspeccao = (function () {
     renderizarHistorico($("campoBuscaHistoricoProsp").value);
   }
 
+  /* ---------- DESCADASTROS (quem respondeu SAIR) ---------- */
+
+  async function carregarOptout(container) {
+    const { data, error } = await window.banco.from("email_optout").select("*").order("criado_em", { ascending: false });
+    if (error) {
+      optoutCache = [];
+      $("areaListaOptoutProsp").innerHTML = `<p class="vazio-explicativo">A tabela de descadastro ainda não existe. Rode o prospeccao.sql no Supabase.</p>`;
+      return;
+    }
+    optoutCache = data || [];
+    renderizarListaOptout();
+    atualizarContadorDestinatarios();
+  }
+
+  function renderizarListaOptout() {
+    const alvo = $("areaListaOptoutProsp");
+    if (!alvo) return;
+    if (optoutCache.length === 0) {
+      alvo.innerHTML = `<p class="vazio-explicativo">Ninguém pediu pra sair ainda.</p>`;
+      return;
+    }
+    alvo.innerHTML = `<ul style="display:flex; flex-direction:column; gap:8px;">
+      ${optoutCache.map((o) => `
+        <li style="display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:.85rem;">
+          <span>${escapeHtml(o.email)} <span style="color:var(--tinta-suave); font-size:.78rem;">· desde ${formatarData(o.criado_em)}</span></span>
+          <button type="button" class="link-discreto" data-remover-optout="${o.id}">remover</button>
+        </li>
+      `).join("")}
+    </ul>`;
+    alvo.querySelectorAll("[data-remover-optout]").forEach((botao) => {
+      botao.addEventListener("click", () => removerOptout(botao.dataset.removerOptout));
+    });
+  }
+
+  async function adicionarOptout(evento) {
+    evento.preventDefault();
+    const campo = $("campoEmailOptoutProsp");
+    const email = campo.value.trim().toLowerCase();
+    if (!email) return;
+    const { error } = await window.banco.from("email_optout").insert({ email });
+    if (error) {
+      mostrarToast(error.message.indexOf("duplicate") !== -1 ? "Esse e-mail já está no descadastro" : "Não consegui adicionar: " + error.message, "erro");
+      return;
+    }
+    campo.value = "";
+    mostrarToast("E-mail adicionado ao descadastro");
+    await carregarOptout(document.getElementById("conteudoAba"));
+  }
+
+  async function removerOptout(id) {
+    if (!confirm("Remover esse e-mail do descadastro? Ele volta a poder receber e-mails de prospecção.")) return;
+    const { error } = await window.banco.from("email_optout").delete().eq("id", id);
+    if (error) { mostrarToast("Não consegui remover (rode o adicionar-remover-optout.sql no Supabase)", "erro"); return; }
+    mostrarToast("Removido do descadastro");
+    await carregarOptout(document.getElementById("conteudoAba"));
+  }
+
   /* ---------- ENVIAR VIA RESEND ---------- */
 
   async function chamarFuncaoEnviarEmails(destinatarios, assunto, corpoHtml) {
@@ -518,6 +592,35 @@ window.AdminProspeccao = (function () {
     return dados;
   }
 
+  // Busca, na tabela de histórico, o motivo real do último envio que falhou
+  // pra esse e-mail (é a função carteiro que grava esse texto lá).
+  async function buscarMotivoUltimaFalha(email) {
+    try {
+      const { data } = await window.banco
+        .from("email_envios")
+        .select("erro, criado_em")
+        .eq("email", email.toLowerCase())
+        .eq("status", "erro")
+        .order("criado_em", { ascending: false })
+        .limit(1);
+      return data && data[0] ? data[0].erro : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function mostrarErroEnvioDetalhado(titulo, motivo) {
+    abrirModalAdmin(titulo, `
+      <p style="margin-bottom:10px;">O Resend recusou o envio com esta mensagem:</p>
+      <p style="background: var(--linho); border-radius:10px; padding:12px 14px; font-size:.85rem; font-family:'Courier New', monospace; word-break:break-word;">${escapeHtml(motivo)}</p>
+      <p style="font-size:.84rem; color:var(--tinta-suave); margin-top:14px;">
+        As causas mais comuns: a chave RESEND_API_KEY não foi colada nas Secrets da função, ou você ainda não verificou
+        um domínio no Resend (sem domínio verificado, ele só entrega e-mail de teste pro e-mail que você usou pra
+        criar a conta no Resend).
+      </p>
+    `);
+  }
+
   function enviarTeste() {
     const template = montarTemplateAtual();
     if (!template.assunto || !template.corpoHtml) {
@@ -529,8 +632,14 @@ window.AdminProspeccao = (function () {
     const textoOriginal = botao.textContent;
     botao.textContent = "Enviando teste...";
     chamarFuncaoEnviarEmails([{ email: EMAIL_AUTORIZADO, nomeMarca: "Marca de Teste" }], template.assunto, template.corpoHtml)
-      .then((resultado) => {
-        mostrarToast(resultado.enviados > 0 ? "Teste enviado! Confira sua caixa de entrada." : "O teste não foi enviado.", resultado.enviados > 0 ? "sucesso" : "erro");
+      .then(async (resultado) => {
+        if (resultado.enviados > 0) {
+          mostrarToast("Teste enviado! Confira sua caixa de entrada.", "sucesso");
+          return;
+        }
+        mostrarToast("O teste não foi enviado. Veja o motivo na janela que abriu.", "erro");
+        const motivo = await buscarMotivoUltimaFalha(EMAIL_AUTORIZADO);
+        mostrarErroEnvioDetalhado("Por que o teste não foi enviado", motivo || "Não encontrei o motivo no histórico. Confira se a Edge Function enviar-emails está publicada no Supabase.");
       })
       .catch((erro) => mostrarToast("Não deu pra mandar o teste: " + erro.message, "erro"))
       .finally(() => { botao.disabled = false; botao.textContent = textoOriginal; });
