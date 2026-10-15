@@ -16,7 +16,7 @@ function renderEmConstrucao(nomeAba, descricao) {
 }
 
 const ABAS = {
-  dashboard:  { titulo: "Dashboard",   render: () => renderEmConstrucao("Dashboard", "Essa visão geral chega na próxima etapa, com os cards de faturamento, propostas, lembretes e o resumo do Instagram.") },
+  dashboard:  { titulo: "Dashboard",   render: () => window.AdminDashboard.render(document.getElementById("conteudoAba")) },
   portfolio:  { titulo: "Portfólio",  render: () => window.AdminPortfolio.render(document.getElementById("conteudoAba")) },
   marcas:     { titulo: "Marcas",     render: () => window.AdminMarcas.render(document.getElementById("conteudoAba")) },
   prospeccao: { titulo: "Prospecção", render: () => window.AdminProspeccao.render(document.getElementById("conteudoAba")) },
@@ -43,7 +43,7 @@ async function iniciarAdmin() {
   document.body.classList.remove("carregando");
 
   montarNavegacao();
-  irParaAba("portfolio");
+  irParaAba("dashboard");
 
   window.banco.auth.onAuthStateChange((_evento, sessao) => {
     if (!sessao) window.location.replace("../login/");
