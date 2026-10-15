@@ -14,6 +14,8 @@ window.AdminDashboard = (function () {
   let campanhasCache = [];
   let lembretesCache = [];
   let propostasCache = [];
+  let lancamentosCache = [];
+  let metaMensal = 0;
 
   function $(id) { return document.getElementById(id); }
 
@@ -44,20 +46,25 @@ window.AdminDashboard = (function () {
     $("botaoOcultarValoresDash").addEventListener("click", alternarOcultarValores);
     atualizarIconeOcultar();
 
-    const [campanhasResultado, lembretesResultado, propostasResultado] = await Promise.all([
+    const [campanhasResultado, lembretesResultado, propostasResultado, lancamentosResultado, configResultado] = await Promise.all([
       window.banco.from("campanhas").select("*"),
       window.banco.from("lembretes").select("*").order("data", { ascending: true }),
       window.banco.from("propostas").select("status"),
+      window.banco.from("lancamentos").select("*"),
+      window.banco.from("configuracoes").select("*").eq("chave", "meta_mensal"),
     ]);
 
     if (campanhasResultado.error) avisoFaltando(container, "campanhas", campanhasResultado.error);
     if (lembretesResultado.error) avisoFaltando(container, "lembretes (rode o adicionar-lembretes.sql no Supabase)", lembretesResultado.error);
-    // propostas ainda pode não existir (rode o adicionar-propostas.sql); sem aviso aqui
-    // pra não poluir o Dashboard, o card simplesmente mostra um traço.
+    // propostas e lancamentos ainda podem não existir (rode os SQL das etapas
+    // de Propostas e Financeiro); sem aviso aqui pra não poluir o Dashboard,
+    // os cards simplesmente mostram um traço.
 
     campanhasCache = campanhasResultado.data || [];
     lembretesCache = lembretesResultado.data || [];
     propostasCache = propostasResultado.data || [];
+    lancamentosCache = lancamentosResultado.data || [];
+    metaMensal = Number((configResultado.data || [])[0]?.valor) || 0;
 
     renderCards();
     renderLembretes();
@@ -89,15 +96,21 @@ window.AdminDashboard = (function () {
     const emProducao = campanhasCache.filter((c) => c.ativa && c.status !== "Entregue").length;
     const entregasSemana = campanhasCache.filter((c) => c.prazo && c.prazo >= hojeStr && c.prazo <= em7diasStr && c.status !== "Entregue").length;
 
+    const anoMesAtual = hojeStr.slice(0, 7);
+    const lancamentosDoMes = lancamentosCache.filter((l) => (l.vencimento || "").slice(0, 7) === anoMesAtual);
+    const faturadoMes = lancamentosDoMes.filter((l) => l.status === "pago").reduce((s, l) => s + Number(l.valor || 0), 0);
+    const aReceberTotal = lancamentosCache.filter((l) => l.status !== "pago").reduce((s, l) => s + Number(l.valor || 0), 0);
+    const percMeta = metaMensal > 0 ? Math.min(100, Math.round((faturadoMes / metaMensal) * 100)) : 0;
+
     const cartoes = [
-      {
-        cor: "var(--terracota)", numero: textoValor("—"), rotulo: "faturado no mês", pendente: true,
-        extra: `<div class="barra-progresso"><div style="width:0%;"></div></div><div class="contexto">Meta e faturamento chegam com o Financeiro</div>`,
-      },
-      {
-        cor: "var(--amarelo-texto)", numero: textoValor("—"), rotulo: "a receber", pendente: true,
-        contexto: "Aparece quando o Financeiro estiver pronto",
-      },
+      lancamentosCache.length === 0
+        ? { cor: "var(--terracota)", numero: textoValor("—"), rotulo: "faturado no mês", pendente: true,
+            extra: `<div class="barra-progresso"><div style="width:0%;"></div></div><div class="contexto">Cadastre lançamentos na aba Financeiro</div>` }
+        : { cor: "var(--terracota)", numero: textoValor(formatarMoeda(faturadoMes)), rotulo: "faturado no mês",
+            extra: `<div class="barra-progresso"><div style="width:${percMeta}%;"></div></div><div class="contexto">${metaMensal > 0 ? `${percMeta}% da meta de ${textoValor(formatarMoeda(metaMensal))}` : "Defina sua meta na aba Financeiro"}</div>` },
+      lancamentosCache.length === 0
+        ? { cor: "var(--amarelo-texto)", numero: textoValor("—"), rotulo: "a receber", pendente: true, contexto: "Aparece quando o Financeiro estiver pronto" }
+        : { cor: "var(--amarelo-texto)", numero: textoValor(formatarMoeda(aReceberTotal)), rotulo: "a receber", contexto: "Somando todos os meses" },
       {
         cor: "var(--oliva)", numero: String(emProducao), rotulo: "em produção",
         contexto: campanhasCache.length ? `${entregasSemana} entrega(s) nesta semana` : "Cadastre campanhas na aba Campanhas",

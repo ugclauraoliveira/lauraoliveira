@@ -24,7 +24,7 @@ const ABAS = {
   campanhas:  { titulo: "Campanhas",  render: () => window.AdminCampanhas.render(document.getElementById("conteudoAba")) },
   checklist:  { titulo: "Checklist",  render: () => window.AdminChecklist.render(document.getElementById("conteudoAba")) },
   propostas:  { titulo: "Propostas",  render: () => window.AdminPropostas.render(document.getElementById("conteudoAba")) },
-  financeiro: { titulo: "Financeiro", render: () => renderEmConstrucao("Financeiro", "O controle de recebimentos e a meta mensal chegam numa próxima etapa.") },
+  financeiro: { titulo: "Financeiro", render: () => window.AdminFinanceiro.render(document.getElementById("conteudoAba")) },
   roteiros:   { titulo: "Transcrições", render: () => window.AdminRoteiros.render(document.getElementById("conteudoAba")) },
   instagram:  { titulo: "Instagram",  render: () => renderEmConstrucao("Instagram", "O registro de métricas e o banco de ideias de conteúdo chegam numa próxima etapa.") },
 };
