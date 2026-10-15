@@ -308,12 +308,30 @@ tr.arrastando{ opacity:.4; }
 .capa-etiquetas{ display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
 .etiqueta-capa{ background: rgba(255,255,255,0.16); border:1px solid rgba(255,255,255,0.3); border-radius:999px; padding:5px 13px; font-size:.72rem; color:#fff; }
 
-/* ---------- PROSPECÇÃO: CARTÕES DE MÉTRICA ---------- */
-.grade-metricas-prospeccao{ display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:12px; margin-bottom:20px; }
-.cartao-metrica-prospeccao{ background: var(--papel); border-radius: var(--raio); border-left:4px solid var(--tarja, var(--terracota)); padding:14px 16px; box-shadow: 0 8px 20px -16px var(--sombra); }
-.cartao-metrica-prospeccao .numero{ font-family: var(--serif); font-weight:400; font-size:1.7rem; color: var(--tarja, var(--terracota)); }
-.cartao-metrica-prospeccao .rotulo{ font-size:.8rem; color: var(--tinta-suave); margin-top:2px; }
-.cartao-metrica-prospeccao .contexto{ font-size:.7rem; color: var(--tinta-suave); margin-top:2px; }
+/* ---------- CARTÕES DE MÉTRICA (Prospecção e Dashboard) ---------- */
+.grade-metricas-prospeccao, .grade-cartoes-metrica{ display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:12px; margin-bottom:20px; }
+.cartao-metrica-prospeccao, .cartao-metrica{ background: var(--papel); border-radius: var(--raio); border-left:4px solid var(--tarja, var(--terracota)); padding:14px 16px; box-shadow: 0 8px 20px -16px var(--sombra); }
+.cartao-metrica-prospeccao .numero, .cartao-metrica .numero{ font-family: var(--serif); font-weight:400; font-size:1.7rem; color: var(--tarja, var(--terracota)); }
+.cartao-metrica-prospeccao .rotulo, .cartao-metrica .rotulo{ font-size:.8rem; color: var(--tinta-suave); margin-top:2px; }
+.cartao-metrica-prospeccao .contexto, .cartao-metrica .contexto{ font-size:.7rem; color: var(--tinta-suave); margin-top:2px; }
+.cartao-metrica.pendente .numero{ color: var(--tinta-suave); }
+.cartao-metrica .barra-progresso{ width:100%; margin-top:8px; }
+
+/* ---------- DASHBOARD ---------- */
+.atalhos-dashboard{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+.atalhos-dashboard .btn{ flex:1; min-width:120px; justify-content:center; }
+.botao-ocultar-valores{ flex:0 0 auto !important; min-width:0 !important; width:40px; padding:0 !important; }
+.lista-lembretes-dashboard{ display:flex; flex-direction:column; }
+.lista-lembretes-dashboard h3{ font-size:.82rem; text-transform:uppercase; letter-spacing:.04em; color: var(--tinta-suave); margin:14px 0 4px; }
+.lista-lembretes-dashboard h3:first-child{ margin-top:0; }
+.item-lembrete{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid rgba(58,43,34,0.08); }
+.item-lembrete:last-child{ border-bottom:none; }
+.item-lembrete input{ width:16px; height:16px; accent-color: var(--terracota); flex-shrink:0; }
+.item-lembrete .pino-prioridade{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.item-lembrete .texto-lembrete{ flex:1; min-width:0; cursor:pointer; }
+.item-lembrete .texto-lembrete strong{ display:block; font-size:.88rem; }
+.item-lembrete.concluido .texto-lembrete strong{ text-decoration:line-through; opacity:.55; }
+.item-lembrete .meta-lembrete{ font-size:.74rem; color: var(--tinta-suave); }
 
 /* ---------- PROSPECÇÃO: FORMULÁRIO + PRÉVIA ---------- */
 .grade-prospeccao{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap:20px; align-items:start; }
