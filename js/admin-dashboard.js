@@ -284,37 +284,125 @@ window.AdminDashboard = (function () {
   }
 
   /* ---------- NOTIFICAÇÃO DE LEMBRETES ----------
-     Isso só funciona enquanto você está com o admin aberto no
-     navegador (é uma notificação do navegador, não um push de
-     celular de verdade, que exigiria um servidor à parte). Mas
-     já avisa na hora se o lembrete é de hoje e você está com a
-     aba aberta ou minimizada. */
+     Duas camadas:
+     1) Push de verdade: ao ativar, o navegador cria uma "assinatura"
+        (Service Worker + PushManager) que é salva no Supabase. De 15 em
+        15 minutos, uma função lá do Supabase confere os lembretes e manda
+        a notificação direto pro celular, mesmo com o site/navegador
+        fechados.
+     2) Aviso local (verificarNotificacoes, mais abaixo): continua existindo
+        como complemento — se você estiver com o admin aberto, avisa na
+        hora, sem esperar o ciclo de 15 minutos. */
 
   const CHAVE_NOTIFICADOS_HOJE = "painelLembretesNotificadosHoje";
+
+  // Chave pública VAPID: segura para ficar aqui no código (é pública por
+  // natureza, como a chave do Supabase em js/banco.js). A privada nunca
+  // fica no site — só como segredo da função enviar-notificacoes.
+  const VAPID_CHAVE_PUBLICA = "BD_Pv9e_ktkD0RT4wJF8HAXAx3MiBU1ntlqhqk3quLBgQzbb72dCuYiSsxQCKMNFGQOwLGUhsHn3bnCDhLJa4YI";
 
   function notificacoesSuportadas() {
     return typeof Notification !== "undefined";
   }
 
-  function atualizarBotaoNotificacoes() {
+  function pushSuportado() {
+    return "serviceWorker" in navigator && "PushManager" in window;
+  }
+
+  function urlBase64ParaUint8Array(base64String) {
+    const preenchimento = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + preenchimento).replace(/-/g, "+").replace(/_/g, "/");
+    const bruto = window.atob(base64);
+    const saida = new Uint8Array(bruto.length);
+    for (let i = 0; i < bruto.length; i++) saida[i] = bruto.charCodeAt(i);
+    return saida;
+  }
+
+  async function registrarServiceWorker() {
+    if (!pushSuportado()) return null;
+    try {
+      return await navigator.serviceWorker.register("../sw.js");
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function assinaturaAtual() {
+    const registro = await registrarServiceWorker();
+    if (!registro) return null;
+    return registro.pushManager.getSubscription();
+  }
+
+  async function atualizarBotaoNotificacoes() {
     const botao = $("botaoNotificacoesDash");
     if (!botao) return;
     if (!notificacoesSuportadas()) { botao.style.display = "none"; return; }
 
-    if (Notification.permission === "granted") {
-      botao.textContent = "Notificações ativadas";
-      botao.disabled = true;
-    } else if (Notification.permission === "denied") {
+    if (Notification.permission === "denied") {
       botao.textContent = "Notificações bloqueadas pelo navegador";
       botao.disabled = true;
-    } else {
-      botao.textContent = "Ativar notificações";
-      botao.disabled = false;
-      botao.onclick = async () => {
-        await Notification.requestPermission();
-        atualizarBotaoNotificacoes();
-        verificarNotificacoes();
-      };
+      return;
+    }
+
+    if (pushSuportado() && Notification.permission === "granted") {
+      const assinatura = await assinaturaAtual();
+      if (assinatura) {
+        botao.textContent = "Notificações ativadas no celular";
+        botao.disabled = true;
+        return;
+      }
+    }
+
+    botao.textContent = "Ativar notificações no celular";
+    botao.disabled = false;
+    botao.onclick = ativarNotificacoesPush;
+  }
+
+  async function ativarNotificacoesPush() {
+    const botao = $("botaoNotificacoesDash");
+    if (botao) { botao.disabled = true; botao.textContent = "Ativando..."; }
+
+    try {
+      const permissao = await Notification.requestPermission();
+      if (permissao !== "granted") {
+        mostrarToast("Sem permissão do navegador, não vai dar pra te avisar.", "erro");
+        return;
+      }
+
+      if (pushSuportado()) {
+        const registro = await registrarServiceWorker();
+        if (!registro) {
+          mostrarToast("Não consegui preparar as notificações neste navegador.", "erro");
+          return;
+        }
+
+        let assinatura = await registro.pushManager.getSubscription();
+        if (!assinatura) {
+          assinatura = await registro.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ParaUint8Array(VAPID_CHAVE_PUBLICA),
+          });
+        }
+
+        const dados = assinatura.toJSON();
+        const { error } = await window.banco.from("push_subscriptions").upsert(
+          { endpoint: dados.endpoint, p256dh: dados.keys.p256dh, auth: dados.keys.auth },
+          { onConflict: "endpoint" },
+        );
+
+        if (error) {
+          mostrarToast("Permissão ativada, mas faltou rodar o adicionar-notificacoes-push.sql no Supabase.", "erro");
+        } else {
+          mostrarToast("Notificações ativadas! Agora chegam até no celular, mesmo com o site fechado.");
+        }
+      } else {
+        mostrarToast("Esse navegador só avisa enquanto o site está aberto.");
+      }
+    } catch (e) {
+      mostrarToast("Não consegui ativar as notificações.", "erro");
+    } finally {
+      atualizarBotaoNotificacoes();
+      verificarNotificacoes();
     }
   }
 
