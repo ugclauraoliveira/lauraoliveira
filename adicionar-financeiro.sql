@@ -10,6 +10,10 @@
 -- 2) configuracoes: uma tabelinha bem simples de "chave e valor", usada
 --    pra guardar a sua meta mensal (e, se um dia precisar, outras
 --    configurações do painel, sem precisar criar tabela nova pra cada uma).
+--
+-- Pode rodar esse arquivo mais de uma vez sem medo, mesmo que já tenha
+-- rodado antes (inclusive se parou no meio por algum erro): ele apaga e
+-- recria só as regras de segurança, nunca os seus dados.
 -- =========================================================================
 
 create table if not exists public.lancamentos (
@@ -34,19 +38,33 @@ create table if not exists public.configuracoes (
 );
 
 alter table public.lancamentos enable row level security;
+
+drop policy if exists "laura le lancamentos" on public.lancamentos;
 create policy "laura le lancamentos" on public.lancamentos
   for select to authenticated using (true);
+
+drop policy if exists "laura cadastra lancamentos" on public.lancamentos;
 create policy "laura cadastra lancamentos" on public.lancamentos
   for insert to authenticated with check (true);
+
+drop policy if exists "laura edita lancamentos" on public.lancamentos;
 create policy "laura edita lancamentos" on public.lancamentos
   for update to authenticated using (true) with check (true);
+
+drop policy if exists "laura apaga lancamentos" on public.lancamentos;
 create policy "laura apaga lancamentos" on public.lancamentos
   for delete to authenticated using (true);
 
 alter table public.configuracoes enable row level security;
+
+drop policy if exists "laura le configuracoes" on public.configuracoes;
 create policy "laura le configuracoes" on public.configuracoes
   for select to authenticated using (true);
+
+drop policy if exists "laura cadastra configuracoes" on public.configuracoes;
 create policy "laura cadastra configuracoes" on public.configuracoes
   for insert to authenticated with check (true);
+
+drop policy if exists "laura edita configuracoes" on public.configuracoes;
 create policy "laura edita configuracoes" on public.configuracoes
   for update to authenticated using (true) with check (true);
