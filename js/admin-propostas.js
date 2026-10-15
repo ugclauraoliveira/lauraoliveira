@@ -473,8 +473,19 @@ window.AdminPropostas = (function () {
     if (error) { mostrarToast("Não consegui atualizar", "erro"); return; }
     const p = propostasCache.find((x) => x.id === id);
     if (p) p.status = novoStatus;
-    if (novoStatus === "aceita") {
-      mostrarToast("Proposta aceita! Quando o Financeiro estiver pronto, vou te oferecer criar o lançamento automaticamente.");
+
+    if (novoStatus === "aceita" && p) {
+      if (window.AdminFinanceiro) {
+        if (confirm(`Proposta aceita! Quer criar o lançamento de ${formatarMoeda(p.total)} pra "${p.cliente_nome}" no Financeiro?`)) {
+          const resultado = await window.AdminFinanceiro.criarLancamentoDeProposta(p);
+          if (resultado.error) mostrarToast("Não consegui criar o lançamento: " + resultado.error.message, "erro");
+          else mostrarToast("Lançamento criado no Financeiro");
+        } else {
+          mostrarToast("Status atualizado");
+        }
+      } else {
+        mostrarToast("Proposta aceita! Quando o Financeiro estiver pronto, vou te oferecer criar o lançamento automaticamente.");
+      }
     } else {
       mostrarToast("Status atualizado");
     }
