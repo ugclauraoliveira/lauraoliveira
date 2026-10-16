@@ -143,25 +143,28 @@ window.AdminFinanceiro = (function () {
   function renderGrafico() {
     const area = $("areaGraficoFin");
     if (lancamentosCache.length === 0) {
-      area.innerHTML = `<p class="vazio-explicativo">Quando você tiver lançamentos, aqui vai aparecer um gráfico comparando o recebido dos últimos meses.</p>`;
+      area.innerHTML = `<p class="vazio-explicativo">Quando você tiver lançamentos, aqui vai aparecer um gráfico comparando o recebido no ano.</p>`;
       return;
     }
 
+    const ano = mesAtual.getFullYear();
     const meses = [];
-    for (let i = 5; i >= 0; i--) meses.push(new Date(mesAtual.getFullYear(), mesAtual.getMonth() - i, 1));
+    for (let m = 0; m < 12; m++) meses.push(new Date(ano, m, 1));
 
     const totais = meses.map((m) => lancamentosDoMes(m).filter((l) => l.status === "pago").reduce((s, l) => s + Number(l.valor || 0), 0));
     const maximo = Math.max(1, ...totais);
 
-    area.innerHTML = `<div class="grafico-barras">
-      ${meses.map((m, i) => {
-        const altura = Math.max(2, Math.round((totais[i] / maximo) * 100));
-        return `<div class="barra-dia" title="${formatarMoeda(totais[i])} em ${NOMES_MES[m.getMonth()]}">
-          <div class="barra" style="height:${altura}%"></div>
-          <span class="rotulo-dia">${NOMES_MES_CURTO[m.getMonth()]}</span>
-        </div>`;
-      }).join("")}
-    </div>`;
+    area.innerHTML = `
+      <p class="vazio-explicativo" style="text-align:left; padding:0 0 10px;">Ano de ${ano} (o mesmo ano que você está navegando lá em cima)</p>
+      <div class="grafico-barras">
+        ${meses.map((m, i) => {
+          const altura = Math.max(2, Math.round((totais[i] / maximo) * 100));
+          return `<div class="barra-dia" title="${formatarMoeda(totais[i])} em ${NOMES_MES[m.getMonth()]}">
+            <div class="barra" style="height:${altura}%"></div>
+            <span class="rotulo-dia">${NOMES_MES_CURTO[m.getMonth()]}</span>
+          </div>`;
+        }).join("")}
+      </div>`;
   }
 
   function renderLista() {
