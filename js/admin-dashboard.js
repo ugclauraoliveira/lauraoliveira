@@ -160,9 +160,9 @@ window.AdminDashboard = (function () {
   /* ---------- LEMBRETES ---------- */
 
   function corPrioridade(prioridade) {
-    if (prioridade === "alta") return "var(--terracota)";
-    if (prioridade === "baixa") return "var(--oliva)";
-    return "var(--amarelo-texto)";
+    if (prioridade === "baixa") return "var(--amarelo)";
+    if (prioridade === "alta") return "var(--vermelho)";
+    return "var(--laranja)";
   }
 
   function renderLembretes() {
