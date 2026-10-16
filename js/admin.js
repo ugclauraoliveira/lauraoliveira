@@ -23,6 +23,7 @@ const ABAS = {
   calendario: { titulo: "Calendário", render: () => window.AdminCalendario.render(document.getElementById("conteudoAba")) },
   campanhas:  { titulo: "Campanhas",  render: () => window.AdminCampanhas.render(document.getElementById("conteudoAba")) },
   checklist:  { titulo: "Checklist",  render: () => window.AdminChecklist.render(document.getElementById("conteudoAba")) },
+  guiaimersao: { titulo: "Guia da Imersão", render: () => window.AdminGuia.render(document.getElementById("conteudoAba")) },
   propostas:  { titulo: "Propostas",  render: () => window.AdminPropostas.render(document.getElementById("conteudoAba")) },
   financeiro: { titulo: "Financeiro", render: () => window.AdminFinanceiro.render(document.getElementById("conteudoAba")) },
   roteiros:   { titulo: "Transcrições", render: () => window.AdminRoteiros.render(document.getElementById("conteudoAba")) },
