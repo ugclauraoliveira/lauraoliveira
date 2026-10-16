@@ -16,6 +16,8 @@ window.AdminDashboard = (function () {
   let propostasCache = [];
   let lancamentosCache = [];
   let metaMensal = 0;
+  let instagramMetricasCache = [];
+  let ideiasCache = [];
 
   function $(id) { return document.getElementById(id); }
 
@@ -44,31 +46,36 @@ window.AdminDashboard = (function () {
     `;
 
     $("botaoNovoLembreteDash").addEventListener("click", () => abrirFormularioLembrete(null));
-    $("botaoNovaIdeiaDash").addEventListener("click", () => mostrarToast("As ideias de conteúdo chegam na etapa do Instagram"));
+    $("botaoNovaIdeiaDash").addEventListener("click", () => window.AdminInstagram.abrirNovaIdeia(() => render(container)));
     $("botaoNovaPropostaDash").addEventListener("click", () => irParaAba("propostas"));
     $("botaoOcultarValoresDash").addEventListener("click", alternarOcultarValores);
     atualizarIconeOcultar();
     atualizarBotaoNotificacoes();
 
-    const [campanhasResultado, lembretesResultado, propostasResultado, lancamentosResultado, configResultado] = await Promise.all([
+    const [campanhasResultado, lembretesResultado, propostasResultado, lancamentosResultado, configResultado, instagramResultado, ideiasResultado] = await Promise.all([
       window.banco.from("campanhas").select("*"),
       window.banco.from("lembretes").select("*").order("data", { ascending: true }),
       window.banco.from("propostas").select("status"),
       window.banco.from("lancamentos").select("*"),
       window.banco.from("configuracoes").select("*").eq("chave", "meta_mensal"),
+      window.banco.from("instagram_metricas").select("*").order("data", { ascending: false }).limit(2),
+      window.banco.from("ideias_conteudo").select("status"),
     ]);
 
     if (campanhasResultado.error) avisoFaltando(container, "campanhas", campanhasResultado.error);
     if (lembretesResultado.error) avisoFaltando(container, "lembretes (rode o adicionar-lembretes.sql no Supabase)", lembretesResultado.error);
-    // propostas e lancamentos ainda podem não existir (rode os SQL das etapas
-    // de Propostas e Financeiro); sem aviso aqui pra não poluir o Dashboard,
-    // os cards simplesmente mostram um traço.
+    // propostas, lancamentos, instagram_metricas e ideias_conteudo ainda podem
+    // não existir (rode os SQL das etapas de Propostas, Financeiro e
+    // Instagram); sem aviso aqui pra não poluir o Dashboard, os cards
+    // simplesmente mostram um traço.
 
     campanhasCache = campanhasResultado.data || [];
     lembretesCache = lembretesResultado.data || [];
     propostasCache = propostasResultado.data || [];
     lancamentosCache = lancamentosResultado.data || [];
     metaMensal = Number((configResultado.data || [])[0]?.valor) || 0;
+    instagramMetricasCache = instagramResultado.data || [];
+    ideiasCache = ideiasResultado.data || [];
 
     renderCards();
     renderLembretes();
@@ -124,14 +131,20 @@ window.AdminDashboard = (function () {
         ? { cor: "var(--azul-suave)", numero: "—", rotulo: "propostas enviadas", pendente: true, contexto: "Crie a primeira na aba Propostas" }
         : { cor: "var(--azul-suave)", numero: String(propostasCache.filter((p) => p.status === "enviada").length), rotulo: "aguardando resposta",
             contexto: `${propostasCache.filter((p) => p.status === "aceita").length} aceita(s) · ${propostasCache.filter((p) => p.status === "recusada").length} recusada(s)` },
-      {
-        cor: "var(--vermelho-suave)", numero: "—", rotulo: "resumo do Instagram", pendente: true,
-        contexto: "Aparece quando o Instagram estiver pronto",
-      },
-      {
-        cor: "var(--terracota-escuro)", numero: "—", rotulo: "ideias em andamento", pendente: true,
-        contexto: "Aparece quando o Instagram estiver pronto",
-      },
+      instagramMetricasCache.length === 0
+        ? { cor: "var(--vermelho-suave)", numero: "—", rotulo: "resumo do Instagram", pendente: true, contexto: "Registre seus números na aba Instagram" }
+        : (() => {
+            const [atual, anterior] = instagramMetricasCache;
+            const diferenca = anterior ? atual.seguidores - anterior.seguidores : null;
+            const contexto = diferenca === null
+              ? `Último registro: ${formatarData(atual.data)}`
+              : `${diferenca >= 0 ? "+" : ""}${diferenca} desde ${formatarData(anterior.data)}`;
+            return { cor: "var(--vermelho-suave)", numero: String(atual.seguidores), rotulo: "seguidores no Instagram", contexto };
+          })(),
+      ideiasCache.length === 0
+        ? { cor: "var(--terracota-escuro)", numero: "—", rotulo: "ideias em andamento", pendente: true, contexto: "Adicione ideias na aba Instagram" }
+        : { cor: "var(--terracota-escuro)", numero: String(ideiasCache.filter((i) => i.status !== "publicado").length), rotulo: "ideias em andamento",
+            contexto: `${ideiasCache.filter((i) => i.status === "publicado").length} publicada(s)` },
     ];
 
     $("gradeCartoesDash").innerHTML = cartoes.map((c) => `
