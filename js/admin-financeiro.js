@@ -323,6 +323,7 @@ window.AdminFinanceiro = (function () {
         return;
       }
 
+      const status = $("campoStatusFin").value;
       const parcelas = Math.max(1, Number($("campoParcelasFin").value) || 1);
       const linhas = [];
       const valorParcela = Math.floor((valorTotal / parcelas) * 100) / 100;
@@ -334,7 +335,7 @@ window.AdminFinanceiro = (function () {
           cliente, descricao, valor: valorDesta,
           vencimento: data.toISOString().slice(0, 10),
           forma_pagamento: formaPagamento,
-          status: "a receber",
+          status,
           parcela_rotulo: parcelas > 1 ? `Parcela ${i + 1}/${parcelas}` : "",
         });
       }
