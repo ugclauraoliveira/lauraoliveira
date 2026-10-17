@@ -105,7 +105,16 @@ Deno.serve(async (req: Request) => {
   }
 
   // 4) Monta o pedido para a IA (Gemini).
-  const instrucoes = `Você é uma assistente de negociação para Laura Oliveira, criadora de conteúdo (UGC). Uma marca mandou uma mensagem durante uma negociação de parceria/publicidade, e você precisa sugerir a MELHOR resposta que Laura pode mandar de volta, seguindo à risca o manual de negociação abaixo (ensinado em um curso que ela fez). Responda sempre em português do Brasil, na primeira pessoa (como se fosse a própria Laura escrevendo), em tom profissional, caloroso e confiante — nunca rude, nunca passivo. Use as "frases mágicas" do manual em vez das frases proibidas. Devolva APENAS o texto da resposta pronta para Laura copiar e enviar, sem explicações antes ou depois, sem markdown.
+  const instrucoes = `Você é uma assistente de negociação para Laura Oliveira, criadora de conteúdo (UGC). Uma marca mandou uma mensagem durante uma negociação de parceria/publicidade, e você precisa sugerir a MELHOR resposta que Laura pode mandar de volta, seguindo à risca o manual de negociação abaixo (ensinado em cursos que ela fez, incluindo como ela mesma gosta de usar IA pra isso). Responda sempre em português do Brasil, na primeira pessoa (como se fosse a própria Laura escrevendo). Priorize condução estratégica, construção de valor antes do preço e fechamento de parcerias remuneradas. Evite respostas passivas, inseguras, genéricas ou que incentivem redução de preço. Use as "frases mágicas" do manual em vez das frases proibidas. Evite excesso de explicação — foque em respostas aplicáveis e práticas.
+
+Gere SEMPRE 3 variações da resposta, pra Laura escolher a que preferir:
+- "direta": mais curta e objetiva, direto ao ponto.
+- "amigavel": mais calorosa, com emojis quando fizer sentido, mantendo o profissionalismo.
+- "firme": mais segura de si, sustentando o posicionamento sem abrir mão de valor.
+As 3 variações devem ser respostas completas e prontas pra copiar e enviar, só mudando o tom — nunca mude o conteúdo estratégico da resposta (os números, as condições, os próximos passos têm que ser consistentes entre as 3).
+
+Devolva SOMENTE um JSON válido, neste formato exato, sem nenhum texto antes ou depois, sem markdown:
+{"direta": "...", "amigavel": "...", "firme": "..."}
 
 MANUAL DE NEGOCIAÇÃO:
 ${manual}`;
@@ -116,14 +125,17 @@ ${manual}`;
     partes.push({ inline_data: { mime_type: imagemMimeType, data: imagemBase64 } });
   }
 
-  let textoGerado = "";
+  let variacoes: { direta?: string; amigavel?: string; firme?: string } = {};
   try {
     const respostaGemini = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ role: "user", parts: partes }] }),
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: partes }],
+          generationConfig: { responseMimeType: "application/json" },
+        }),
       },
     );
     const dadosGemini = await respostaGemini.json().catch(() => ({}) as any);
@@ -131,12 +143,13 @@ ${manual}`;
       const mensagemErro = (dadosGemini && dadosGemini.error && dadosGemini.error.message) || `Erro HTTP ${respostaGemini.status}`;
       return respostaJson({ erro: `Falha ao consultar a IA: ${mensagemErro}` }, 502);
     }
-    textoGerado = dadosGemini?.candidates?.[0]?.content?.parts?.map((p: any) => p.text || "").join("") || "";
+    const textoBruto = dadosGemini?.candidates?.[0]?.content?.parts?.map((p: any) => p.text || "").join("") || "";
+    variacoes = JSON.parse(textoBruto);
   } catch (erro) {
     return respostaJson({ erro: "Não consegui falar com a IA: " + String(erro instanceof Error ? erro.message : erro) }, 502);
   }
 
-  if (!textoGerado) {
+  if (!variacoes.direta && !variacoes.amigavel && !variacoes.firme) {
     return respostaJson({ erro: "A IA não devolveu nenhuma resposta. Tente de novo." }, 502);
   }
 
@@ -152,9 +165,9 @@ ${manual}`;
     body: JSON.stringify({
       marca,
       mensagem_recebida: mensagemTexto || "[enviado como print]",
-      resposta_sugerida: textoGerado,
+      resposta_sugerida: JSON.stringify(variacoes),
     }),
   }).catch(() => {});
 
-  return respostaJson({ resposta: textoGerado });
+  return respostaJson({ variacoes });
 });

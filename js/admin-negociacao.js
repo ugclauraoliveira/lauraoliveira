@@ -97,7 +97,7 @@ window.AdminNegociacao = (function () {
       const dados = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(dados.erro || "Falha ao gerar a resposta.");
 
-      mostrarResposta(dados.resposta);
+      mostrarResposta(dados.variacoes);
       await carregarHistorico(document.getElementById("conteudoAba"));
     } catch (erro) {
       mostrarToast("Não consegui gerar a resposta: " + erro.message, "erro");
@@ -107,19 +107,27 @@ window.AdminNegociacao = (function () {
     }
   }
 
-  function mostrarResposta(texto) {
+  const ROTULOS_VARIACAO = { direta: "Direta", amigavel: "Amigável", firme: "Firme" };
+
+  function mostrarResposta(variacoes) {
     const area = $("areaRespostaNeg");
-    area.innerHTML = `
+    const chaves = ["direta", "amigavel", "firme"].filter((chave) => variacoes && variacoes[chave]);
+
+    area.innerHTML = chaves.map((chave) => `
       <div class="campo-admin">
-        <label>Resposta sugerida</label>
-        <textarea id="campoRespostaGeradaNeg" style="min-height:140px;" readonly>${escapeHtml(texto)}</textarea>
+        <label>${ROTULOS_VARIACAO[chave]}</label>
+        <textarea id="campoRespostaGeradaNeg-${chave}" style="min-height:120px;" readonly>${escapeHtml(variacoes[chave])}</textarea>
+        <button type="button" class="btn btn-secundario" data-copiar-variacao="${chave}" style="align-self:flex-start;">${ICONES.copiar(16)} Copiar ${ROTULOS_VARIACAO[chave].toLowerCase()}</button>
       </div>
-      <button type="button" class="btn btn-secundario" id="botaoCopiarRespostaNeg">${ICONES.copiar(16)} Copiar</button>
-    `;
-    $("botaoCopiarRespostaNeg").addEventListener("click", () => {
-      navigator.clipboard.writeText(texto)
-        .then(() => mostrarToast("Resposta copiada"))
-        .catch(() => mostrarToast("Não consegui copiar sozinho, selecione o texto", "erro"));
+    `).join("");
+
+    area.querySelectorAll("[data-copiar-variacao]").forEach((botao) => {
+      botao.addEventListener("click", () => {
+        const texto = variacoes[botao.dataset.copiarVariacao];
+        navigator.clipboard.writeText(texto)
+          .then(() => mostrarToast("Resposta copiada"))
+          .catch(() => mostrarToast("Não consegui copiar sozinho, selecione o texto", "erro"));
+      });
     });
   }
 
@@ -140,16 +148,25 @@ window.AdminNegociacao = (function () {
       area.innerHTML = `<p class="vazio-explicativo">Nenhuma negociação registrada ainda.</p>`;
       return;
     }
-    area.innerHTML = historicoCache.map((h) => `
+    area.innerHTML = historicoCache.map((h) => {
+      let variacoes = null;
+      try { variacoes = JSON.parse(h.resposta_sugerida); } catch (e) { variacoes = null; }
+
+      const respostaHtml = (variacoes && typeof variacoes === "object")
+        ? ["direta", "amigavel", "firme"].filter((c) => variacoes[c]).map((c) => `<p style="font-size:.85rem; margin:4px 0;"><strong>${ROTULOS_VARIACAO[c]}:</strong> ${escapeHtml(variacoes[c])}</p>`).join("")
+        : `<p style="font-size:.85rem; margin:4px 0;">${escapeHtml(h.resposta_sugerida)}</p>`;
+
+      return `
       <div class="cartao" style="margin-bottom:10px; box-shadow:none; border:1px solid rgba(58,43,34,0.1);">
         <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
           <strong>${escapeHtml(h.marca || "Marca não informada")}</strong>
           <span style="font-size:.78rem; color:var(--tinta-suave);">${formatarDataHora(h.criado_em)}</span>
         </div>
         <p style="font-size:.85rem; margin:8px 0 2px;"><strong>Marca disse:</strong> ${escapeHtml(h.mensagem_recebida)}</p>
-        <p style="font-size:.85rem; margin:2px 0 0;"><strong>Resposta sugerida:</strong> ${escapeHtml(h.resposta_sugerida)}</p>
+        ${respostaHtml}
       </div>
-    `).join("");
+    `;
+    }).join("");
   }
 
   return { render };
