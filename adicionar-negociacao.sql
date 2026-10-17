@@ -161,6 +161,26 @@ Técnica usada aqui: nunca aceitar a primeira oferta (nem a permuta, nem o desco
 - Mostre flexibilidade e profissionalismo no roteiro: "Vocês podem me mandar o roteiro que gostariam que eu seguisse, ou eu crio e envio para aprovação."
 - Quando a marca pede tempo pra decidir internamente ("vamos analisar com o time"), responda com cordialidade, sem pressionar, e aguarde. Pode oferecer um pequeno incentivo condicionado a uma resposta rápida — não é desconto, é agilidade na entrega — pra gerar leve urgência sem parecer ansiosa: "Caso consigam retorno até amanhã, consigo incluir a entrega de uma das produções ainda essa semana."
 - Assim que fechar, já defina um marco concreto de entrega ("te envio o primeiro vídeo até sexta") — isso transmite organização e controle do processo.
-- Feche a conversa de forma simples e calorosa, agradecendo e desejando um bom dia/continuidade, sem alongar depois que o "sim" já veio.$$
+- Feche a conversa de forma simples e calorosa, agradecendo e desejando um bom dia/continuidade, sem alongar depois que o "sim" já veio.
+
+14. TENTAR CONVENCER x CONDUZIR A NEGOCIAÇÃO (postura geral — a mais importante)
+Tentar convencer (evite): explica demais, justifica o próprio valor de novo e de novo, tenta provar que "vale a pena", insiste para a marca aceitar, fica dependente da aprovação dela, fala mais do que deveria.
+Conduzir a negociação (faça isso): apresenta valor com clareza (uma vez só, sem repetir se justificando), direciona a conversa com estratégia, cria cenários e opções estruturadas (pacotes), mantém controle sem pressão, leva a marca à decisão com segurança, demonstra que não precisa fechar aquela marca mas quer.
+
+15. SIMULAÇÃO: QUANDO A MARCA INSISTE EM PERMUTA (mesmo depois da resposta profissional)
+Marca: "No momento estamos priorizando permuta, obrigada."
+Forma condutora (aceitar a permuta, mas reduzindo o escopo da entrega): "Entendo perfeitamente. Então, para esse formato em permuta, conseguimos trabalhar com uma entrega um pouco mais simples, como conteúdos mais diretos ou stories. O que acha? [envie um exemplo de conteúdo simples como referência]. Quando se trata de conteúdos mais estratégicos, focados em vendas e performance, é necessário muitas horas de produção e investimento, por isso, com projetos remunerados, consigo garantir um resultado mais consistente junto à marca."
+Forma direcionada (oferecer duas opções e deixar a marca escolher): "Perfeito, então estruturei duas possibilidades: uma mais simples dentro do formato de permuta oferecido e outra mais estratégica já pensando em resultado e com uma condição mega especial. Você me confirma se conseguimos seguir assim?"
+Regra geral: nunca recusar a permuta de forma seca quando a marca insiste — sempre ofereça um caminho (entrega mais simples dentro da permuta, OU duas opções lado a lado), nunca deixando de reforçar que entregas estratégicas (foco em venda/performance) são reservadas para projetos remunerados.
+
+16. QUANDO A MARCA PERGUNTA "QUAL É O SEU PREÇO?" (antes de qualquer briefing)
+Nunca responda com um número direto de cara. Motivos: a marca pode pagar mais do que você imagina; preço isolado te coloca em comparação com outras criadoras; reduz a percepção de valor; diminui sua margem de negociação. Quem fala o preço primeiro perde vantagem — ganhe tempo com inteligência, não enrolando, mas conduzindo.
+Use esse momento para conduzir a conversa: entenda o objetivo da campanha, o formato esperado e a expectativa da marca antes de falar qualquer valor. Evite transformar sua entrega em algo simples só porque ainda não sabe o orçamento.
+Resposta estratégica modelo: "Hoje eu trabalho com formatos estratégicos, que variam de acordo com o objetivo da campanha, tipo de entrega e execução. Pra te direcionar da melhor forma, vocês já têm uma faixa de investimento definida para esse projeto?"
+Por que funciona: você não se limita antes de entender o cenário completo; abre espaço para orçamentos maiores do que você imaginaria; evita se subvalorizar; faz a marca revelar o nível/orçamento dela primeiro.
+
+17. A MARCA NÃO QUIS DIZER O PREÇO, E AGORA?
+Retome o controle com uma proposta estruturada: apresente opções (pacotes), mantenha seu posicionamento, mostre que conhece a marca, monte um orçamento exclusivo pra aquele projeto, e demonstre confiança e profissionalismo (nunca insegurança por não saber o orçamento dela).
+Exemplo: "Perfeito! Vou te estruturar algumas possibilidades alinhadas ao objetivo da campanha, assim conseguimos avaliar o melhor formato juntos."$$
 )
 on conflict (chave) do update set valor = excluded.valor;
