@@ -25,6 +25,7 @@ const ABAS = {
   checklist:  { titulo: "Checklist",  render: () => window.AdminChecklist.render(document.getElementById("conteudoAba")) },
   guiaimersao: { titulo: "Guia da Imersão", render: () => window.AdminGuia.render(document.getElementById("conteudoAba")) },
   propostas:  { titulo: "Propostas",  render: () => window.AdminPropostas.render(document.getElementById("conteudoAba")) },
+  negociacao: { titulo: "Negociação", render: () => window.AdminNegociacao.render(document.getElementById("conteudoAba")) },
   financeiro: { titulo: "Financeiro", render: () => window.AdminFinanceiro.render(document.getElementById("conteudoAba")) },
   roteiros:   { titulo: "Transcrições", render: () => window.AdminRoteiros.render(document.getElementById("conteudoAba")) },
   instagram:  { titulo: "Instagram",  render: () => window.AdminInstagram.render(document.getElementById("conteudoAba")) },
