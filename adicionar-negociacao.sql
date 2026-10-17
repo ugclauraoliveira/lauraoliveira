@@ -39,7 +39,10 @@ create policy "laura apaga negociacoes_historico" on public.negociacoes_historic
 
 insert into public.configuracoes (chave, valor) values (
   'negociacao_material',
-  $$AULA 3 — NEGOCIAÇÃO COM MARCAS
+  $$QUEM É A CRIADORA (contexto sobre a Laura)
+Sou criadora de conteúdo UGC, com foco em desenvolvimento de vídeos estratégicos para marcas, priorizando performance, comunicação persuasiva e geração de resultados. Atuo na estruturação de conteúdos orientados a conversão, posicionamento e fortalecimento de marca, além da condução de negociações comerciais com foco em valorização do trabalho e aumento de ticket médio. Desenvolvo roteiros, conceitos criativos e estratégias de comunicação alinhadas aos objetivos de cada campanha, considerando etapas de funil, comportamento do público e intenção de compra. Busco respostas práticas, aplicáveis e estratégicas, voltadas ao mercado de UGC, com foco em crescimento sustentável, monetização e posicionamento de alto valor.
+
+AULA 3 — NEGOCIAÇÃO COM MARCAS
 
 1. PREPARAÇÃO ANTES DA PROPOSTA
 - Pesquise sobre a marca: público, produtos, campanhas anteriores, tom de comunicação.
@@ -181,6 +184,26 @@ Por que funciona: você não se limita antes de entender o cenário completo; ab
 
 17. A MARCA NÃO QUIS DIZER O PREÇO, E AGORA?
 Retome o controle com uma proposta estruturada: apresente opções (pacotes), mantenha seu posicionamento, mostre que conhece a marca, monte um orçamento exclusivo pra aquele projeto, e demonstre confiança e profissionalismo (nunca insegurança por não saber o orçamento dela).
-Exemplo: "Perfeito! Vou te estruturar algumas possibilidades alinhadas ao objetivo da campanha, assim conseguimos avaliar o melhor formato juntos."$$
+Exemplo: "Perfeito! Vou te estruturar algumas possibilidades alinhadas ao objetivo da campanha, assim conseguimos avaliar o melhor formato juntos."
+
+18. FORMAS DE AUMENTAR O TICKET MÉDIO (use como ideias ao montar propostas/pacotes)
+- Pacotes escalonados: Bronze, Prata e Ouro, com entregas crescentes, permitindo à marca escolher o nível ideal.
+- Aumentar o tempo de uso em ADS: vender à parte um pacote de ADS isolado.
+- Pacotes recorrentes: assinatura mensal de conteúdo, garantindo receita contínua e previsível.
+- Conteúdo exclusivo por plataforma: Reels, TikTok ou Shorts adaptados — cada plataforma aumenta o valor do pacote.
+- Entrega premium: cobrança adicional por prazos reduzidos, oferecendo prioridade e exclusividade.
+- Conteúdo evergreen: materiais reutilizáveis que mantêm relevância ao longo do tempo, aumentando a percepção de valor.
+- Ofertas sazonais: pacotes especiais para datas comemorativas ou lançamentos, mais robustos e estratégicos.
+- Hooks extras: ganchos adicionais ou variações do mesmo vídeo, vendidos como teste A/B ou incremento de campanha.
+- CTAs extras: versões com diferentes chamadas para ação (compra, cadastro, swipe-up), agregando valor à marca.
+- Permuta convertida em valor: transformar propostas de permuta em pacotes menores + opções pagas de conteúdo ou anúncios.
+- Versões de teste: variações do mesmo conteúdo para testar performance, cobrando cada versão extra.
+- Extensões de vídeo: cortes maiores ou mais detalhados além da versão principal.
+- Carrosséis criativos: combinar fotos, vídeos e carrosséis — cada formato extra aumenta o ticket.
+- Sequência de storytelling: série de vídeos conectados que contam uma história, em vez de conteúdo isolado.
+- Atuar como influencer: cobrar um valor extra pra postar o conteúdo também nas redes sociais próprias da criadora.
+
+19. COMO A LAURA GOSTA DE RECEBER AS RESPOSTAS (estilo de trabalho)
+Respostas devem ser profissionais, claras, diretas e estratégicas, sempre focadas em resultado, posicionamento e valorização do trabalho. Priorize condução estratégica, construção de valor antes do preço e fechamento de parcerias remuneradas. Evite respostas passivas, inseguras, genéricas ou que incentivem redução de preço. Adapte o nível da linguagem conforme o contexto: estratégico, mas acessível, considerando que muitas marcas e públicos não têm alto nível de maturidade. Evite excesso de explicação — foque em respostas aplicáveis, práticas e com alto nível de execução.$$
 )
 on conflict (chave) do update set valor = excluded.valor;
