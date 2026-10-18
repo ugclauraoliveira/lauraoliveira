@@ -12,7 +12,6 @@ window.AdminPropostas = (function () {
     { nome: "Pacote de Stories", valor: 0 },
     { nome: "Publicidade no Instagram", valor: 0 },
     { nome: "Criativos para tráfego", valor: 0 },
-    { nome: "Consultoria", valor: 0 },
   ];
   const FORMAS_PAGAMENTO_PADRAO = "50% na contratação + 50% na aprovação do roteiro";
   const STATUS_PROPOSTA = ["enviada", "aceita", "recusada"];
