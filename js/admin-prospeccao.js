@@ -510,7 +510,7 @@ window.AdminProspeccao = (function () {
     }
     alvo.innerHTML = lista.map((h) => {
       const tag = h.status === "ok" ? `<span class="tag-status-envio ok">ok</span>` : `<span class="tag-status-envio erro">erro</span>`;
-      return `<tr>
+      return `<tr data-id="${h.id}" style="cursor:pointer;" title="Clique para ver o e-mail enviado">
         <td>${escapeHtml(h.email)}</td>
         <td>${escapeHtml(h.assunto)}</td>
         <td>${formatarDataHora(h.criado_em)}</td>
@@ -518,6 +518,23 @@ window.AdminProspeccao = (function () {
         <td>${escapeHtml(h.erro || "")}</td>
       </tr>`;
     }).join("");
+
+    alvo.querySelectorAll("tr[data-id]").forEach((linha) => {
+      linha.addEventListener("click", () => {
+        const h = historicoCache.find((x) => x.id === linha.dataset.id);
+        if (h) abrirEmailDoHistorico(h);
+      });
+    });
+  }
+
+  function abrirEmailDoHistorico(h) {
+    const corpo = h.corpo_html
+      ? `<iframe srcdoc="${attrEsc(h.corpo_html)}" style="width:100%; height:60vh; border:1px solid rgba(58,43,34,0.12); border-radius:10px; background:#fff;"></iframe>`
+      : `<p class="vazio-explicativo">Esse envio é de antes de guardarmos o conteúdo do e-mail, então não tem o que mostrar aqui.</p>`;
+    abrirModalAdmin(`Pra ${h.email}`, `
+      <p style="font-weight:600; margin:0 0 10px;">${escapeHtml(h.assunto)}</p>
+      ${corpo}
+    `);
   }
 
   async function carregarHistorico(container) {
@@ -805,6 +822,7 @@ window.AdminProspeccao = (function () {
         nomeMarca: d.nomeMarca,
         assunto: assuntoFinal,
         corpoTexto: obterTextoSimplesDeHtml(corpoFinalHtml),
+        corpoHtml: corpoFinalHtml,
         marcaId: marca ? marca.id : null,
       };
     });
@@ -845,7 +863,7 @@ window.AdminProspeccao = (function () {
 
   async function marcarItemFilaComoEnviado(item) {
     const agora = new Date().toISOString();
-    await window.banco.from("email_envios").insert({ email: item.email, assunto: item.assunto, status: "ok", erro: null, resend_id: null });
+    await window.banco.from("email_envios").insert({ email: item.email, assunto: item.assunto, status: "ok", erro: null, resend_id: null, corpo_html: item.corpoHtml || null });
     if (item.marcaId) {
       await window.banco.from("marcas").update({ ultimo_envio_em: agora, ultimo_envio_assunto: item.assunto }).eq("id", item.marcaId);
       const marca = marcasCache.find((m) => m.id === item.marcaId);
