@@ -75,7 +75,7 @@
   function renderizarProposta(p){
     const area = document.getElementById("areaProposta");
     const itens = Array.isArray(p.itens) ? p.itens : [];
-    const subtotal = itens.reduce((soma, item) => soma + (Number(item.valor) || 0), 0);
+    const subtotal = itens.reduce((soma, item) => soma + (Number(item.valor) || 0) * (Number(item.quantidade) || 1), 0);
     const desconto = Number(p.desconto) || 0;
 
     const dataValidade = new Date(p.criado_em);
@@ -93,12 +93,16 @@
         <div class="proposta-corpo">
           <div class="bloco-proposta">
             <h2>Serviços</h2>
-            ${itens.map(item => `
+            ${itens.map(item => {
+              const quantidade = Number(item.quantidade) || 1;
+              const valor = Number(item.valor) || 0;
+              return `
               <div class="linha-item-proposta">
-                <span>${escapeHtml(item.descricao)}</span>
-                <span>${formatarMoeda(item.valor)}</span>
+                <span>${quantidade > 1 ? `${quantidade}x ` : ""}${escapeHtml(item.descricao)}</span>
+                <span>${formatarMoeda(valor * quantidade)}</span>
               </div>
-            `).join("") || `<p class="vazio-explicativo" style="text-align:left; padding:0;">Nenhum item cadastrado.</p>`}
+            `;
+            }).join("") || `<p class="vazio-explicativo" style="text-align:left; padding:0;">Nenhum item cadastrado.</p>`}
             ${desconto > 0 ? `<div class="linha-desconto-proposta"><span>Desconto</span><span>- ${formatarMoeda(desconto)}</span></div>` : ""}
             <div class="linha-total-proposta"><span>Total</span><span>${formatarMoeda(subtotal - desconto)}</span></div>
           </div>
