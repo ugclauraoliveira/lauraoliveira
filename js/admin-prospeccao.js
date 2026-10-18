@@ -55,6 +55,9 @@ window.AdminProspeccao = (function () {
           <span class="etiqueta-capa">a chave vive no Supabase</span>
           <span class="etiqueta-capa">quem responde SAIR sai da lista</span>
         </div>
+        <div style="margin-top:14px;">
+          <a class="btn btn-secundario" href="https://eilaradam.github.io/admin-imersao/email/" target="_blank" rel="noopener">${ICONES.envelope(16)} Guia de e-mails</a>
+        </div>
       </div>
 
       <div class="grade-metricas-prospeccao">
