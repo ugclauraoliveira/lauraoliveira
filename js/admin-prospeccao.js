@@ -23,6 +23,17 @@ window.AdminProspeccao = (function () {
 
   function $(id) { return document.getElementById(id); }
 
+  // Alguns e-mails importados vêm com anotação junto, tipo
+  // "contato@marca.com.br (contato — e-mail geral)" ou até
+  // "não encontrado". Isso quebrava o envio (o Resend recusa o
+  // campo "to" com texto extra ou caracteres como o travessão —).
+  // Esta função pega só o endereço de e-mail de verdade, descartando
+  // o resto.
+  function extrairEmailValido(bruto) {
+    const match = String(bruto || "").match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/);
+    return match ? match[0].toLowerCase() : "";
+  }
+
   /* ---------- RENDER PRINCIPAL ---------- */
 
   async function render(container) {
@@ -352,7 +363,7 @@ window.AdminProspeccao = (function () {
   }
 
   function verificarBaseSemEmail(container) {
-    const totalComEmail = marcasCache.filter((m) => !!(m.email && m.email.trim())).length;
+    const totalComEmail = marcasCache.filter((m) => !!extrairEmailValido(m.email)).length;
     const aviso = $("avisoBaseSemEmailProsp");
     const area = $("areaFormularioProsp");
     if (totalComEmail === 0) {
@@ -407,17 +418,18 @@ window.AdminProspeccao = (function () {
       base = marcasCache.filter((m) => (m.situacao || "") === valor);
     } else base = [];
 
-    const semEmail = base.filter((m) => !(m.email && m.email.trim())).length;
     const emailsDescadastrados = new Set(optoutCache.map((o) => o.email.toLowerCase()));
     const vistos = {};
     const lista = [];
+    let semEmail = 0;
     let descadastrados = 0;
-    base.filter((m) => !!(m.email && m.email.trim())).forEach((m) => {
-      const chave = m.email.trim().toLowerCase();
-      if (vistos[chave]) return;
-      vistos[chave] = true;
-      if (emailsDescadastrados.has(chave)) { descadastrados++; return; }
-      lista.push({ email: m.email.trim(), nomeMarca: m.nome || "" });
+    base.forEach((m) => {
+      const emailLimpo = extrairEmailValido(m.email);
+      if (!emailLimpo) { semEmail++; return; }
+      if (vistos[emailLimpo]) return;
+      vistos[emailLimpo] = true;
+      if (emailsDescadastrados.has(emailLimpo)) { descadastrados++; return; }
+      lista.push({ email: emailLimpo, nomeMarca: m.nome || "" });
     });
 
     return { lista, comEmail: lista.length, semEmail, descadastrados };
@@ -461,7 +473,7 @@ window.AdminProspeccao = (function () {
   }
 
   async function carregarEstatisticas(container) {
-    const comEmail = marcasCache.filter((m) => !!(m.email && m.email.trim())).length;
+    const comEmail = marcasCache.filter((m) => !!extrairEmailValido(m.email)).length;
     const jaReceberam = marcasCache.filter((m) => !!m.ultimo_envio_em).length;
     $("metricaComEmailProsp").textContent = comEmail;
     $("metricaAEnviarProsp").textContent = comEmail - jaReceberam;
@@ -787,7 +799,7 @@ window.AdminProspeccao = (function () {
     filaRascunho = resultado.lista.map((d) => {
       const assuntoFinal = aplicarVariaveis(template.assunto, d.nomeMarca);
       const corpoFinalHtml = aplicarVariaveis(template.corpoHtml, d.nomeMarca);
-      const marca = marcasCache.find((m) => m.email && m.email.toLowerCase() === d.email.toLowerCase());
+      const marca = marcasCache.find((m) => extrairEmailValido(m.email) === d.email.toLowerCase());
       return {
         email: d.email,
         nomeMarca: d.nomeMarca,
