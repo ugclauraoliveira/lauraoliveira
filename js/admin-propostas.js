@@ -61,9 +61,13 @@ window.AdminPropostas = (function () {
               <input id="campoDescontoProp" type="number" min="0" step="0.01" value="0">
             </div>
             <div class="campo-admin">
-              <label>Total</label>
-              <div id="textoTotalProp" style="font-family:var(--serif); font-size:1.4rem; color:var(--terracota-escuro); padding-top:6px;">R$ 0,00</div>
+              <label for="campoDescontoPercentProp">Desconto em % (opcional)</label>
+              <input id="campoDescontoPercentProp" type="number" min="0" max="100" step="0.01" placeholder="Ex: 10">
             </div>
+          </div>
+          <div class="campo-admin">
+            <label>Total</label>
+            <div id="textoTotalProp" style="font-family:var(--serif); font-size:1.4rem; color:var(--terracota-escuro); padding-top:6px;">R$ 0,00</div>
           </div>
         </div>
 
@@ -157,6 +161,11 @@ window.AdminPropostas = (function () {
     $("botaoWhatsappProp").addEventListener("click", enviarPorWhatsapp);
     $("botaoNovaProp").addEventListener("click", () => { iniciarNovaProposta(); mostrarToast("Formulário limpo pra uma proposta nova"); });
     $("campoDescontoProp").addEventListener("input", atualizarTotal);
+    $("campoDescontoPercentProp").addEventListener("input", () => {
+      const percentual = Number($("campoDescontoPercentProp").value) || 0;
+      $("campoDescontoProp").value = (Math.round(subtotalItens() * (percentual / 100) * 100) / 100).toFixed(2);
+      atualizarTotal();
+    });
     $("campoBuscaHistoricoProp").addEventListener("input", () => renderHistorico($("campoBuscaHistoricoProp").value));
 
     ["campoClienteNomeProp", "campoClienteWhatsappProp", "campoPrazoEntregaProp", "campoFormasPagamentoProp", "campoComoFuncionaProp", "campoObservacoesProp", "campoValidadeProp", "campoDescontoProp"].forEach((id) => {
@@ -188,7 +197,7 @@ window.AdminPropostas = (function () {
   }
 
   function adicionarItem(item) {
-    itensAtual.push({ descricao: item.descricao || "", valor: Number(item.valor) || 0 });
+    itensAtual.push({ descricao: item.descricao || "", valor: Number(item.valor) || 0, quantidade: Number(item.quantidade) || 1 });
     renderItens();
     atualizarTotal();
   }
@@ -199,25 +208,36 @@ window.AdminPropostas = (function () {
       area.innerHTML = `<p class="vazio-explicativo" style="text-align:left; padding:8px 0;">Nenhum item ainda. Use os botões acima ou adicione um item em branco.</p>`;
       return;
     }
-    area.innerHTML = itensAtual.map((item, i) => `
-      <div class="linha-campos" data-item="${i}" style="align-items:flex-end; margin-bottom:8px;">
-        <div class="campo-admin" style="flex:2;">
+    area.innerHTML = itensAtual.map((item, i) => {
+      const quantidade = Number(item.quantidade) || 1;
+      const valor = Number(item.valor) || 0;
+      return `
+      <div data-item="${i}" style="display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; margin-bottom:8px;">
+        <div class="campo-admin" style="flex:2; min-width:160px; margin-bottom:0;">
           <label>Descrição</label>
           <input data-campo-item="descricao" data-indice="${i}" value="${attrEsc(item.descricao)}">
         </div>
-        <div class="campo-admin" style="max-width:140px;">
-          <label>Valor (R$)</label>
-          <input data-campo-item="valor" data-indice="${i}" type="number" min="0" step="0.01" value="${item.valor}">
+        <div class="campo-admin" style="width:90px; margin-bottom:0;">
+          <label>Quantidade</label>
+          <input data-campo-item="quantidade" data-indice="${i}" type="number" min="1" step="1" value="${quantidade}">
         </div>
+        <div class="campo-admin" style="width:140px; margin-bottom:0;">
+          <label>Valor unitário (R$)</label>
+          <input data-campo-item="valor" data-indice="${i}" type="number" min="0" step="0.01" value="${valor}">
+        </div>
+        <span data-subtotal-item="${i}" style="font-size:.8rem; color:var(--tinta-suave); padding-bottom:10px;">${formatarMoeda(valor * quantidade)}</span>
         <button type="button" class="btn-icone" data-remover-item="${i}" title="Remover item">${ICONES.lixeira(16)}</button>
       </div>
-    `).join("");
+    `;
+    }).join("");
 
     area.querySelectorAll("[data-campo-item]").forEach((input) => {
       input.addEventListener("input", () => {
         const i = Number(input.dataset.indice);
         const campo = input.dataset.campoItem;
-        itensAtual[i][campo] = campo === "valor" ? Number(input.value) || 0 : input.value;
+        itensAtual[i][campo] = campo === "descricao" ? input.value : Number(input.value) || 0;
+        const subtotalSpan = area.querySelector(`[data-subtotal-item="${i}"]`);
+        if (subtotalSpan) subtotalSpan.textContent = formatarMoeda((Number(itensAtual[i].valor) || 0) * (Number(itensAtual[i].quantidade) || 1));
         atualizarTotal();
       });
     });
@@ -230,10 +250,13 @@ window.AdminPropostas = (function () {
     });
   }
 
+  function subtotalItens() {
+    return itensAtual.reduce((soma, item) => soma + (Number(item.valor) || 0) * (Number(item.quantidade) || 1), 0);
+  }
+
   function calcularTotal() {
-    const subtotal = itensAtual.reduce((soma, item) => soma + (Number(item.valor) || 0), 0);
     const desconto = Number($("campoDescontoProp").value) || 0;
-    return Math.max(0, subtotal - desconto);
+    return Math.max(0, subtotalItens() - desconto);
   }
 
   function atualizarTotal() {
@@ -250,6 +273,7 @@ window.AdminPropostas = (function () {
     $("campoClienteNomeProp").value = "";
     $("campoClienteWhatsappProp").value = "";
     $("campoDescontoProp").value = "0";
+    $("campoDescontoPercentProp").value = "";
     $("campoPrazoEntregaProp").value = "";
     $("campoFormasPagamentoProp").value = FORMAS_PAGAMENTO_PADRAO;
     $("campoComoFuncionaProp").value = "";
@@ -267,6 +291,7 @@ window.AdminPropostas = (function () {
     $("campoClienteNomeProp").value = p.cliente_nome || "";
     $("campoClienteWhatsappProp").value = p.cliente_whatsapp || "";
     $("campoDescontoProp").value = p.desconto || 0;
+    $("campoDescontoPercentProp").value = "";
     $("campoPrazoEntregaProp").value = p.prazo_entrega || "";
     $("campoFormasPagamentoProp").value = p.formas_pagamento || FORMAS_PAGAMENTO_PADRAO;
     $("campoComoFuncionaProp").value = p.como_funciona || "";
@@ -371,7 +396,7 @@ window.AdminPropostas = (function () {
 
   function renderizarPreviaAgora() {
     const dados = dadosDoFormulario();
-    const subtotal = itensAtual.reduce((s, i) => s + (Number(i.valor) || 0), 0);
+    const subtotal = subtotalItens();
     const passos = (dados.como_funciona || "").split("\n").map((l) => l.trim()).filter(Boolean);
     const nomeExemplo = dados.cliente_nome || "Cliente Exemplo";
 
@@ -384,9 +409,11 @@ window.AdminPropostas = (function () {
         <div class="proposta-corpo">
           <div class="bloco-proposta">
             <h2>Serviços</h2>
-            ${itensAtual.filter((i) => i.descricao).map((item) => `
-              <div class="linha-item-proposta"><span>${escapeHtml(item.descricao)}</span><span>${formatarMoeda(item.valor)}</span></div>
-            `).join("") || `<p class="vazio-explicativo" style="text-align:left; padding:0;">Adicione itens na aba Editar.</p>`}
+            ${itensAtual.filter((i) => i.descricao).map((item) => {
+              const quantidade = Number(item.quantidade) || 1;
+              const valor = Number(item.valor) || 0;
+              return `<div class="linha-item-proposta"><span>${quantidade > 1 ? `${quantidade}x ` : ""}${escapeHtml(item.descricao)}</span><span>${formatarMoeda(valor * quantidade)}</span></div>`;
+            }).join("") || `<p class="vazio-explicativo" style="text-align:left; padding:0;">Adicione itens na aba Editar.</p>`}
             ${dados.desconto > 0 ? `<div class="linha-desconto-proposta"><span>Desconto</span><span>- ${formatarMoeda(dados.desconto)}</span></div>` : ""}
             <div class="linha-total-proposta"><span>Total</span><span>${formatarMoeda(Math.max(0, subtotal - dados.desconto))}</span></div>
           </div>
