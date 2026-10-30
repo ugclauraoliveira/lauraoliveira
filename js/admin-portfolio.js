@@ -322,7 +322,11 @@ window.AdminPortfolio = (function () {
       if (editando) {
         resultado = await window.banco.from("videos").update(dados).eq("id", video.id);
       } else {
-        dados.ordem = videosCache.length ? Math.max(...videosCache.map(v => v.ordem || 0)) + 1 : 0;
+        // Vídeo novo entra sempre no começo da fila do nicho dele (em vez
+        // de ir pro final), pra aparecer primeiro assim que for publicado.
+        const videosDoNicho = videosCache.filter(v => (v.nicho || "") === dados.nicho);
+        const referencia = videosDoNicho.length ? videosDoNicho : videosCache;
+        dados.ordem = referencia.length ? Math.min(...referencia.map(v => v.ordem || 0)) - 1 : 0;
         resultado = await window.banco.from("videos").insert(dados);
       }
 
