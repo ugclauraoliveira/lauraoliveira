@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Proposta | Laura Oliveira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+<style>
+  /* O visual do "documento" da proposta (janela-proposta e tudo dentro
+     dela) mora em css/admin.css, compartilhado com a prévia do admin.
+     Aqui fica só o que é específico desta página pública. */
+  body{ background: var(--linho); min-height:100vh; padding: 28px 16px 60px; }
+  .pagina-proposta{ max-width: 640px; margin: 0 auto; }
+  .proposta-marca{ text-align:center; margin-bottom: 20px; }
+  .proposta-marca .nome{ font-family: var(--serif); font-style: italic; color: var(--terracota-escuro); font-size: 1.4rem; }
+  @media print{
+    body{ background:#fff; padding:0; }
+    .proposta-marca, .rodape-proposta{ display:none; }
+    .janela-proposta{ box-shadow:none; border-radius:0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="pagina-proposta">
+  <div class="proposta-marca"><span class="nome">Laura Oliveira</span></div>
+  <div id="areaProposta">
+    <div class="estado-proposta">Carregando a proposta...</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/banco.js"></script>
+<script>
+  function escapeHtml(texto){
+    return String(texto ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  }
+  function formatarMoeda(valor){
+    return (Number(valor) || 0).toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
+  }
+  function formatarData(dataISO){
+    const d = new Date(dataISO);
+    return d.toLocaleDateString("pt-BR");
+  }
+
+  async function carregarProposta(){
+    const area = document.getElementById("areaProposta");
+    const parametros = new URLSearchParams(window.location.search);
+    const token = parametros.get("id");
+
+    if(!token){
+      area.innerHTML = `<div class="janela-proposta"><div class="estado-proposta">Link incompleto. Confira se você copiou o endereço certinho.</div></div>`;
+      return;
+    }
+
+    const { data, error } = await window.banco.rpc("obter_proposta_publica", { token_busca: token });
+    const proposta = Array.isArray(data) ? data[0] : data;
+
+    if(error || !proposta){
+      area.innerHTML = `<div class="janela-proposta"><div class="estado-proposta">Não encontrei essa proposta. Confira se o link está completo, ou fale com a Laura.</div></div>`;
+      return;
+    }
+
+    renderizarProposta(proposta);
+
+    if (parametros.get("imprimir") === "1") {
+      setTimeout(() => window.print(), 400);
+    }
+  }
+
+  function renderizarProposta(p){
+    const area = document.getElementById("areaProposta");
+    const itens = Array.isArray(p.itens) ? p.itens : [];
+    const subtotal = itens.reduce((soma, item) => soma + (Number(item.valor) || 0) * (Number(item.quantidade) || 1), 0);
+    const desconto = Number(p.desconto) || 0;
+
+    const dataValidade = new Date(p.criado_em);
+    dataValidade.setDate(dataValidade.getDate() + (Number(p.validade_dias) || 7));
+    const venceu = new Date() > dataValidade;
+
+    const passos = (p.como_funciona || "").split("\n").map(l => l.trim()).filter(Boolean);
+
+    area.innerHTML = `
+      <div class="janela-proposta">
+        <div class="proposta-topo">
+          <span class="eyebrow">proposta de parceria</span>
+          <h1>Pra ${escapeHtml(p.cliente_nome)}</h1>
+        </div>
+        <div class="proposta-corpo">
+          <div class="bloco-proposta">
+            <h2>Serviços</h2>
+            ${itens.map(item => {
+              const quantidade = Number(item.quantidade) || 1;
+              const valor = Number(item.valor) || 0;
+              return `
+              <div class="linha-item-proposta">
+                <span>${quantidade > 1 ? `${quantidade}x ` : ""}${escapeHtml(item.descricao)}</span>
+                <span>${formatarMoeda(valor * quantidade)}</span>
+              </div>
+            `;
+            }).join("") || `<p class="vazio-explicativo" style="text-align:left; padding:0;">Nenhum item cadastrado.</p>`}
+            ${desconto > 0 ? `<div class="linha-desconto-proposta"><span>Desconto</span><span>- ${formatarMoeda(desconto)}</span></div>` : ""}
+            <div class="linha-total-proposta"><span>Total</span><span>${formatarMoeda(subtotal - desconto)}</span></div>
+          </div>
+
+          ${p.prazo_entrega ? `<div class="bloco-proposta"><h2>Prazo de entrega</h2><p style="margin:0;">${escapeHtml(p.prazo_entrega)}</p></div>` : ""}
+          ${p.formas_pagamento ? `<div class="bloco-proposta"><h2>Formas de pagamento</h2><p style="margin:0;">${escapeHtml(p.formas_pagamento)}</p></div>` : ""}
+          ${passos.length ? `<div class="bloco-proposta"><h2>Como funciona depois do aceite</h2><ol class="lista-passos-proposta">${passos.map(passo => `<li>${escapeHtml(passo)}</li>`).join("")}</ol></div>` : ""}
+          ${p.observacoes ? `<div class="bloco-proposta"><h2>Observações</h2><p style="margin:0;">${escapeHtml(p.observacoes)}</p></div>` : ""}
+        </div>
+        <p class="nota-validade-proposta ${venceu ? "vencida" : ""}">
+          ${venceu ? "Essa proposta já venceu. Fala comigo pra gente atualizar os valores." : `Proposta válida até ${formatarData(dataValidade)}.`}
+        </p>
+        <div class="rodape-proposta">
+          <p style="margin:0 0 8px;">Dúvidas? Chama no WhatsApp.</p>
+          <a href="https://wa.me/5543999747945" target="_blank" rel="noopener">(43) 99974-7945</a>
+        </div>
+      </div>
+    `;
+  }
+
+  carregarProposta();
+</script>
+</body>
+</html>

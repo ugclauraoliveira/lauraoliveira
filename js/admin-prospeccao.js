@@ -23,6 +23,17 @@ window.AdminProspeccao = (function () {
 
   function $(id) { return document.getElementById(id); }
 
+  // Alguns e-mails importados vêm com anotação junto, tipo
+  // "contato@marca.com.br (contato — e-mail geral)" ou até
+  // "não encontrado". Isso quebrava o envio (o Resend recusa o
+  // campo "to" com texto extra ou caracteres como o travessão —).
+  // Esta função pega só o endereço de e-mail de verdade, descartando
+  // o resto.
+  function extrairEmailValido(bruto) {
+    const match = String(bruto || "").match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/);
+    return match ? match[0].toLowerCase() : "";
+  }
+
   /* ---------- RENDER PRINCIPAL ---------- */
 
   async function render(container) {
@@ -43,6 +54,9 @@ window.AdminProspeccao = (function () {
           <span class="etiqueta-capa">teste antes sempre</span>
           <span class="etiqueta-capa">a chave vive no Supabase</span>
           <span class="etiqueta-capa">quem responde SAIR sai da lista</span>
+        </div>
+        <div style="margin-top:14px;">
+          <a class="btn btn-secundario" href="https://eilaradam.github.io/admin-imersao/email/" target="_blank" rel="noopener">${ICONES.envelope(16)} Guia de e-mails</a>
         </div>
       </div>
 
@@ -352,7 +366,7 @@ window.AdminProspeccao = (function () {
   }
 
   function verificarBaseSemEmail(container) {
-    const totalComEmail = marcasCache.filter((m) => !!(m.email && m.email.trim())).length;
+    const totalComEmail = marcasCache.filter((m) => !!extrairEmailValido(m.email)).length;
     const aviso = $("avisoBaseSemEmailProsp");
     const area = $("areaFormularioProsp");
     if (totalComEmail === 0) {
@@ -407,17 +421,18 @@ window.AdminProspeccao = (function () {
       base = marcasCache.filter((m) => (m.situacao || "") === valor);
     } else base = [];
 
-    const semEmail = base.filter((m) => !(m.email && m.email.trim())).length;
     const emailsDescadastrados = new Set(optoutCache.map((o) => o.email.toLowerCase()));
     const vistos = {};
     const lista = [];
+    let semEmail = 0;
     let descadastrados = 0;
-    base.filter((m) => !!(m.email && m.email.trim())).forEach((m) => {
-      const chave = m.email.trim().toLowerCase();
-      if (vistos[chave]) return;
-      vistos[chave] = true;
-      if (emailsDescadastrados.has(chave)) { descadastrados++; return; }
-      lista.push({ email: m.email.trim(), nomeMarca: m.nome || "" });
+    base.forEach((m) => {
+      const emailLimpo = extrairEmailValido(m.email);
+      if (!emailLimpo) { semEmail++; return; }
+      if (vistos[emailLimpo]) return;
+      vistos[emailLimpo] = true;
+      if (emailsDescadastrados.has(emailLimpo)) { descadastrados++; return; }
+      lista.push({ email: emailLimpo, nomeMarca: m.nome || "" });
     });
 
     return { lista, comEmail: lista.length, semEmail, descadastrados };
@@ -461,7 +476,7 @@ window.AdminProspeccao = (function () {
   }
 
   async function carregarEstatisticas(container) {
-    const comEmail = marcasCache.filter((m) => !!(m.email && m.email.trim())).length;
+    const comEmail = marcasCache.filter((m) => !!extrairEmailValido(m.email)).length;
     const jaReceberam = marcasCache.filter((m) => !!m.ultimo_envio_em).length;
     $("metricaComEmailProsp").textContent = comEmail;
     $("metricaAEnviarProsp").textContent = comEmail - jaReceberam;
@@ -498,7 +513,7 @@ window.AdminProspeccao = (function () {
     }
     alvo.innerHTML = lista.map((h) => {
       const tag = h.status === "ok" ? `<span class="tag-status-envio ok">ok</span>` : `<span class="tag-status-envio erro">erro</span>`;
-      return `<tr>
+      return `<tr data-id="${h.id}" style="cursor:pointer;" title="Clique para ver o e-mail enviado">
         <td>${escapeHtml(h.email)}</td>
         <td>${escapeHtml(h.assunto)}</td>
         <td>${formatarDataHora(h.criado_em)}</td>
@@ -506,6 +521,23 @@ window.AdminProspeccao = (function () {
         <td>${escapeHtml(h.erro || "")}</td>
       </tr>`;
     }).join("");
+
+    alvo.querySelectorAll("tr[data-id]").forEach((linha) => {
+      linha.addEventListener("click", () => {
+        const h = historicoCache.find((x) => x.id === linha.dataset.id);
+        if (h) abrirEmailDoHistorico(h);
+      });
+    });
+  }
+
+  function abrirEmailDoHistorico(h) {
+    const corpo = h.corpo_html
+      ? `<iframe srcdoc="${attrEsc(h.corpo_html)}" style="width:100%; height:60vh; border:1px solid rgba(58,43,34,0.12); border-radius:10px; background:#fff;"></iframe>`
+      : `<p class="vazio-explicativo">Esse envio é de antes de guardarmos o conteúdo do e-mail, então não tem o que mostrar aqui.</p>`;
+    abrirModalAdmin(`Pra ${h.email}`, `
+      <p style="font-weight:600; margin:0 0 10px;">${escapeHtml(h.assunto)}</p>
+      ${corpo}
+    `);
   }
 
   async function carregarHistorico(container) {
@@ -787,12 +819,13 @@ window.AdminProspeccao = (function () {
     filaRascunho = resultado.lista.map((d) => {
       const assuntoFinal = aplicarVariaveis(template.assunto, d.nomeMarca);
       const corpoFinalHtml = aplicarVariaveis(template.corpoHtml, d.nomeMarca);
-      const marca = marcasCache.find((m) => m.email && m.email.toLowerCase() === d.email.toLowerCase());
+      const marca = marcasCache.find((m) => extrairEmailValido(m.email) === d.email.toLowerCase());
       return {
         email: d.email,
         nomeMarca: d.nomeMarca,
         assunto: assuntoFinal,
         corpoTexto: obterTextoSimplesDeHtml(corpoFinalHtml),
+        corpoHtml: corpoFinalHtml,
         marcaId: marca ? marca.id : null,
       };
     });
@@ -833,7 +866,7 @@ window.AdminProspeccao = (function () {
 
   async function marcarItemFilaComoEnviado(item) {
     const agora = new Date().toISOString();
-    await window.banco.from("email_envios").insert({ email: item.email, assunto: item.assunto, status: "ok", erro: null, resend_id: null });
+    await window.banco.from("email_envios").insert({ email: item.email, assunto: item.assunto, status: "ok", erro: null, resend_id: null, corpo_html: item.corpoHtml || null });
     if (item.marcaId) {
       await window.banco.from("marcas").update({ ultimo_envio_em: agora, ultimo_envio_assunto: item.assunto }).eq("id", item.marcaId);
       const marca = marcasCache.find((m) => m.id === item.marcaId);

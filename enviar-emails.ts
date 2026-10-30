@@ -213,6 +213,7 @@ Deno.serve(async (req: Request) => {
         status: sucesso ? "ok" : "erro",
         erro: sucesso ? null : mensagemErro,
         resend_id: resendId,
+        corpo_html: corpoFinal,
       }),
     });
 
