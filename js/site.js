@@ -240,7 +240,11 @@ function iniciarCarrosselDestaques(totalVideos) {
 
   if (temClones) {
     trilho.addEventListener("transitionend", (evento) => {
-      if (evento.propertyName !== "transform") return;
+      // Os cards (.destaque-slot) também têm transição de "transform"
+      // (o zoom de quando ficam ativos), e esse evento borbulha até a
+      // trilha. Sem checar o alvo, isso disparava o pulo do loop
+      // infinito fora de hora e travava o avanço automático.
+      if (evento.target !== trilho || evento.propertyName !== "transform") return;
       if (indiceAtivo === 0) irPara(totalVideos, true);
       else if (indiceAtivo === totalVideos + 1) irPara(1, true);
     });
