@@ -272,6 +272,91 @@ function iniciarCarrosselDestaques(totalVideos) {
 }
 
 /* =========================================================
+   CARROSSEL DO PROCESSO CRIATIVO
+   Mesma lógica de loop infinito do carrossel de destaques (clona a
+   primeira e a última etapa, desliza, e pula sem transição quando
+   chega no clone), só que com as 3 etapas fixas em vez de vídeos.
+========================================================= */
+function iniciarCarrosselProcesso() {
+  const pista = document.querySelector(".processo-pista");
+  const trilho = document.getElementById("processoGrid");
+  const botaoAnterior = document.querySelector(".seta-processo-anterior");
+  const botaoProxima = document.querySelector(".seta-processo-proxima");
+  if (!pista || !trilho || !botaoAnterior || !botaoProxima) return;
+
+  const totalEtapas = trilho.children.length;
+  if (totalEtapas === 0) return;
+
+  const temClones = totalEtapas > 1;
+  if (temClones) {
+    const slotsReais = Array.from(trilho.children);
+    const cloneUltimo = slotsReais[slotsReais.length - 1].cloneNode(true);
+    const clonePrimeiro = slotsReais[0].cloneNode(true);
+    [cloneUltimo, clonePrimeiro].forEach(clone => clone.setAttribute("aria-hidden", "true"));
+    trilho.insertBefore(cloneUltimo, trilho.firstChild);
+    trilho.appendChild(clonePrimeiro);
+  }
+
+  let indiceAtivo = temClones ? 1 : 0;
+  let temporizador = null;
+
+  function irPara(indice, semTransicao) {
+    const slots = Array.from(trilho.children);
+    indiceAtivo = indice;
+
+    slots.forEach((slot, i) => slot.classList.toggle("processo-slot-ativo", i === indiceAtivo));
+
+    const ativo = slots[indiceAtivo];
+    if (!ativo) return;
+
+    if (semTransicao) trilho.style.transition = "none";
+    const centroAtivo = ativo.offsetLeft + ativo.offsetWidth / 2;
+    trilho.style.transform = `translateX(${pista.clientWidth / 2 - centroAtivo}px)`;
+    if (semTransicao) {
+      trilho.offsetHeight;
+      trilho.style.transition = "";
+    }
+  }
+
+  function atualizar() {
+    irPara(indiceAtivo, false);
+  }
+
+  function avancar(passo) {
+    if (!temClones) return;
+    irPara(indiceAtivo + passo, false);
+  }
+
+  if (temClones) {
+    trilho.addEventListener("transitionend", (evento) => {
+      if (evento.target !== trilho || evento.propertyName !== "transform") return;
+      if (indiceAtivo === 0) irPara(totalEtapas, true);
+      else if (indiceAtivo === totalEtapas + 1) irPara(1, true);
+    });
+  }
+
+  function reiniciarAutoAvanco() {
+    clearInterval(temporizador);
+    if (!temClones) return;
+    temporizador = setInterval(() => avancar(1), 3000);
+  }
+
+  botaoAnterior.hidden = !temClones;
+  botaoProxima.hidden = !temClones;
+  botaoAnterior.addEventListener("click", () => { avancar(-1); reiniciarAutoAvanco(); });
+  botaoProxima.addEventListener("click", () => { avancar(1); reiniciarAutoAvanco(); });
+
+  atualizar();
+  reiniciarAutoAvanco();
+
+  let redimensionando2 = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(redimensionando2);
+    redimensionando2 = setTimeout(() => irPara(indiceAtivo, true), 120);
+  });
+}
+
+/* =========================================================
    CARROSSEL DOS TRABALHOS
    Mostra só alguns vídeos por vez (a quantidade muda sozinha
    conforme a largura da tela) e usa as setinhas pra avançar.
@@ -504,3 +589,8 @@ function atributoSeguro(valor) {
     console.warn("Não consegui registrar a visita:", erro);
   }
 })();
+
+// Carrossel do processo criativo (3 etapas fixas, loop infinito),
+// na seção de contato. Não depende de dados do Supabase, então pode
+// iniciar direto assim que o DOM deste script já existe.
+iniciarCarrosselProcesso();

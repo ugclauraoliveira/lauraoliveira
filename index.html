@@ -1177,33 +1177,57 @@
     grid-template-columns: 2fr 3fr;
     gap: 40px;
   }
-  .campo{ margin-bottom: 18px; display:flex; flex-direction:column; gap:6px; }
-  .campo-linha{ display:flex; gap:18px; }
-  .campo-linha .campo{ flex:1; min-width:0; }
-  @media (max-width: 480px){
-    .campo-linha{ flex-direction:column; gap:0; }
-  }
-  .campo label{ font-size: .88rem; font-weight: 500; }
-  .campo input, .campo textarea{
-    padding: 13px 16px;
-    border-radius: 12px;
-    border: 1.5px solid rgba(58,43,34,0.25);
+  .contato-grid > div{ min-width: 0; }
+  .processo-titulo{ font-family: var(--serif); font-size: 1.6rem; margin: 0 0 20px; color: var(--tinta); }
+  .processo-carrossel{ position:relative; }
+  .processo-pista{ overflow:hidden; }
+  .processo-trilho{ display:flex; transition: transform .5s ease; }
+  .processo-slot{ flex:0 0 100%; max-width:100%; box-sizing:border-box; padding:0 4px; }
+  .processo-card{
     background: var(--papel);
-    font-family: inherit;
-    font-size: .96rem;
-    color: var(--tinta);
+    border-radius: 18px;
+    padding: 28px 26px;
+    box-shadow: 0 14px 28px -18px var(--sombra);
+    min-height: 190px;
   }
-  .campo textarea{ resize: vertical; min-height: 120px; }
-  #formularioContato button{ margin-top: 6px; }
-
-  .confirmacao-envio{
-    background: var(--oliva);
+  .processo-numero{
+    display:inline-block;
+    background: var(--tinta);
     color: var(--papel);
-    border-radius: 16px;
-    padding: 28px;
-    text-align:center;
+    font-size: .82rem;
+    font-weight: 700;
+    padding: 7px 16px;
+    border-radius: 999px;
+    margin-bottom: 16px;
   }
-  .confirmacao-envio h3{ color: var(--papel); }
+  .processo-card p{ font-size: .95rem; color: var(--tinta-suave); line-height: 1.55; margin:0; }
+  .processo-rodape{
+    text-align:center;
+    font-weight: 700;
+    font-size: .8rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--terracota-escuro);
+    margin-top: 22px;
+  }
+  .seta-processo{
+    position:absolute;
+    top:50%;
+    transform: translateY(-50%);
+    width: 40px; height:40px;
+    border-radius:50%;
+    border:none;
+    background: var(--papel);
+    box-shadow: 0 10px 24px -12px var(--sombra);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 1.2rem;
+    z-index:3;
+  }
+  .seta-processo-anterior{ left: -14px; }
+  .seta-processo-proxima{ right: -14px; }
+  .seta-processo:disabled{ opacity:.35; }
 
   .contato-canais{ display:flex; flex-direction:column; gap:16px; align-items:flex-start; margin-top:26px; }
   .canal-linha{
@@ -1727,36 +1751,34 @@
       </div>
 
       <div class="reveal">
-        <form id="formularioContato" novalidate>
-          <div class="campo-linha">
-            <div class="campo">
-              <label for="campoNome">Nome</label>
-              <input type="text" id="campoNome" name="nome" placeholder="Seu nome" required autocomplete="name">
+        <h3 class="processo-titulo">Processo criativo</h3>
+        <div class="processo-carrossel">
+          <button type="button" class="seta-processo seta-processo-anterior" aria-label="Ver etapa anterior">‹</button>
+          <div class="processo-pista">
+            <div class="processo-trilho" id="processoGrid">
+              <div class="processo-slot">
+                <div class="processo-card">
+                  <span class="processo-numero">1, Análise de marca</span>
+                  <p>Conversa + análise da marca para eu entender os objetivos e o pacote desejado para elaboração do contrato.</p>
+                </div>
+              </div>
+              <div class="processo-slot">
+                <div class="processo-card">
+                  <span class="processo-numero">2, Roteiro</span>
+                  <p>A partir do briefing elaboro o roteiro em até 3 dias úteis (após o recebimento do produto) envio para aprovação para que esteja tudo alinhado.</p>
+                </div>
+              </div>
+              <div class="processo-slot">
+                <div class="processo-card">
+                  <span class="processo-numero">3, Criação e entrega</span>
+                  <p>Gravo e edito o conteúdo e a entrega é feita num prazo de até 10 dias úteis após aprovação do roteiro.</p>
+                </div>
+              </div>
             </div>
-            <div class="campo">
-              <label for="campoEmail">E-mail</label>
-              <input type="email" id="campoEmail" name="email" placeholder="voce@marca.com" required autocomplete="email">
-            </div>
           </div>
-          <div class="campo">
-            <label for="campoMarca">Marca / Empresa</label>
-            <input type="text" id="campoMarca" name="marca" placeholder="Nome da marca" autocomplete="organization">
-          </div>
-          <div class="campo">
-            <label for="campoOrcamento">Orçamento estimado</label>
-            <input type="text" id="campoOrcamento" name="orcamento" placeholder="Ex: R$ 1.000 a R$ 5.000">
-          </div>
-          <div class="campo">
-            <label for="campoMensagem">Conta sobre o projeto</label>
-            <textarea id="campoMensagem" name="mensagem" placeholder="Categoria, formato, prazo, objetivo da campanha..." required></textarea>
-          </div>
-          <button type="submit" class="botao botao-primario">Enviar mensagem <span aria-hidden="true">↗</span></button>
-        </form>
-
-        <div class="confirmacao-envio" id="confirmacaoEnvio" hidden role="status" aria-live="polite">
-          <h3>Mensagem enviada!</h3>
-          <p>Obrigada pelo contato. Eu volto para você em breve pelo e-mail informado.</p>
+          <button type="button" class="seta-processo seta-processo-proxima" aria-label="Ver próxima etapa">›</button>
         </div>
+        <p class="processo-rodape">Pacotes personalizados, prazo à combinar.</p>
       </div>
     </div>
   </section>
