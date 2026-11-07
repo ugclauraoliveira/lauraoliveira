@@ -969,6 +969,28 @@
   .seta-carrossel:hover:not(:disabled){ background: rgba(58,43,34,0.08); }
   .seta-carrossel:disabled{ opacity:.35; cursor:default; }
 
+  /* ===================== FOTOS ===================== */
+  .fotos-grid{
+    display:grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+  }
+  .fotos-grid img{
+    width:100%;
+    aspect-ratio: 4/5;
+    object-fit:cover;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px -14px var(--sombra);
+    display:block;
+  }
+  @media (max-width: 980px){
+    .fotos-grid{ grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 560px){
+    .fotos-grid{ grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .fotos-grid img{ border-radius: 8px; }
+  }
+
   /* ===================== SERVIÇOS ===================== */
   .servicos-faixa{
     background: var(--terracota);
@@ -1592,6 +1614,33 @@
       </div>
       <div id="trabalhosGrid">
         <!-- preenchido via JavaScript: uma seção por nicho, cada uma com título e sua própria grade -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOTOS ===================== -->
+  <section id="fotos">
+    <div class="container">
+      <div class="titulo-secao reveal">
+        <span class="eyebrow">fotos</span>
+        <h2>Fotos</h2>
+        <p>Além de vídeo, também entrego fotos autênticas pra campanhas e redes sociais.</p>
+      </div>
+      <div class="fotos-grid reveal">
+        <img src="img/galeria/foto-01.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-02.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-03.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-04.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-05.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-06.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-07.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-08.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-09.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-10.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-11.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-12.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-13.jpg" alt="Foto de conteúdo para marca" loading="lazy">
+        <img src="img/galeria/foto-14.jpg" alt="Foto de conteúdo para marca" loading="lazy">
       </div>
     </div>
   </section>
