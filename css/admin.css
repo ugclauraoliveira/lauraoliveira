@@ -58,7 +58,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   padding: 8px 16px; border-radius: 999px; border: 1.5px solid transparent;
   font-size: .86rem; font-weight: 500; background: transparent; color: var(--tinta);
   transition: background-color .15s ease, transform .15s ease;
-  white-space: nowrap;
+  white-space: nowrap; text-decoration:none;
 }
 .btn:hover{ transform: translateY(-1px); }
 .btn-primario{ background: var(--terracota); color: var(--papel); }
@@ -213,6 +213,7 @@ tr.arrastando{ opacity:.4; }
 .campo-busca input{ width:100%; padding: 9px 12px 9px 34px; border-radius: 999px; border: 1.5px solid rgba(58,43,34,0.2); background: var(--papel); font-size:.85rem; }
 .chip-filtro{ padding: 7px 14px; border-radius:999px; border:1.5px solid rgba(58,43,34,0.22); background:transparent; font-size:.8rem; }
 .chip-filtro.ativo{ background: var(--terracota); border-color: var(--terracota); color: var(--papel); }
+.chip-filtro-link{ display:inline-flex; align-items:center; gap:6px; text-decoration:none; color: var(--tinta); }
 
 /* ---------- MODAL ---------- */
 .modal-admin-fundo{ position:fixed; inset:0; background: rgba(58,43,34,0.5); display:flex; align-items:center; justify-content:center; padding:20px; z-index:200; opacity:0; pointer-events:none; transition: opacity .2s ease; }
