@@ -9,8 +9,7 @@
 window.AdminGuia = (function () {
 
   const LINKS = [
-    { rotulo: "Guia da Imersão — Dia 1", url: "https://eilaradam.github.io/guia-imersao/#e1" },
-    { rotulo: "Guia da Imersão — Dia 2", url: "https://eilaradam.github.io/guia-imersao/dia2/#e1" },
+    { rotulo: "Guia da Imersão", url: "https://eilaradam.github.io/imersao/" },
     { rotulo: "Guia de Abordagem", url: "https://eilaradam.github.io/portfolios-brilhos/abordagem/" },
   ];
 
@@ -20,7 +19,7 @@ window.AdminGuia = (function () {
         <h2>Links</h2>
         <p class="vazio-explicativo" style="text-align:left; padding:0 0 14px;">Conteúdo de fora do painel (de outros sites) — cada botão abre numa aba nova.</p>
         <div style="display:flex; flex-wrap:wrap; gap:10px;">
-          ${LINKS.map((l) => `<a class="btn btn-secundario" href="${attrEsc(l.url)}" target="_blank" rel="noopener">${ICONES.enviar(16)} ${escapeHtml(l.rotulo)}</a>`).join("")}
+          ${LINKS.map((l) => `<a class="chip-filtro chip-filtro-link" href="${attrEsc(l.url)}" target="_blank" rel="noopener">${ICONES.enviar(14)} ${escapeHtml(l.rotulo)}</a>`).join("")}
         </div>
       </div>
     `;
